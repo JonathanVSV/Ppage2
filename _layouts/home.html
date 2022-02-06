@@ -1,0 +1,15 @@
+---
+layout: archive
+author_profile: true
+header:
+  overlay_image: /assets/images/ceiba5.JPG
+---
+
+{{ content }}
+
+{% assign categories_max = 0 %}
+{% for category in site.categories %}
+  {% if category[1].size > categories_max %}
+    {% assign categories_max = category[1].size %}
+  {% endif %}
+{% endfor %}
