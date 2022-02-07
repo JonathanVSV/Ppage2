@@ -210,10 +210,6 @@ exp_plot <- ggdraw(p1) +
             height = 0.2)
 {% endhighlight %}
 
-Here is the resulting map.
-
-{% include figure image_path="/assets/images/Map1.jpeg" alt="map" caption="Map of the study site with an inset map." %}
-
 Finally, you can export the resulting map using `save_plot`.
 
 {% highlight r %}
@@ -225,3 +221,8 @@ save_plot(exp_plot,
           dpi = 300,
           filename = "Map/Map1.jpeg")
 {% endhighlight %}
+
+Here is the resulting map.
+
+{% include figure image_path="/assets/images/Map1.jpeg" alt="map" caption="Map of the study site with an inset map." %}
+
