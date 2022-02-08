@@ -277,7 +277,7 @@ render_graph(a_graph)
 
 The produced the diagram
 
-[![styled-image]({{ site.baseurl }}/blog/assets/images/flowchart_blog.png){: .align-center style="width: 60%;"}]({{ site.baseurl }}/blog/assets/images/flowchart_blog.png ) Flowchart of a BFAST + ML approach.
+[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/flowchart_blog.png){: .align-center style="width: 60%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/flowchart_blog.png ) Flowchart of a BFAST + ML approach.
 {: style="text-align: center; font-size:0.75em;"}
 
 If you wish to export the diagram, you can use `export_graph`.
