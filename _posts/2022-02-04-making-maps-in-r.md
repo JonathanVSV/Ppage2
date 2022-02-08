@@ -224,5 +224,5 @@ save_plot(exp_plot,
 
 Here is the resulting map.
 
-[![styled-image](/blog/assets/images/Map1.jpeg){: .align-center style="width: 60%;"}](/blog/assets/images/Map1.jpeg) Map of the study site with an inset map.
+[![styled-image]({{ site.baseurl }}/blog/assets/images/Map1.jpeg){: .align-center style="width: 60%;"}]({{ site.baseurl }}/blog/assets/images/Map1.jpeg) Map of the study site with an inset map.
 {: style="text-align: center; font-size:0.75em;"}

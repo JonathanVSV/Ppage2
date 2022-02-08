@@ -84,5 +84,5 @@ anim_save("Plots/fires.gif",
 
 And here's a preview of the result.
 
-[![styled-image](/blog/assets/images/fires.gif){: .align-center style="width: 60%;"}](/blog/assets/images/fires.gif) Animation of fires in ROI.
+[![styled-image]({{ site.baseurl }}/blog/assets/images/fires.gif){: .align-center style="width: 60%;"}]({{ site.baseurl }}/blog/assets/images/fires.gif) Animation of fires in ROI.
 {: style="text-align: center; font-size:0.75em;"}
