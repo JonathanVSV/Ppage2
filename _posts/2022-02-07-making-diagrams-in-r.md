@@ -277,7 +277,8 @@ render_graph(a_graph)
 
 The produced the diagram
 
-{% include figure image_path="/assets/images/flowchart_blog.png" alt="flowchart" caption="Flowchart of a BFAST + ML approach." %}
+[![styled-image](/assets/images/flowchart_blog.png){: .align-center style="width: 60%;"}](/assets/images/flowchart_blog.png ) Flowchart of a BFAST + ML approach.
+{: style="text-align: center; font-size:0.75em;"}
 
 If you wish to export the diagram, you can use `export_graph`.
 

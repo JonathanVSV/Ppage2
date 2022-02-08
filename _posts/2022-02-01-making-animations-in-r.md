@@ -84,4 +84,5 @@ anim_save("Plots/fires.gif",
 
 And here's a preview of the result.
 
-{% include figure image_path="/assets/images/fires.gif" alt="animation" caption="Animation of fires in ROI." %}
+[![styled-image](/assets/images/fires.gif){: .align-center style="width: 60%;"}](/assets/images/fires.gif) Animation of fires in ROI.
+{: style="text-align: center; font-size:0.75em;"}

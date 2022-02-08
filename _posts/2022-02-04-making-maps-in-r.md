@@ -224,5 +224,5 @@ save_plot(exp_plot,
 
 Here is the resulting map.
 
-{% include figure image_path="/assets/images/Map1.jpeg" alt="map" caption="Map of the study site with an inset map." %}
-
+[![styled-image](/assets/images/Map1.jpeg){: .align-center style="width: 60%;"}](/assets/images/Map1.jpeg) Map of the study site with an inset map.
+{: style="text-align: center; font-size:0.75em;"}
