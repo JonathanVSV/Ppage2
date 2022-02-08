@@ -12,8 +12,4 @@ I made some basic courses to learn R and to use it to perform image processing a
 
 * [Pruebas estadísticas en R](/assets/courses/PruebEstad.html)
 
-* [Manejo de imágenes en R](/assets/courses/Man.html)
-
-* [Clasificación de imágenes en R](/assets/courses/Class.html)
-
 * [QGIS](https://github.com/JonathanVSV/CursoQGIS)
