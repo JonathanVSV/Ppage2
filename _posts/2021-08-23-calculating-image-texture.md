@@ -37,7 +37,7 @@ imgNIR<-imgmul[[4]]
 
 Here's a preview of the dummy image: imgR.
 
-[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/imgR.png){: .align-center style="width: 60%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/imgR.png ) Flowchart of a BFAST + ML approach.
+[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/imgR.png){: .align-center style="width: 60%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/imgR.png ) Dummy image.
 {: style="text-align: center; font-size:0.75em;"}
 
 # FOTO
@@ -75,7 +75,7 @@ writeRaster(foto_resul$rgb,
 
 Here's a preview of the FOTO image.
 
-[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/imgFOTO.png){: .align-center style="width: 60%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/imgFOTO.png ) Flowchart of a BFAST + ML approach.
+[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/imgFOTO.png){: .align-center style="width: 60%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/imgFOTO.png ) FOTO images.
 {: style="text-align: center; font-size:0.75em;"}
 
 # GLCM
@@ -106,5 +106,5 @@ writeRaster(glcm_R,
 
 Here's a preview of the GLCM image.
 
-[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/imgGLCM.png){: .align-center style="width: 60%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/imgGLCM.png ) Flowchart of a BFAST + ML approach.
+[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/imgGLCM.png){: .align-center style="width: 60%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/imgGLCM.png ) GLCM images.
 {: style="text-align: center; font-size:0.75em;"}
