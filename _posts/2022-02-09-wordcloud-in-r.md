@@ -1,5 +1,5 @@
 ---
-title: "wordlcoud in R"
+title: "Wordlcoud in R"
 date: 2022-02-09T15:23:30-04:00
 categories:
   - blog
