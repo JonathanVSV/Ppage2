@@ -1,5 +1,5 @@
 ---
-title: "Wordlcoud in R"
+title: "Wordcloud in R"
 date: 2022-02-09T15:25:30-04:00
 categories:
   - blog
