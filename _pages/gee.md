@@ -13,7 +13,7 @@ I am currently working on a collaborative Google Earth Manual in Spanish, which 
 
 Additionally, I gave a Google Earth Engine Workshop along with Gabriel Perilla, organized by SELPER - México in July 2021. The videos of this workshop can be seen in the following youtube link: 
 
-* [Google Earth Engine Workshop](https://www.youtube.com/watch?v=6VsLG0BPhdM&list=PL8pmc2BWDfaCw4IA2v5ZW6YEw1CcRwXh0&ab_channel=SELPERM%C3%A9xico)
+* [Google Earth Engine Workshop](https://www.youtube.com/watch?v=O7jLtnEbYuI&ab_channel=SchmilblickProduction)
 
 I made some Google Earth Engine scripts that can be used to perform cloudless annual mosaics using Landsat 4, 5, 7 and 8 surface reflectance collections, or obtain the number of cloudless observations per pixel using Sentinel-2 images.
 
