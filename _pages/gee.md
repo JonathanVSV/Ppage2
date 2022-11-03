@@ -7,7 +7,11 @@ header:
   overlay_image: /assets/images/ceiba3.JPG
 toc: true
 ---
-I am currently working on a collaborative Google Earth Manual in Spanish, which can consulted in the following repository:
+I made a Google Earth Manual in Spanish, which can be consulted in the following link:
+
+* [Cómo usar Google Earth Engine y no fallar en el intento](https://publicaciones.ciga.unam.mx/index.php/ec/catalog/book/12)
+
+Additionally, the github pages version, as well as the complete files used to build the book can be consulted in the following repository:
 
 * [Manual de Google Earth Engine](https://github.com/JonathanVSV/GEE_manual)
 
