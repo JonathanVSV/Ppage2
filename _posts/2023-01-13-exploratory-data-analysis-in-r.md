@@ -21,7 +21,7 @@ In this post we are going to use two packages designed to perform exploratory da
 
 For this example, we are going to use `flights` dataset.
 
-{% highlight `r` %}
+{% highlight r %}
 library(tidyverse)
 library(skimr)
 library(nycflights13)
@@ -42,20 +42,18 @@ Skimr is a package designed to skim over the data and get a basic description of
 4. Number of unique values (character) or mean, sd and quartiles (numeric).
 5. Histograms.
 
-{% highlight `r` %}
+{% highlight r %}
 # General skim
 flights |>
   skim()
 {% endhighlight %}
 
-{% highlight r %}
-```{r echo=F, out.width="90%", fig.align="center"}
-knitr::include_graphics("img/skim.png")
-```
+[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/skim.png){: .align-center style="width: 60%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/skim.png) Example of skim results.
+{: style="text-align: center; font-size:0.75em;"}
 
 You can also use traditional dplyr syntax to select only particular variables or non missing rows.
 
-{% highlight `r` %}
+{% highlight r %}
 # Select non na entries
 flights |>
   skim() |>
@@ -70,7 +68,7 @@ flights |>
 
 Dataxray is a package that performs a similar exploratory data analysis to `skimr`, but its main advantage is that it has an interactive interface and has a fancier design. Nonetheless, it shows almost the same information as `skimr`; however it takes more time to show the results.
 
-{% highlight `r` %}
+{% highlight r %}
 flights |>
   # Just to accelerate creation of xray
   slice(1:50000) |>
@@ -78,7 +76,5 @@ flights |>
   view_xray()
 {% endhighlight %}
 
-{% highlight r %}
-```{r echo=F, out.width="90%", fig.align="center"}
-knitr::include_graphics("img/dataxray.png")
-```
+[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/dataxray.png){: .align-center style="width: 60%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/dataxray.png) Example of dataxray interface.
+{: style="text-align: center; font-size:0.75em;"}
