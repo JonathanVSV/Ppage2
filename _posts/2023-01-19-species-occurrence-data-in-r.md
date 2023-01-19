@@ -110,5 +110,5 @@ tmap_save(tm = map1,
           dpi = 300)
 {% endhighlight %}
 
-[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/Map_Rm.png){: .align-center style="width: 60%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/Map_Rm.png) 3D histogram with ggridges.
+[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/Map_Rm.png){: .align-center style="width: 60%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/Map_Rm.png) Map with _Rhizophora mangle_ registries in Mexico.
 {: style="text-align: center; font-size:0.75em;"}
