@@ -33,7 +33,7 @@ Then, read the roi polygon file and use it to obtain the RGB tiles and DEM data.
 
 {% highlight r %}
 # Get polygon of roi
-poly <- st_read("MX_inegi.shp")
+poly <- st_read("MX_inegi.gpkg")
 # Get RGB mosaic
 rgb <- get_tiles(poly,
                  provider = "Esri.WorldImagery",
