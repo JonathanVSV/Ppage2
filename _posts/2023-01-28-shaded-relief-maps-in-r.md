@@ -87,7 +87,7 @@ ext(hillshade) <- ext(rgb)
 hillshade <- mask(hillshade, poly)
 {% endhighlight %}
 
-Then export the two images in a single png, setting some transparency in the second image so the hillshade can be appreciated under the RGB composite.
+Then export the two images in a single png, setting some transparency in the second image so the hillshade can be appreciated under the RGB composite. In this case, you need to create a folder named "Plots" outside R in your working directory or use `dir.create("Plots")` inside R, so you can export the file in the exact same location as in the example. Other alternative, might be to delete the folder part (i.e., "Plots/")and just export it directly in the working directory.
 
 {% highlight r %}
 # Export to png
