@@ -96,8 +96,6 @@ Define color palette for the topography colors, using hexadecimal codes.
 my_pal <- grDevices::colorRampPalette(c("#026449", "#12722c","#d7d17e",
                     "#95400d", "#980802", "#746c69", "#f1f1f1","#fdfdfd"),
                     interpolate = "spline",
-                    # space = "rgb",
-                    # alpha = T,
                     bias = 1)(256)
 {% endhighlight %}
 
@@ -112,7 +110,6 @@ im <- dem_mat |>
   add_overlay(height_shade(dem_mat, 
                            texture = my_pal),
               alphalayer = 0.7) |>
-  # add_overlay(rgb_mat) |>
   add_shadow(ray_shade(dem_mat,
                        sunaltitude = sunaltitude,
                        zscale=zscale),
@@ -147,7 +144,6 @@ png(paste0("Plots/",name_poly,"_AltCol.png"),
     height = 20,
     units = "cm",
     res = 300)
-# Plot RGB; values * 255 to scale to 0 - 255 range again
 plotRGB(im_rep,
         # stretch = "hist",
         smooth = T,
@@ -164,7 +160,7 @@ Once you obtain the png, you can make some enhancements using the `magick` packa
 {% highlight r %}
 # Final enhancements
 im1 <- image_read(paste0("Plots/",name_poly,"_AltCol.png"))
-
+# Crop image to remove borders
 im2 <- image_trim(im1)
 # Add color saturation
 im2 <- image_modulate(im2, 
@@ -179,6 +175,7 @@ im2 <- image_contrast(im2,
 Finally, using the same package you can make some annotations, add some borders to the image and write the final image into another png.
 
 {% highlight r %}
+# Main title
 im2 <- image_annotate(im2, 
                       paste0(name_poly),
                       font = font,
@@ -188,6 +185,7 @@ im2 <- image_annotate(im2,
                       size = 140, 
                       gravity = "southwest",
                       location = "+200+200")
+# Subtitle                      
 im2 <- image_annotate(im2, 
                       text = c("shaded relief"), 
                       weight = 700,
@@ -196,6 +194,7 @@ im2 <- image_annotate(im2,
                       color = font_color, 
                       size = 80, 
                       gravity = "southwest")
+# Coordinates                      
 im2 <- image_annotate(im2, 
                       text = paste0(coords_df$c1, " - ", coords_df$c2),
                       # Normal face 
@@ -205,22 +204,14 @@ im2 <- image_annotate(im2,
                       color = font_color, 
                       size = 30, 
                       gravity = "southwest")
-im2 <- image_annotate(im2, 
-                      text = paste0(coords_df$c1, " - ", coords_df$c2), 
-                      weight = 400,
-                      font = font, 
-                      location = "+165+60",
-                      color = font_color, 
-                      size = 30, 
-                      gravity = "southwest")
+# Add white border
 im2 <- image_border(im2, 
                     color = "white",
                     geometry = "10x10")
+# Add black border                    
 im2 <- image_border(im2, 
                     color = "black",
                     geometry = "10x10")
-im2
-
 
 image_write(im2, 
             path = paste0("Plots/",name_poly,"_AltCol_final.png"), 
