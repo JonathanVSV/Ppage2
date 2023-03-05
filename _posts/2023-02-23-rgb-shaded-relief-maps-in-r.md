@@ -1,5 +1,5 @@
 ---
-title: "Shaded relief maps in R"
+title: "RGB Shaded relief maps in R"
 date: 2023-02-23T09:15:00-00:00
 categories:
   - blog
@@ -16,7 +16,7 @@ tags:
 layout: splash
 ---
 
-# Shaded relief maps in R
+# RGB Shaded relief maps in R
 
 In this post I will show you how to make an RGB composite with shaded relief using `rayshader`, `elevatr`, `maptiles`,`sf`, `terra` and `magick` packages. First load the libraries we are going to use.
 
