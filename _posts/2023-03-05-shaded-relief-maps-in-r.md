@@ -56,7 +56,7 @@ poly <- st_read("MX_inegi.gpkg")
 dem <- get_elev_raster(poly,
                       prj = "EPSG:4326",
                       src = "aws",
-                      z = 6,
+                      z = zoom_val,
                       neg_to_na = FALSE)
 {% endhighlight %}
 
