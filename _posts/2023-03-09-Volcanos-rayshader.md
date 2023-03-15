@@ -250,7 +250,7 @@ image_append(c(imall, stacked_im)) |>
 
 The result:
 
-[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/Volcanos_all_final.png){: .align-center style="width: 60%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/Volcanos_all_final.png) Mexico's highest peaks.
+[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/Volcanos_all_final.png){: .align-center style="width: 90%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/Volcanos_all_final.png) Mexico's highest peaks.
 {: style="text-align: center; font-size:0.75em;"}
 
 In the final map, the tallest peaks can be appreciated with its labels, as well as a zoom-in to all of them individually (right-side panel). I like to think of the resulting image as a simple infography.
