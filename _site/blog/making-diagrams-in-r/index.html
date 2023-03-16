@@ -1,0 +1,493 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Making diagrams in R - Jonathan V. Solórzano</title>
+<meta name="description" content="Diagrams in R">
+
+
+  <meta name="author" content="Jonathan V. Solórzano">
+  
+  <meta property="article:author" content="Jonathan V. Solórzano">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Jonathan V. Solórzano">
+<meta property="og:title" content="Making diagrams in R">
+<meta property="og:url" content="http://localhost:4000/blog/making-diagrams-in-r/">
+
+
+  <meta property="og:description" content="Diagrams in R">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2022-02-07T07:34:30-06:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/blog/making-diagrams-in-r/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Jonathan V. Solórzano Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--splash">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Jonathan V. Solórzano
+          <span class="site-subtitle">My personal site</span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/courses/">Courses</a>
+            </li><li class="masthead__menu-item">
+              <a href="/mini-packages/">Mini-packages</a>
+            </li><li class="masthead__menu-item">
+              <a href="/gee/">GEE</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+<div id="main" role="main">
+  <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Making diagrams in R">
+    <meta itemprop="description" content="Diagrams in R">
+    <meta itemprop="datePublished" content="2022-02-07T07:34:30-06:00">
+    
+
+    <section class="page__content" itemprop="text">
+      <h1 id="diagrams-in-r">Diagrams in R</h1>
+
+<p>In this post I will show you how to create simple diagrams in R that can be useful for creating flowcharts and figures using the packages DiagrammeR. So the first thing is to load DiagrammeR package.</p>
+
+<h1 id="diagrammer-package">DiagrammeR package</h1>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">DiagrammeR</span><span class="p">)</span></code></pre></figure>
+
+<p>This packages works with essentially two types of objects: nodes and edges. Nodes will represent the nodes in a diagram, which usually consist of geometric figures with text. In turn, edges correspond to connections among the nodes that will usually consist of arrows that represent the direction of the workflow. In this example, I will show you how to draw a diagram by adding each node and edge separately; however, for more experienced users it might be easier to use nodes and edge dataframes to define all the nodes and edges in a single data frame.</p>
+
+<h1 id="example-diagram">Example diagram</h1>
+
+<p>The first step is to create a graph, using the <code class="language-plaintext highlighter-rouge">create_graph</code> function. Then we will use a pipe <code class="language-plaintext highlighter-rouge">|&gt;</code> to start creating each node, using <code class="language-plaintext highlighter-rouge">add_node</code>. Notice that each node can take the following arguments: label (text that will be shown) and font color of the node, shape of the node, color and fill color of the node. Additionally, you can set if the size of the figure should be set according to the label or a predefined height and width.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">a_graph</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">create_graph</span><span class="p">()</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Set nodes</span><span class="w">
+  </span><span class="n">add_node</span><span class="p">(</span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"\nLandsat 5, 7, 8\nNDVI time\nseries (1994-\n2018)"</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">node_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"cylinder"</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#a4aebd"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fillcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#d9e8f8"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fontcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+             </span><span class="c1"># fixedsize = T,</span><span class="w">
+             </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.9</span><span class="p">,</span><span class="w">
+             </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.1</span><span class="w">
+           </span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_node</span><span class="p">(</span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"BFAST\ncomponents\nextraction"</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">node_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"box"</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#be9c5c"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fillcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#fee5cc"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fontcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fixedsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="w">
+           </span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_node</span><span class="p">(</span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"\n238 points\nTraining / Verification\nMagnitude\nGamma distribution"</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">node_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"cylinder"</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#8fa38a"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fillcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#d5e8d4"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fontcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+             </span><span class="c1"># fixedsize = T,</span><span class="w">
+             </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.9</span><span class="p">,</span><span class="w">
+             </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.4</span><span class="w">
+           </span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_node</span><span class="p">(</span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Visual interpretation\nusing Sentinel-2"</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">node_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"rectangle"</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#8e7571"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fillcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#f7cecc"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fontcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fixedsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="w">
+           </span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_node</span><span class="p">(</span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"All-forest"</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">node_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"rectangle"</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#8b7e8f"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fillcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#e1d4e5"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fontcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fixedsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="w">
+           </span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_node</span><span class="p">(</span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"TDF"</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">node_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"rectangle"</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#8b7e8f"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fillcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#e1d4e5"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fontcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fixedsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="w">
+           </span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_node</span><span class="p">(</span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"TF"</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">node_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"rectangle"</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#8b7e8f"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fillcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#e1d4e5"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fontcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fixedsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="w">
+           </span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_node</span><span class="p">(</span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Models training\nand evaluation"</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">node_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"oval"</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#8b7e8f"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fillcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#e1d4e5"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fontcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fixedsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="w">
+           </span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_node</span><span class="p">(</span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Best model\nselection"</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">node_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"rectangle"</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#8b7e8f"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fillcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#e1d4e5"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fontcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fixedsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="w">
+           </span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_node</span><span class="p">(</span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Prediction on\nstudy site"</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">node_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"rectangle"</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#8b7e8f"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fillcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#e1d4e5"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fontcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fixedsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="w">
+           </span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_node</span><span class="p">(</span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"\n624 points\n verification\nStratified random\ndistribution"</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">node_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"cylinder"</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#8fa38a"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fillcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#d5e8d4"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fontcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+             </span><span class="c1"># fixedsize = T,</span><span class="w">
+             </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.9</span><span class="p">,</span><span class="w">
+             </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.1</span><span class="w">
+           </span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_node</span><span class="p">(</span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Visual interpretation\nusing Sentinel-2"</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">node_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"rectangle"</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#8e7571"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fillcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#f7cecc"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fontcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fixedsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="w">
+           </span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_node</span><span class="p">(</span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Confusion matrix\ncalculation"</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">node_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"rectangle"</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#7c7b8c"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fillcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#d0cee3"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fontcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fixedsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="w">
+           </span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_node</span><span class="p">(</span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Class unbiased area\nestimate"</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">node_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"rectangle"</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#7c7b8c"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fillcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"#d0cee3"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fontcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+             </span><span class="n">fixedsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="w">
+           </span><span class="p">))</span><span class="w"> </span></code></pre></figure>
+
+<p>The second step is to define each node’s position. Notice that nodes are automatically numbered in the order they were created. Thus, <code class="language-plaintext highlighter-rouge">node = 1</code> refers to the first node that was created using <code class="language-plaintext highlighter-rouge">add_node</code>. Each node position can be defined by its x and y coordinates.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">a_graph</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">a_graph</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Set nodes position</span><span class="w">
+  </span><span class="n">set_node_position</span><span class="p">(</span><span class="w">
+    </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w">
+    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6.5</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">set_node_position</span><span class="p">(</span><span class="w">
+    </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w">
+    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2.45</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6.5</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">set_node_position</span><span class="p">(</span><span class="w">
+    </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w">
+    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6.5</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">set_node_position</span><span class="p">(</span><span class="w">
+    </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w">
+    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">set_node_position</span><span class="p">(</span><span class="w">
+    </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w">
+    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">set_node_position</span><span class="p">(</span><span class="w">
+    </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6</span><span class="p">,</span><span class="w">
+    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">set_node_position</span><span class="p">(</span><span class="w">
+    </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7</span><span class="p">,</span><span class="w">
+    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">set_node_position</span><span class="p">(</span><span class="w">
+    </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">,</span><span class="w">
+    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">set_node_position</span><span class="p">(</span><span class="w">
+    </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">9</span><span class="p">,</span><span class="w">
+    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">set_node_position</span><span class="p">(</span><span class="w">
+    </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w">
+    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">set_node_position</span><span class="p">(</span><span class="w">
+    </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">11</span><span class="p">,</span><span class="w">
+    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6.5</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6.5</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">set_node_position</span><span class="p">(</span><span class="w">
+    </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">,</span><span class="w">
+    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6.5</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">set_node_position</span><span class="p">(</span><span class="w">
+    </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">13</span><span class="p">,</span><span class="w">
+    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6.5</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">set_node_position</span><span class="p">(</span><span class="w">
+    </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">14</span><span class="p">,</span><span class="w">
+    </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6.5</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span></code></pre></figure>
+
+<p>Afterward, we will add the edges. In this step, we will use the same numbering of the nodes as in the previous step. Thus, node 1 will be the first created node, while node 2 will be the second. Inside the <code class="language-plaintext highlighter-rouge">add_edge</code> function we can set the width of the arrow, as well as its color.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">a_graph</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">a_graph</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Add edges</span><span class="w">
+  </span><span class="n">add_edge</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">edge_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">penwidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.5</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_edge</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">edge_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">penwidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.5</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_edge</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">edge_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">penwidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.5</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_edge</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">edge_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">penwidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.5</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_edge</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">edge_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">penwidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.5</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_edge</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">edge_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">penwidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.5</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_edge</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">edge_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">penwidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.5</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_edge</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">edge_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">penwidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.5</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_edge</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">edge_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">penwidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.5</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_edge</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">9</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">edge_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">penwidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.5</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_edge</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">9</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">edge_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">penwidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.5</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_edge</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w">
+           </span><span class="n">edge_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">penwidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.5</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_edge</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">11</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">edge_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">penwidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.5</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_edge</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">11</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">edge_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">penwidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.5</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_edge</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">13</span><span class="p">,</span><span class="w">
+           </span><span class="n">edge_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">penwidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.5</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_edge</span><span class="p">(</span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">13</span><span class="p">,</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">14</span><span class="p">,</span><span class="w">
+           </span><span class="n">edge_aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge_aes</span><span class="p">(</span><span class="w">
+             </span><span class="n">penwidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.5</span><span class="p">,</span><span class="w">
+             </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">))</span></code></pre></figure>
+
+<p>Finally, we can render the graph.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">render_graph</span><span class="p">(</span><span class="n">a_graph</span><span class="p">)</span></code></pre></figure>
+
+<p>The produced the diagram</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/flowchart_blog.png"><img src="http://localhost:4000/assets/images/flowchart_blog.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Flowchart of a BFAST + ML approach.</p>
+
+<p>If you wish to export the diagram, you can use <code class="language-plaintext highlighter-rouge">export_graph</code>.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">export_graph</span><span class="p">(</span><span class="n">a_graph</span><span class="p">,</span><span class="w">
+             </span><span class="n">file_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Plots/flowchart.png"</span><span class="p">,</span><span class="w">
+             </span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"png"</span><span class="p">,</span><span class="w">
+             </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3600</span><span class="p">,</span><span class="w">
+             </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2400</span><span class="p">)</span></code></pre></figure>
+
+    </section>
+  </article>
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/JonathanVSV" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://stackoverflow.com/users/9022665/jonathan-v-sol%c3%b3rzano" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-stack-overflow" aria-hidden="true"></i> Stack Overflow</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Jonathan V. Solórzano. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,437 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Presentations in R - Jonathan V. Solórzano</title>
+<meta name="description" content="Presentations in R">
+
+
+  <meta name="author" content="Jonathan V. Solórzano">
+  
+  <meta property="article:author" content="Jonathan V. Solórzano">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Jonathan V. Solórzano">
+<meta property="og:title" content="Presentations in R">
+<meta property="og:url" content="http://localhost:4000/blog/presentations-in-r/">
+
+
+  <meta property="og:description" content="Presentations in R">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2022-10-17T12:08:00-05:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/blog/presentations-in-r/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Jonathan V. Solórzano Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--splash">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Jonathan V. Solórzano
+          <span class="site-subtitle">My personal site</span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/courses/">Courses</a>
+            </li><li class="masthead__menu-item">
+              <a href="/mini-packages/">Mini-packages</a>
+            </li><li class="masthead__menu-item">
+              <a href="/gee/">GEE</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+<div id="main" role="main">
+  <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Presentations in R">
+    <meta itemprop="description" content="Presentations in R">
+    <meta itemprop="datePublished" content="2022-10-17T12:08:00-05:00">
+    
+
+    <section class="page__content" itemprop="text">
+      <h1 id="presentations-in-r">Presentations in R</h1>
+
+<p>Using the <code class="language-plaintext highlighter-rouge">xaringan</code> package, you can construct beautiful presentations using R. Essentially, the RMarkdown syntax is used to add text, tables and figures.</p>
+
+<h2 id="syntax-summary">Syntax summary</h2>
+
+<figure class="highlight"><pre><code class="language-md" data-lang="md">--- to start a new slide
+-- to show additional content in the same slide (previously hidden).</code></pre></figure>
+
+<h3 id="titles">Titles</h3>
+
+<p>Set titles.</p>
+
+<figure class="highlight"><pre><code class="language-md" data-lang="md"><span class="gh"># Header 1</span>
+<span class="gh"># Header 2</span>
+<span class="gh"># Header 3</span></code></pre></figure>
+
+<h3 id="highlight">Highlight</h3>
+
+<p>Highlight words in italic or bold font.</p>
+
+<figure class="highlight"><pre><code class="language-md" data-lang="md"><span class="ge">_italic_</span>, <span class="gs">**bold**</span></code></pre></figure>
+
+<h3 id="lists">Lists</h3>
+
+<p>You can choose between three different types of lists: hyphens, numbered and bullets.</p>
+
+<p>Hyphens</p>
+
+<figure class="highlight"><pre><code class="language-md" data-lang="md"><span class="p">-</span> a
+<span class="p">-</span> b</code></pre></figure>
+
+<p>Numbered</p>
+
+<figure class="highlight"><pre><code class="language-md" data-lang="md"><span class="p">1.</span> a
+<span class="p">2.</span> b</code></pre></figure>
+
+<p>Bullets</p>
+
+<figure class="highlight"><pre><code class="language-md" data-lang="md"><span class="p">*</span> a
+<span class="p">*</span> b</code></pre></figure>
+
+<h3 id="add-images">Add images</h3>
+
+<p>Although you can add images directly with markdown, I recommend using <code class="language-plaintext highlighter-rouge">knitr</code> to include images using r code. This way you can better control the size of the image (instead of using directly its size) and setting other options as its alignment.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="err">``</span><span class="n">`{r echo=F, out.width="90%", fig.align="center"}
+knitr::include_graphics("img/test.png")
+`</span><span class="err">``</span></code></pre></figure>
+
+<h3 id="two-columns">Two columns</h3>
+
+<p>There are two default styles to set the objects inside the slides in a two-column format:</p>
+
+<p>The first one puts your slides in two columns with each one expanding aprox. 50 % of the total width of the slide</p>
+
+<figure class="highlight"><pre><code class="language-md" data-lang="md">.pull-left[
+  your content
+]
+.pull-right[
+  your content
+]</code></pre></figure>
+
+<p>The second one puts your slides in two columns with the first expanding aprox. 25 % of the total width of the slide, and the second, 75 %.</p>
+
+<figure class="highlight"><pre><code class="language-md" data-lang="md">.left-column[
+  your content
+]
+.right-column[
+  your content
+]</code></pre></figure>
+
+<h3 id="changing-slide-class">Changing slide class</h3>
+
+<p>You can add special slides with a different theme than the default. One commonly used is the ‘inverse’ class, which is the theme used for the starting slide. Additionally, you can set other classes such as ‘center’ or ‘bottom’ or combine them to set the position of the text.</p>
+
+<figure class="highlight"><pre><code class="language-md" data-lang="md">class: center, bottom, inverse</code></pre></figure>
+
+<h3 id="background-images">Background images</h3>
+
+<p>You can add images as background for certain slides by selecting the image and setting its position and size.</p>
+
+<figure class="highlight"><pre><code class="language-md" data-lang="md">background-image: url("img/end.png")
+background-position: 50% 50%
+background-size: cover</code></pre></figure>
+
+<h3 id="tables">Tables</h3>
+
+<p>You can use <code class="language-plaintext highlighter-rouge">kable</code> inside the <code class="language-plaintext highlighter-rouge">knitr</code> package to draw formatted tables.</p>
+
+<figure class="highlight"><pre><code class="language-md" data-lang="md">knitr::kable(tab1, 
+             format = "html",
+             table.attr = "style='width:80%;'") |&gt;
+  kable_styling(bootstrap_options = c("striped"), 
+                full_width = T,
+                font_size = 14) </code></pre></figure>
+
+<h3 id="formulas">Formulas</h3>
+
+<p>You can add formulas or use mathematica notation using <code class="language-plaintext highlighter-rouge">$$ $$</code> for equations or <code class="language-plaintext highlighter-rouge">$ $</code> for mathematical notations.</p>
+
+<figure class="highlight"><pre><code class="language-md" data-lang="md">$$OA = <span class="se">\d</span>isplaystyle <span class="se">\f</span>rac {TP + TN} {TP + TN + FP + FN}$$</code></pre></figure>
+
+<h3 id="knit">Knit</h3>
+
+<p>Finally, when the document is ready, knit the document (string ball icon in Rstudio) to create the html file with the slides.</p>
+
+<h2 id="minimal-example">Minimal example</h2>
+
+<figure class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="c1"># Title slide</span>
+
+<span class="nn">---</span>
+<span class="na">title</span><span class="pi">:</span> <span class="s2">"</span><span class="s">My</span><span class="nv"> </span><span class="s">presentation"</span>
+<span class="na">author</span><span class="pi">:</span> <span class="pi">|</span> 
+    <span class="s">| Myself</span>
+    <span class="s">| Others</span>
+<span class="na">institute</span><span class="pi">:</span> <span class="s2">"</span><span class="s">My</span><span class="nv"> </span><span class="s">Company"</span>
+<span class="na">date</span><span class="pi">:</span> <span class="s2">"</span><span class="s">27/05/2022"</span>
+<span class="na">output</span><span class="pi">:</span>
+  <span class="s">xaringan::moon_reader:</span>
+    <span class="s">css</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">default</span><span class="pi">,</span> <span class="nv">default-fonts</span><span class="pi">,</span> <span class="nv">mystyle.css</span><span class="pi">]</span>
+<span class="na">lib_dir</span><span class="pi">:</span> <span class="s">libs</span>
+<span class="na">nature</span><span class="pi">:</span>
+  <span class="na">highlightStyle</span><span class="pi">:</span> <span class="s">github</span>
+<span class="na">highlightLines</span><span class="pi">:</span> <span class="no">true</span>
+<span class="na">countIncrementalSlides</span><span class="pi">:</span> <span class="no">false</span>
+<span class="nn">---</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-md" data-lang="md">  
+<span class="p">```</span><span class="nl">{r setup, include=FALSE}
+</span><span class="sb">library(tidyverse)
+library(kableExtra)</span>
+<span class="p">```</span>
+
+<span class="gh"># First slide</span>
+
+Text
+
+<span class="p">```</span><span class="nl">{r echo=F, out.width="50%", fig.align="center"}
+</span><span class="sb">knitr::include_graphics("img/rxar.png")</span>
+<span class="p">```</span>
+<span class="p">
+---</span>
+<span class="gh"># Second slide</span>
+
+List:
+<span class="p">  -</span> 1.
+<span class="p">  -</span> 2. 
+<span class="p">  -</span> 3.
+<span class="p">  -</span> 4.
+
+<span class="gh"># Empty line</span>
+<span class="ni">&amp;nbsp;</span><span class="nt">&lt;br&gt;</span>
+
+<span class="gh"># Another image</span>
+<span class="p">```</span><span class="nl">{r echo=F, out.width="10%", fig.align="center"}
+</span><span class="sb">knitr::include_graphics("img/xaringan.png")</span>
+<span class="p">```</span>
+<span class="p">
+---</span>
+<span class="gh"># Third slide</span>
+
+.pull-left[
+text at left
+]
+
+.pull-right[
+text at right
+]
+<span class="p">
+---</span>
+<span class="gh"># Fourth slide</span>
+
+A table.
+
+<span class="p">```</span><span class="nl">{r echo=F, out.width="100%"}
+</span><span class="sb">
+tab1 &lt;- data.frame(a = 1:4,
+                   b = 4:7,
+                   c = 5:8,
+                   d = 12:15)
+
+knitr::kable(tab1, 
+             escape = FALSE, 
+             format = "html",
+             table.attr = "style='width:100%;'",
+             col.names = c("0", 
+                           "1", 
+                           "2", 
+                           "3"),
+             align = c("l", rep("r", 3))) |&gt;
+  kable_styling(bootstrap_options = c("striped"), 
+                full_width = T,
+                font_size = 14) |&gt;
+  kableExtra::row_spec(1, extra_css = "border-top: 1px solid")</span>
+<span class="p">```</span>
+<span class="p">
+---</span>
+background-image: url("img/r.png")
+background-position: 50% 50%
+background-size: cover
+class: center, bottom, inverse
+
+<span class="gh"># ¡Thx!</span>
+
+<span class="gu">## contact</span></code></pre></figure>
+
+<p>The result is the following (click on the following broken link image to view the pdf presentation).</p>
+
+<p><a href="http://localhost:4000/assets/images/presentation.pdf"><img src="http://localhost:4000/assets/images/presentation.pdf" alt="my-presentation" class="align-center" style="width: 60%;" /></a> Resulting slides.</p>
+
+    </section>
+  </article>
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/JonathanVSV" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://stackoverflow.com/users/9022665/jonathan-v-sol%c3%b3rzano" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-stack-overflow" aria-hidden="true"></i> Stack Overflow</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Jonathan V. Solórzano. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

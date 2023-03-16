@@ -1,0 +1,313 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Beautiful-plots(ggplot2)-in-r - Jonathan V. Solórzano</title>
+<meta name="description" content="Beautiful plots in R using ggplot2">
+
+
+  <meta name="author" content="Jonathan V. Solórzano">
+  
+  <meta property="article:author" content="Jonathan V. Solórzano">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Jonathan V. Solórzano">
+<meta property="og:title" content="Beautiful-plots(ggplot2)-in-r">
+<meta property="og:url" content="http://localhost:4000/blog/beautiful-plots(ggplot2)-in-r/">
+
+
+  <meta property="og:description" content="Beautiful plots in R using ggplot2">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2023-01-27T05:52:00-06:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/blog/beautiful-plots(ggplot2)-in-r/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Jonathan V. Solórzano Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--splash">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Jonathan V. Solórzano
+          <span class="site-subtitle">My personal site</span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/courses/">Courses</a>
+            </li><li class="masthead__menu-item">
+              <a href="/mini-packages/">Mini-packages</a>
+            </li><li class="masthead__menu-item">
+              <a href="/gee/">GEE</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+<div id="main" role="main">
+  <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Beautiful-plots(ggplot2)-in-r">
+    <meta itemprop="description" content="Beautiful plots in R using ggplot2">
+    <meta itemprop="datePublished" content="2023-01-27T05:52:00-06:00">
+    
+
+    <section class="page__content" itemprop="text">
+      <h1 id="beautiful-plots-in-r-using-ggplot2">Beautiful plots in R using ggplot2</h1>
+
+<p>The purpose of this post is to show how to use the basic syntax of ggplot2, do some of the most common types of plots, show some customizations and facets.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">rgbif</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">skimr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">tidyr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">rnaturalearth</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">tmap</span><span class="p">)</span></code></pre></figure>
+
+<p>The first step will be to set your credentials to be able to acess GBIF. If you do not have these credentials, you can register in their website and obtain them (https://www.gbif.org/user/profile). Then rewrite that information into the R environment</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># ---------------1. Set credentials----------------------</span><span class="w">
+</span><span class="c1"># Set credentials</span><span class="w">
+</span><span class="c1"># usethis::edit_r_environ()</span><span class="w">
+
+</span><span class="c1"># Edit .Renviron</span><span class="w">
+</span><span class="c1"># GBIF_USER="myname"</span><span class="w">
+</span><span class="c1"># GBIF_PWD="mypass"</span><span class="w">
+</span><span class="c1"># GBIF_EMAIL="yeahyeahyeah@myorg.org"</span></code></pre></figure>
+
+<p>The next step is downloading the data of interest. In this example, I am going to download the data for <em>Rhizhophora mangle</em> in Mexico. You will have to wait for the download to complete. Meanwhile, you can check the status of the download using <code class="language-plaintext highlighter-rouge">occ_download_wait</code> and putting in the key of numbers that will appear in the console. Once the download have been finished, you can import the data into R.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># -----------2. Search and download data-----------------</span><span class="w">
+</span><span class="c1"># Now you can use without logging in every session</span><span class="w">
+</span><span class="n">id</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">name_backbone</span><span class="p">(</span><span class="s2">"Rhizophora mangle"</span><span class="p">)</span><span class="o">$</span><span class="n">usageKey</span><span class="w">
+</span><span class="c1"># Send download request</span><span class="w">
+</span><span class="n">occ_download</span><span class="p">(</span><span class="n">pred</span><span class="p">(</span><span class="s2">"taxonKey"</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">),</span><span class="w">
+             </span><span class="n">pred</span><span class="p">(</span><span class="s2">"country"</span><span class="p">,</span><span class="w"> </span><span class="s2">"MX"</span><span class="p">),</span><span class="w">
+             </span><span class="n">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"SIMPLE_CSV"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Check status of download</span><span class="w">
+</span><span class="n">occ_download_wait</span><span class="p">(</span><span class="s1">'key_of_numbers'</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Once finished download to hard drive and save it in df</span><span class="w">
+</span><span class="n">df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">occ_download_get</span><span class="p">(</span><span class="s1">'key_of_numbers'</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">occ_download_import</span><span class="p">()</span></code></pre></figure>
+
+<p>Next, you can use <code class="language-plaintext highlighter-rouge">skimr</code> to take a look at the general structure of the data and select the columns of interest. Additinoally, you can drop registries without location. (longitude / latitude).</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># ---------3. Select vars of interest-------------------</span><span class="w">
+</span><span class="n">skim</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Select columns of importance</span><span class="w">
+</span><span class="n">rhizMang</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="n">scientificName</span><span class="p">,</span><span class="w"> </span><span class="n">identifiedBy</span><span class="p">,</span><span class="w">
+         </span><span class="n">decimalLatitude</span><span class="p">,</span><span class="w"> </span><span class="n">decimalLongitude</span><span class="p">,</span><span class="w"> </span><span class="n">coordinateUncertaintyInMeters</span><span class="p">,</span><span class="w">
+         </span><span class="n">year</span><span class="p">,</span><span class="w"> </span><span class="n">month</span><span class="p">,</span><span class="w"> </span><span class="n">day</span><span class="p">,</span><span class="w">
+         </span><span class="n">elevation</span><span class="p">,</span><span class="w"> </span><span class="n">elevationAccuracy</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Drop registries without spatial reference</span><span class="w">
+  </span><span class="n">drop_na</span><span class="p">(</span><span class="n">decimalLatitude</span><span class="p">,</span><span class="w"> </span><span class="n">decimalLongitude</span><span class="p">)</span></code></pre></figure>
+
+<p>Finally, you can transform the data into a spatial object and make a map. Here, I use <code class="language-plaintext highlighter-rouge">ne_countries</code> to get the polygon of Mexico and <code class="language-plaintext highlighter-rouge">tmap</code> to create the map. Finally, you can export the map.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># ---------4. Geo transformation and map------------------</span><span class="w">
+</span><span class="c1"># Transform into sf object</span><span class="w">
+</span><span class="n">rhizMang</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_as_sf</span><span class="p">(</span><span class="n">rhizMang</span><span class="p">,</span><span class="w"> 
+                     </span><span class="n">coords</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"decimalLongitude"</span><span class="p">,</span><span class="w"> </span><span class="s2">"decimalLatitude"</span><span class="p">),</span><span class="w">
+                     </span><span class="n">crs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">st_crs</span><span class="p">(</span><span class="m">4326</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># Get map of Mexico</span><span class="w">
+</span><span class="n">mx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ne_countries</span><span class="p">(</span><span class="n">scale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">110</span><span class="p">,</span><span class="w"> 
+                   </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"countries"</span><span class="p">,</span><span class="w"> 
+                   </span><span class="c1"># continent = NULL,</span><span class="w">
+                   </span><span class="n">country</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Mexico"</span><span class="p">,</span><span class="w"> 
+                   </span><span class="n">returnclass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"sf"</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># Do a quick map to see the location of the registries</span><span class="w">
+</span><span class="n">map1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tm_shape</span><span class="p">(</span><span class="n">mx</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">tm_borders</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">tm_shape</span><span class="p">(</span><span class="n">rhizMang</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">tm_dots</span><span class="p">(</span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"firebrick2"</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.05</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">tm_graticules</span><span class="p">(</span><span class="n">lines</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">tm_scale_bar</span><span class="p">(</span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.01</span><span class="p">,</span><span class="m">0</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">tm_compass</span><span class="p">(</span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"arrow"</span><span class="p">,</span><span class="w">
+             </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.90</span><span class="p">,</span><span class="m">0.85</span><span class="p">))</span><span class="w">
+
+</span><span class="n">tmap_save</span><span class="p">(</span><span class="n">tm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">map1</span><span class="p">,</span><span class="w">
+          </span><span class="n">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Plots/Map1.png"</span><span class="p">,</span><span class="w">
+          </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">,</span><span class="w">
+          </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w">
+          </span><span class="n">units</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"cm"</span><span class="p">,</span><span class="w">
+          </span><span class="n">dpi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">300</span><span class="p">)</span></code></pre></figure>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/Map_Rm.png"><img src="http://localhost:4000/assets/images/Map_Rm.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Map with <em>Rhizophora mangle</em> registries in Mexico.</p>
+
+    </section>
+  </article>
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/JonathanVSV" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://stackoverflow.com/users/9022665/jonathan-v-sol%c3%b3rzano" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-stack-overflow" aria-hidden="true"></i> Stack Overflow</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Jonathan V. Solórzano. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

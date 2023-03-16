@@ -1,0 +1,343 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>RGB Shaded relief maps in R - Jonathan V. Solórzano</title>
+<meta name="description" content="RGB Shaded relief maps in R">
+
+
+  <meta name="author" content="Jonathan V. Solórzano">
+  
+  <meta property="article:author" content="Jonathan V. Solórzano">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Jonathan V. Solórzano">
+<meta property="og:title" content="RGB Shaded relief maps in R">
+<meta property="og:url" content="http://localhost:4000/blog/rgb-shaded-relief-maps-in-r/">
+
+
+  <meta property="og:description" content="RGB Shaded relief maps in R">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2023-02-23T03:15:00-06:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/blog/rgb-shaded-relief-maps-in-r/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Jonathan V. Solórzano Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--splash">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Jonathan V. Solórzano
+          <span class="site-subtitle">My personal site</span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/courses/">Courses</a>
+            </li><li class="masthead__menu-item">
+              <a href="/mini-packages/">Mini-packages</a>
+            </li><li class="masthead__menu-item">
+              <a href="/gee/">GEE</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+<div id="main" role="main">
+  <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="RGB Shaded relief maps in R">
+    <meta itemprop="description" content="RGB Shaded relief maps in R">
+    <meta itemprop="datePublished" content="2023-02-23T03:15:00-06:00">
+    
+
+    <section class="page__content" itemprop="text">
+      <h1 id="rgb-shaded-relief-maps-in-r">RGB Shaded relief maps in R</h1>
+
+<p>In this post I will show you how to make an RGB composite with shaded relief using <code class="language-plaintext highlighter-rouge">rayshader</code>, <code class="language-plaintext highlighter-rouge">elevatr</code>, <code class="language-plaintext highlighter-rouge">maptiles</code>,<code class="language-plaintext highlighter-rouge">sf</code>, <code class="language-plaintext highlighter-rouge">terra</code> and <code class="language-plaintext highlighter-rouge">magick</code> packages. First load the libraries we are going to use.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">elevatr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">maptiles</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">terra</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">rayshader</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">magick</span><span class="p">)</span></code></pre></figure>
+
+<p>Then, read the roi polygon file and use it to obtain the RGB tiles and DEM data.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Get polygon of roi</span><span class="w">
+</span><span class="c1"># Can be downloaded from: https://github.com/JonathanVSV/Ppage2/tree/master/assets/data</span><span class="w">
+</span><span class="n">poly</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"MX_inegi.gpkg"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Get RGB mosaic</span><span class="w">
+</span><span class="n">rgb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">get_tiles</span><span class="p">(</span><span class="n">poly</span><span class="p">,</span><span class="w">
+                 </span><span class="n">provider</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Esri.WorldImagery"</span><span class="p">,</span><span class="w">
+                 </span><span class="n">cachedir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"cache"</span><span class="p">,</span><span class="w">
+                 </span><span class="n">crop</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">,</span><span class="w">
+                 </span><span class="n">zoom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Get elevation data using elevatr</span><span class="w">
+</span><span class="n">dem</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">get_elev_raster</span><span class="p">(</span><span class="n">poly</span><span class="p">,</span><span class="w">
+                      </span><span class="n">prj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"EPSG:4326"</span><span class="p">,</span><span class="w">
+                      </span><span class="n">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"aws"</span><span class="p">,</span><span class="w">
+                      </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6</span><span class="p">,</span><span class="w">
+                      </span><span class="n">neg_to_na</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span></code></pre></figure>
+
+<p>Then, mask the images using the roi’s polygon and crop the dem to the extent of the RGB.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Mask areas according to polygon</span><span class="w">
+</span><span class="n">rgb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mask</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span><span class="w"> </span><span class="n">poly</span><span class="p">)</span><span class="w">
+</span><span class="n">dem</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mask</span><span class="p">(</span><span class="n">dem</span><span class="p">,</span><span class="w"> </span><span class="n">poly</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Crop dem extent to rgb</span><span class="w">
+</span><span class="n">dem</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">crop</span><span class="p">(</span><span class="n">rast</span><span class="p">(</span><span class="n">dem</span><span class="p">),</span><span class="w"> </span><span class="n">rgb</span><span class="p">)</span></code></pre></figure>
+
+<p>Afterward, transform the RGB into an array and the dem into a matrix.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Restack</span><span class="w">
+</span><span class="c1"># And convert it to a matrix:</span><span class="w">
+</span><span class="n">dem_mat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="n">raster_to_matrix</span><span class="p">(</span><span class="n">dem</span><span class="p">)</span><span class="w">
+</span><span class="n">rgb_mat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.array</span><span class="p">(</span><span class="n">rgb</span><span class="p">)</span></code></pre></figure>
+
+<p>Make a hillshade using the dem (as matrix). Transform it to rast again, set its extent and mask with the roi’s polygon.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Make hillshade</span><span class="w">
+</span><span class="n">hillshade</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dem_mat</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">sphere_shade</span><span class="p">(</span><span class="n">sunangle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">315</span><span class="p">,</span><span class="w">
+               </span><span class="n">texture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'bw'</span><span class="p">,</span><span class="w">
+               </span><span class="n">zscale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">250</span><span class="p">,</span><span class="w">
+               </span><span class="n">colorintensity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Convert back to rast</span><span class="w">
+</span><span class="n">hillshade</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rast</span><span class="p">(</span><span class="n">hillshade</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Add extent from rgb and mask</span><span class="w">
+</span><span class="n">ext</span><span class="p">(</span><span class="n">hillshade</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ext</span><span class="p">(</span><span class="n">rgb</span><span class="p">)</span><span class="w">
+</span><span class="n">hillshade</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mask</span><span class="p">(</span><span class="n">hillshade</span><span class="p">,</span><span class="w"> </span><span class="n">poly</span><span class="p">)</span></code></pre></figure>
+
+<p>Then export the two images in a single png, setting some transparency in the second image so the hillshade can be appreciated under the RGB composite. In this case, you need to create a folder named “Plots” outside R in your working directory or use <code class="language-plaintext highlighter-rouge">dir.create("Plots")</code> inside R, so you can export the file in the exact same location as in the example. Other alternative, might be to delete the folder part (i.e., “Plots/”)and just export it directly in the working directory.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Export to png</span><span class="w">
+</span><span class="n">png</span><span class="p">(</span><span class="s2">"Plots/Mexico_hillshade.png"</span><span class="p">,</span><span class="w">
+    </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">20</span><span class="p">,</span><span class="w">
+    </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">,</span><span class="w">
+    </span><span class="n">units</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"cm"</span><span class="p">,</span><span class="w">
+    </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">300</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Plot hillshade</span><span class="w">
+</span><span class="n">plotRGB</span><span class="p">(</span><span class="n">hillshade</span><span class="p">,</span><span class="w"> 
+        </span><span class="n">stretch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"hist"</span><span class="p">,</span><span class="w">
+        </span><span class="n">smooth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">,</span><span class="w">
+        </span><span class="c1"># completely opaque</span><span class="w">
+        </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">255</span><span class="p">,</span><span class="w">
+        </span><span class="n">add</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">,</span><span class="w">
+        </span><span class="n">maxcell</span><span class="o">=</span><span class="kc">Inf</span><span class="p">,</span><span class="w"> 
+        </span><span class="c1"># Make zoom to the bounding box of the roi</span><span class="w">
+        </span><span class="n">xlim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">st_bbox</span><span class="p">(</span><span class="n">poly</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span><span class="m">-0.05</span><span class="p">,</span><span class="n">st_bbox</span><span class="p">(</span><span class="n">poly</span><span class="p">)[[</span><span class="m">3</span><span class="p">]]</span><span class="m">+0.1</span><span class="p">),</span><span class="w">
+        </span><span class="n">ylim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">st_bbox</span><span class="p">(</span><span class="n">poly</span><span class="p">)[[</span><span class="m">2</span><span class="p">]],</span><span class="n">st_bbox</span><span class="p">(</span><span class="n">poly</span><span class="p">)[[</span><span class="m">4</span><span class="p">]]))</span><span class="w">
+
+</span><span class="c1"># Plot RGB composite</span><span class="w">
+</span><span class="n">plotRGB</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span><span class="w"> 
+        </span><span class="n">stretch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"lin"</span><span class="p">,</span><span class="w">
+        </span><span class="n">smooth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">,</span><span class="w">
+        </span><span class="c1"># Partially transparent</span><span class="w">
+        </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">180</span><span class="p">,</span><span class="w">
+        </span><span class="c1"># Add to previous plot</span><span class="w">
+        </span><span class="n">add</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">,</span><span class="w">
+        </span><span class="n">maxcell</span><span class="o">=</span><span class="kc">Inf</span><span class="p">)</span><span class="w"> 
+
+</span><span class="n">dev.off</span><span class="p">()</span></code></pre></figure>
+
+<p>Once you obtain the png, you will see that the colors of the image are somewhat pale. Thus, you can use <code class="language-plaintext highlighter-rouge">magick</code> to increase the saturation of the colors, increase the contrast and write the image into another png.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Final enhancements</span><span class="w">
+</span><span class="c1"># Read image</span><span class="w">
+</span><span class="n">im1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">image_read</span><span class="p">(</span><span class="s2">"Plots/Mexico_hillshade.png"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Add color saturation</span><span class="w">
+</span><span class="n">im2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">image_modulate</span><span class="p">(</span><span class="n">im1</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">brightness</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">saturation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">200</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">hue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Increase contrast</span><span class="w">
+</span><span class="n">im2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">image_contrast</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span><span class="w"> </span><span class="n">sharpen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Write image</span><span class="w">
+</span><span class="n">image_write</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span><span class="w"> 
+            </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Plots/Mexico_hillshade_final.png"</span><span class="p">,</span><span class="w"> 
+            </span><span class="n">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"png"</span><span class="p">)</span></code></pre></figure>
+
+<p>The result:</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/Mexico_hillshade_final.png"><img src="http://localhost:4000/assets/images/Mexico_hillshade_final.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> RGB shaded relief map of Mexico.</p>
+
+<p>If you are familiar with the surrounding of Morelia, Michoacán, Mexico, you will immediatly recognize Patzcuaro and Cuitzeo lakes, as well as some hills, such as the Quinceo.</p>
+
+    </section>
+  </article>
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/JonathanVSV" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://stackoverflow.com/users/9022665/jonathan-v-sol%c3%b3rzano" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-stack-overflow" aria-hidden="true"></i> Stack Overflow</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Jonathan V. Solórzano. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

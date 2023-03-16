@@ -1,0 +1,339 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Working with LiDAR data in R - Jonathan V. Solórzano</title>
+<meta name="description" content="Working with LiDAR data in R">
+
+
+  <meta name="author" content="Jonathan V. Solórzano">
+  
+  <meta property="article:author" content="Jonathan V. Solórzano">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Jonathan V. Solórzano">
+<meta property="og:title" content="Working with LiDAR data in R">
+<meta property="og:url" content="http://localhost:4000/blog/working-with-lidar/">
+
+
+  <meta property="og:description" content="Working with LiDAR data in R">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2021-02-18T08:10:30-06:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/blog/working-with-lidar/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Jonathan V. Solórzano Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--splash">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Jonathan V. Solórzano
+          <span class="site-subtitle">My personal site</span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/courses/">Courses</a>
+            </li><li class="masthead__menu-item">
+              <a href="/mini-packages/">Mini-packages</a>
+            </li><li class="masthead__menu-item">
+              <a href="/gee/">GEE</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+<div id="main" role="main">
+  <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Working with LiDAR data in R">
+    <meta itemprop="description" content="Working with LiDAR data in R">
+    <meta itemprop="datePublished" content="2021-02-18T08:10:30-06:00">
+    
+
+    <section class="page__content" itemprop="text">
+      <h1 id="working-with-lidar-data-in-r">Working with LiDAR data in R</h1>
+
+<p>For this example we are going to use the <code class="language-plaintext highlighter-rouge">lidR</code> package. Additionally, we are going to load <code class="language-plaintext highlighter-rouge">raster</code> <code class="language-plaintext highlighter-rouge">rgdal</code> and <code class="language-plaintext highlighter-rouge">plyr</code>.
+The first thing is to load the LiDAR data as a catalog and load a shapefile with the areas of interest (that can correspond to in-field measurements).</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">lidR</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">raster</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">rgdal</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="w"> </span><span class="p">(</span><span class="n">plyr</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Load files</span><span class="w">
+</span><span class="n">archivos</span><span class="o">&lt;-</span><span class="n">list.files</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span><span class="w">
+    </span><span class="n">pattern</span><span class="o">=</span><span class="s2">"*.las"</span><span class="p">,</span><span class="w">
+    </span><span class="n">full.names</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
+</span><span class="n">lidares</span><span class="o">&lt;-</span><span class="n">catalog</span><span class="p">(</span><span class="n">archivos</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Plot them to take a look</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">lidares</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Load shapefiles</span><span class="w">
+</span><span class="n">ptos</span><span class="o">&lt;-</span><span class="n">readOGR</span><span class="p">(</span><span class="n">paste0</span><span class="p">(</span><span class="s2">"shapes"</span><span class="p">),</span><span class="w">
+              </span><span class="s2">"buffer"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">buff</span><span class="o">&lt;-</span><span class="n">readOGR</span><span class="p">(</span><span class="n">paste0</span><span class="p">(</span><span class="s2">"shapes"</span><span class="p">),</span><span class="w">
+              </span><span class="s2">"buffer_50m"</span><span class="p">)</span></code></pre></figure>
+
+<p>Sometimes the CRS LiDAR data is lost when opening the file, so we can check the metadata of the image and set it accordingly. In this case, the target CRS was the same as the shapefile so let’s assign the CRS that way.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Set CRS for LiDAR point cloud</span><span class="w">
+</span><span class="n">crs</span><span class="p">(</span><span class="n">lidares</span><span class="p">)</span><span class="o">&lt;-</span><span class="n">crs</span><span class="p">(</span><span class="n">ptos</span><span class="p">)</span></code></pre></figure>
+
+<p>Clip the LiDAR data to the regions of interest.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Clip</span><span class="w">
+</span><span class="n">clipeados</span><span class="o">&lt;-</span><span class="n">lasclip</span><span class="p">(</span><span class="n">lidares</span><span class="p">,</span><span class="n">ptos</span><span class="p">)</span><span class="w">
+</span><span class="n">clipeados2</span><span class="o">&lt;-</span><span class="n">lasclip</span><span class="p">(</span><span class="n">lidares</span><span class="p">,</span><span class="n">buff</span><span class="p">)</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">clipeados</span><span class="p">[[</span><span class="m">1</span><span class="p">]])</span></code></pre></figure>
+
+<p>This LiDAR data was preclassified by the distributer, so we are using that classification values to determine vegetation points and ground points. Additionally, we will clip the LiDAR data by each in-field plot (ptos data).</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Vegetación</span><span class="w">
+</span><span class="n">Veg</span><span class="o">&lt;-</span><span class="n">lapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">clipeados</span><span class="p">),</span><span class="w">
+            </span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">lasfilter</span><span class="p">(</span><span class="n">clipeados</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span><span class="n">Classification</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">1</span><span class="p">))</span><span class="w">
+</span><span class="n">parcelas</span><span class="o">&lt;-</span><span class="n">sapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">clipeados</span><span class="p">),</span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">ptos</span><span class="o">@</span><span class="n">data</span><span class="o">$</span><span class="n">Id_parcela</span><span class="p">[[</span><span class="n">i</span><span class="p">]]))</span><span class="w">
+
+</span><span class="c1"># Suelo</span><span class="w">
+</span><span class="n">Suelo</span><span class="o">&lt;-</span><span class="n">lapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">clipeados2</span><span class="p">),</span><span class="w">
+              </span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">lasfilter</span><span class="p">(</span><span class="n">clipeados2</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span><span class="n">Classification</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">2</span><span class="p">))</span><span class="w">
+</span><span class="c1"># If you need additional filtering, you might do it according to the z values.</span><span class="w">
+</span><span class="c1"># Suelo&lt;-lapply(1:length(Suelo),</span><span class="w">
+</span><span class="c1">#              function(i) lasfilter(Suelo[[i]],Z &gt;=90 &amp; Z &lt;=250))</span><span class="w">
+</span><span class="c1"># plot(Suelo[[60]])</span></code></pre></figure>
+
+<p>The next step is creating a digital terrain model (DTM) using kriging from the ground data.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">DTM</span><span class="o">&lt;-</span><span class="n">lapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">Suelo</span><span class="p">),</span><span class="w">
+            </span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">grid_terrain</span><span class="p">(</span><span class="n">Suelo</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span><span class="n">res</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w">
+                                     </span><span class="n">algorithm</span><span class="o">=</span><span class="n">kriging</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="m">10</span><span class="p">),</span><span class="n">keep_lowest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">))</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">DTM</span><span class="p">[[</span><span class="m">60</span><span class="p">]])</span><span class="w">
+</span><span class="n">DTM</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">DTM</span><span class="p">[[</span><span class="m">1</span><span class="p">]]))</span></code></pre></figure>
+
+<p>Then we can use the DTM to subtract those values to the vegetation points in order to get the vegetation height values.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Normalize point cloud</span><span class="w">
+</span><span class="n">Veg_Norm</span><span class="o">&lt;-</span><span class="n">lapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">Veg</span><span class="p">),</span><span class="w">
+                 </span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">lasnormalize</span><span class="p">(</span><span class="n">Veg</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span><span class="n">DTM</span><span class="p">[[</span><span class="n">i</span><span class="p">]]))</span></code></pre></figure>
+
+<p>The next step is to rasterize the normalized vegetation data to get a canopy height model (CHM).</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Canopy height model</span><span class="w">
+</span><span class="n">trees</span><span class="o">&lt;-</span><span class="n">grid_canopy</span><span class="p">(</span><span class="n">Veg_Norm</span><span class="p">,</span><span class="n">res</span><span class="o">=</span><span class="m">0.5</span><span class="p">)</span></code></pre></figure>
+
+<p>Additionlly, we can extract the point data, without making the rasterization and get height values according to different percentile values (z values).</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Extract Metrics from Z</span><span class="w">
+</span><span class="n">Veg_Z</span><span class="o">&lt;-</span><span class="n">sapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">Veg_Norm</span><span class="p">),</span><span class="w">
+              </span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">lasmetrics</span><span class="p">(</span><span class="n">Veg_Norm</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span><span class="w"> </span><span class="n">.stdmetrics</span><span class="p">))</span><span class="w">
+</span><span class="n">resuls_Z</span><span class="o">&lt;-</span><span class="n">Veg_Z</span><span class="w">
+</span><span class="n">metrics</span><span class="o">&lt;-</span><span class="n">row.names</span><span class="p">(</span><span class="n">resuls_Z</span><span class="p">)</span><span class="w">
+</span><span class="n">resuls_Z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="n">unlist</span><span class="p">(</span><span class="n">resuls_Z</span><span class="p">),</span><span class="w"> </span><span class="n">nrow</span><span class="o">=</span><span class="m">57</span><span class="p">,</span><span class="w"> </span><span class="n">byrow</span><span class="o">=</span><span class="nb">F</span><span class="p">),</span><span class="w">
+                       </span><span class="n">stringsAsFactors</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">resuls_Z</span><span class="o">&lt;-</span><span class="n">t</span><span class="p">(</span><span class="n">resuls_Z</span><span class="p">)</span><span class="w">
+</span><span class="n">row.names</span><span class="p">(</span><span class="n">resuls_Z</span><span class="p">)</span><span class="o">&lt;-</span><span class="n">parcelas</span><span class="w">
+</span><span class="n">colnames</span><span class="p">(</span><span class="n">resuls_Z</span><span class="p">)</span><span class="o">&lt;-</span><span class="n">metrics</span><span class="w">
+</span><span class="n">resuls_Z</span><span class="o">&lt;-</span><span class="n">resuls_Z</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="n">row.names</span><span class="p">(</span><span class="n">resuls_Z</span><span class="p">)),]</span><span class="w">
+
+</span><span class="n">write.csv</span><span class="p">(</span><span class="n">resuls_Z</span><span class="p">,</span><span class="s2">"/Users/ccgss/Drive2/Jonathan_DD/R/ChajulLidar/MetricsZ.csv"</span><span class="p">,</span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span></code></pre></figure>
+
+<p>Or make the same procedure for the intensity values.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Extract Metrics from I</span><span class="w">
+</span><span class="n">Veg_I</span><span class="o">&lt;-</span><span class="n">sapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">Veg</span><span class="p">),</span><span class="w">
+              </span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">lasmetrics</span><span class="p">(</span><span class="n">Veg_Norm</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span><span class="w"> </span><span class="n">.stdmetrics_i</span><span class="p">))</span><span class="w">
+</span><span class="n">resuls_I</span><span class="o">&lt;-</span><span class="n">Veg_I</span><span class="w">
+</span><span class="n">metrics</span><span class="o">&lt;-</span><span class="n">row.names</span><span class="p">(</span><span class="n">resuls_I</span><span class="p">)</span><span class="w">
+
+</span><span class="n">resuls_I</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="n">unlist</span><span class="p">(</span><span class="n">resuls_I</span><span class="p">),</span><span class="w"> </span><span class="n">nrow</span><span class="o">=</span><span class="m">12</span><span class="p">,</span><span class="w"> </span><span class="n">byrow</span><span class="o">=</span><span class="nb">F</span><span class="p">),</span><span class="w">
+                       </span><span class="n">stringsAsFactors</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+</span><span class="n">resuls_I</span><span class="o">&lt;-</span><span class="n">t</span><span class="p">(</span><span class="n">resuls_I</span><span class="p">)</span><span class="w">
+</span><span class="n">row.names</span><span class="p">(</span><span class="n">resuls_I</span><span class="p">)</span><span class="o">&lt;-</span><span class="n">parcelas</span><span class="w">
+</span><span class="n">colnames</span><span class="p">(</span><span class="n">resuls_I</span><span class="p">)</span><span class="o">&lt;-</span><span class="n">metrics</span><span class="w">
+</span><span class="n">resuls_I</span><span class="o">&lt;-</span><span class="n">resuls_I</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="n">row.names</span><span class="p">(</span><span class="n">resuls_I</span><span class="p">)),]</span><span class="w">
+
+</span><span class="n">write.csv</span><span class="p">(</span><span class="n">resuls_I</span><span class="p">,</span><span class="s2">"/Users/ccgss/Drive2/Jonathan_DD/R/ChajulLidar/MetricsI.csv"</span><span class="p">,</span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span></code></pre></figure>
+
+<p>Finally, we can try to detect individual crowns.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Individual crown detection</span><span class="w">
+</span><span class="n">trees</span><span class="o">&lt;-</span><span class="n">lapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">Veg</span><span class="p">),</span><span class="w">
+                 </span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">lastrees</span><span class="p">(</span><span class="n">Veg_Norm</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span><span class="n">li2012</span><span class="p">(</span><span class="n">R</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">speed_up</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)))</span></code></pre></figure>
+
+
+    </section>
+  </article>
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/JonathanVSV" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://stackoverflow.com/users/9022665/jonathan-v-sol%c3%b3rzano" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-stack-overflow" aria-hidden="true"></i> Stack Overflow</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Jonathan V. Solórzano. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

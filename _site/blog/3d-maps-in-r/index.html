@@ -1,0 +1,305 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>3D-maps-in-r - Jonathan V. Solórzano</title>
+<meta name="description" content="3D maps in R">
+
+
+  <meta name="author" content="Jonathan V. Solórzano">
+  
+  <meta property="article:author" content="Jonathan V. Solórzano">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Jonathan V. Solórzano">
+<meta property="og:title" content="3D-maps-in-r">
+<meta property="og:url" content="http://localhost:4000/blog/3d-maps-in-r/">
+
+
+  <meta property="og:description" content="3D maps in R">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2023-01-28T08:15:00-06:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/blog/3d-maps-in-r/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Jonathan V. Solórzano Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--splash">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Jonathan V. Solórzano
+          <span class="site-subtitle">My personal site</span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/courses/">Courses</a>
+            </li><li class="masthead__menu-item">
+              <a href="/mini-packages/">Mini-packages</a>
+            </li><li class="masthead__menu-item">
+              <a href="/gee/">GEE</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+<div id="main" role="main">
+  <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="3D-maps-in-r">
+    <meta itemprop="description" content="3D maps in R">
+    <meta itemprop="datePublished" content="2023-01-28T08:15:00-06:00">
+    
+
+    <section class="page__content" itemprop="text">
+      <h1 id="3d-maps-in-r">3D maps in R</h1>
+
+<p>The purpose of this post is to show how make a 3D map using <code class="language-plaintext highlighter-rouge">rayshader</code>. The idea is to use a DEM obtained from the SRTM mission (worldwide cover) or an available DEM from other National Institutions, such as Mexico’s National Institute of Statistics and Geography to obtain a 3D relief of the area of interest; and an RGB composite to overlay it on the relief. The cloudless RGB mosaic I am using in this post was obtained from Landsat-8 images and was produced using Google Earth Engine. Finally, a shapefile with the locations of two urban settlements in the area is loaded to show their location.</p>
+
+<p>First load the libraries we are going to use.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">rayshader</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">raster</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span></code></pre></figure>
+
+<p>Then, read the images.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">dem</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raster</span><span class="p">(</span><span class="s2">"dem_more.tif"</span><span class="p">)</span><span class="w">
+</span><span class="n">locs</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"Morelia.shp"</span><span class="p">)</span><span class="w">
+</span><span class="n">rgb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">stack</span><span class="p">(</span><span class="s2">"rgb.tif"</span><span class="p">)</span></code></pre></figure>
+
+<p>Then, clip the rgb image values to the lower and upper 3 % quantiles so the image can be better appreciated.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">quants</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">quantile</span><span class="p">(</span><span class="n">as.vector</span><span class="p">(</span><span class="n">values</span><span class="p">(</span><span class="n">rgb</span><span class="p">)),</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.03</span><span class="p">,</span><span class="w"> </span><span class="m">0.97</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># Clip values to lower and upper 3 %</span><span class="w">
+</span><span class="n">rgb</span><span class="p">[</span><span class="n">rgb</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">quants</span><span class="p">[</span><span class="m">1</span><span class="p">]]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">quants</span><span class="p">[</span><span class="m">1</span><span class="p">]</span><span class="w">
+</span><span class="n">rgb</span><span class="p">[</span><span class="n">rgb</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">quants</span><span class="p">[</span><span class="m">2</span><span class="p">]]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">quants</span><span class="p">[</span><span class="m">2</span><span class="p">]</span><span class="w">
+</span><span class="n">rgb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">((</span><span class="n">rgb</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">quants</span><span class="p">[</span><span class="m">1</span><span class="p">])</span><span class="o">*</span><span class="w"> </span><span class="m">1</span><span class="o">/</span><span class="w"> </span><span class="n">quants</span><span class="p">[</span><span class="m">2</span><span class="p">])</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">0</span></code></pre></figure>
+
+<p>Next, let’s transform the rgb into an array and the dem into matrix, so they can be rendered in 3D.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">rgb_array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">as.array</span><span class="p">(</span><span class="n">rgb</span><span class="p">)</span><span class="w">
+</span><span class="n">dem_mat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="n">raster_to_matrix</span><span class="p">(</span><span class="n">dem</span><span class="p">)</span></code></pre></figure>
+
+<p>Extract the coordinates of the two human settlements used as reference (as numbers) and drop the geometry.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">locs</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">locs</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">st_coordinates</span><span class="p">(</span><span class="n">locs</span><span class="p">)[,</span><span class="m">1</span><span class="p">],</span><span class="w">
+         </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">st_coordinates</span><span class="p">(</span><span class="n">locs</span><span class="p">)[,</span><span class="m">2</span><span class="p">])</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">st_drop_geometry</span><span class="p">()</span></code></pre></figure>
+
+<p>Afterward, do the 3d rendering with the rgb and dem layers and set additional parameters for the visualization. Subsequently, add the labels of the two localities.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">rgb_array</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+</span><span class="n">plot_3d</span><span class="p">(</span><span class="n">dem_mat</span><span class="p">,</span><span class="w"> 
+        </span><span class="n">zscale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">12</span><span class="p">,</span><span class="w"> 
+        </span><span class="n">fov</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> 
+        </span><span class="n">theta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">20</span><span class="p">,</span><span class="w"> 
+        </span><span class="n">zoom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.65</span><span class="p">,</span><span class="w"> 
+        </span><span class="c1"># azimut</span><span class="w">
+        </span><span class="n">phi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">45</span><span class="p">,</span><span class="w"> 
+        </span><span class="n">windowsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">1000</span><span class="p">,</span><span class="w"> </span><span class="m">800</span><span class="p">))</span><span class="w"> 
+  </span><span class="n">render_label</span><span class="p">(</span><span class="n">dem_mat</span><span class="p">,</span><span class="w">
+               </span><span class="n">long</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">locs</span><span class="o">$</span><span class="n">x</span><span class="p">[</span><span class="m">1</span><span class="p">],</span><span class="w">
+               </span><span class="n">lat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">locs</span><span class="o">$</span><span class="n">y</span><span class="p">[</span><span class="m">1</span><span class="p">],</span><span class="w">
+               </span><span class="c1"># altitude = 120000,</span><span class="w">
+               </span><span class="n">zscale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">19</span><span class="p">,</span><span class="w">
+               </span><span class="n">extent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">raster</span><span class="o">::</span><span class="n">extent</span><span class="p">(</span><span class="n">dem</span><span class="p">),</span><span class="w">
+               </span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">locs</span><span class="o">$</span><span class="n">Nombre</span><span class="p">[</span><span class="m">1</span><span class="p">],</span><span class="w">
+               </span><span class="n">linecolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"white"</span><span class="p">,</span><span class="w">
+               </span><span class="n">textcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"white"</span><span class="p">)</span><span class="w">
+  </span><span class="n">render_label</span><span class="p">(</span><span class="n">dem_mat</span><span class="p">,</span><span class="w">
+               </span><span class="n">long</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">locs</span><span class="o">$</span><span class="n">x</span><span class="p">[</span><span class="m">2</span><span class="p">],</span><span class="w">
+               </span><span class="n">lat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">locs</span><span class="o">$</span><span class="n">y</span><span class="p">[</span><span class="m">2</span><span class="p">],</span><span class="w">
+               </span><span class="c1"># altitude = 120000,</span><span class="w">
+               </span><span class="n">zscale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">14</span><span class="p">,</span><span class="w">
+               </span><span class="n">extent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">raster</span><span class="o">::</span><span class="n">extent</span><span class="p">(</span><span class="n">dem</span><span class="p">),</span><span class="w">
+               </span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">locs</span><span class="o">$</span><span class="n">Nombre</span><span class="p">[</span><span class="m">2</span><span class="p">],</span><span class="w">
+               </span><span class="n">linecolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"white"</span><span class="p">,</span><span class="w">
+               </span><span class="n">textcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"white"</span><span class="p">)</span></code></pre></figure>
+
+<p>Finally, save a snapshot of the 3d model.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">render_snapshot</span><span class="p">(</span><span class="n">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Morelia3D.png"</span><span class="p">,</span><span class="w">
+                </span><span class="n">gravity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"North"</span><span class="p">)</span></code></pre></figure>
+
+<p>The result:</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/Morelia3D.png"><img src="http://localhost:4000/assets/images/Morelia3D.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> 3D map of Patzcuaro and Morelia surroundings in Michoacán, Mexico.</p>
+
+<p>If you are familiar with the surrounding of Morelia, Michoacán, Mexico, you will immediatly recognize Patzcuaro and Cuitzeo lakes, as well as some hills, such as the Quinceo.</p>
+
+    </section>
+  </article>
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/JonathanVSV" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://stackoverflow.com/users/9022665/jonathan-v-sol%c3%b3rzano" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-stack-overflow" aria-hidden="true"></i> Stack Overflow</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Jonathan V. Solórzano. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

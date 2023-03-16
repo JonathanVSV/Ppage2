@@ -1,0 +1,552 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Working with tidymodels and rasters in R - Jonathan V. Solórzano</title>
+<meta name="description" content="Working with tidymodels and rasters">
+
+
+  <meta name="author" content="Jonathan V. Solórzano">
+  
+  <meta property="article:author" content="Jonathan V. Solórzano">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Jonathan V. Solórzano">
+<meta property="og:title" content="Working with tidymodels and rasters in R">
+<meta property="og:url" content="http://localhost:4000/blog/tidymodels-with-rasters/">
+
+
+  <meta property="og:description" content="Working with tidymodels and rasters">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2022-02-10T08:10:30-06:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/blog/tidymodels-with-rasters/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Jonathan V. Solórzano Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--splash">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Jonathan V. Solórzano
+          <span class="site-subtitle">My personal site</span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/courses/">Courses</a>
+            </li><li class="masthead__menu-item">
+              <a href="/mini-packages/">Mini-packages</a>
+            </li><li class="masthead__menu-item">
+              <a href="/gee/">GEE</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+<div id="main" role="main">
+  <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Working with tidymodels and rasters in R">
+    <meta itemprop="description" content="Working with tidymodels and rasters">
+    <meta itemprop="datePublished" content="2022-02-10T08:10:30-06:00">
+    
+
+    <section class="page__content" itemprop="text">
+      <h1 id="working-with-tidymodels-and-rasters">Working with tidymodels and rasters</h1>
+
+<p>Tidymodels is a package designed to make different types of models in a tidyverse-esque way. This package is particularly useful for implementing machine learning (ML) algorithms, as well as to divide your data into, training and test sets, etc. My particular personal interest was using this package to train models and then use those models to make predictions using raster data.</p>
+
+<p>For this procedure you should use additional packages, beside <code class="language-plaintext highlighter-rouge">tidymodels</code>. <code class="language-plaintext highlighter-rouge">sf</code> contains tools for working with spatial information saved in vectors. <code class="language-plaintext highlighter-rouge">yardstick</code> is a package that contains several functions to get evaluation metrics for the models. <code class="language-plaintext highlighter-rouge">raster</code> is a package that is going to be superseded by <code class="language-plaintext highlighter-rouge">terra</code> to work with rasters. Additionally, <code class="language-plaintext highlighter-rouge">fasterize</code> is a package useful to make transformations from vector to raster and finally, <code class="language-plaintext highlighter-rouge">doParallel</code> will help to make parallel processing in R.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">tidymodels</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">yardstick</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">raster</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">fasterize</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">doParallel</span><span class="p">)</span><span class="w">
+
+</span><span class="n">tidymodels_prefer</span><span class="p">()</span></code></pre></figure>
+
+<h2 id="load-data-and-do-some-preprocessing">Load data and do some preprocessing</h2>
+
+<p>The first thing is to load the labeled data from which we will train and test our model. In this example, we are going to work with spatial information, rasters and vectors. So, we generated a dataset of disturbance and non-disturbance areas using visual interpretation. For the sake of this model, we are going to take the data as spatially independent, however, keep in mind that there are other types of models that can take into account spatial dependency. Here we will use BFAST components and type of forest (tropical dry forest, TDF or temperate forest, TF) as independent variables, while the only dependent variable will be if an area correspnods to disturbance or not. The main idea of the script is to compare a baseline model, based on a magnitude threshold of 0.2 vs a more complex model that might include several other indepdendent variables.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Load raster and set names</span><span class="w">
+</span><span class="n">im1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">stack</span><span class="p">(</span><span class="s2">"bfast_components.tif"</span><span class="p">)</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">im1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"breakpoint"</span><span class="p">,</span><span class="s2">"magnitude"</span><span class="p">,</span><span class="w"> </span><span class="s2">"error"</span><span class="p">,</span><span class="w"> </span><span class="s2">"history"</span><span class="p">,</span><span class="w"> 
+                </span><span class="s2">"r.squared"</span><span class="p">,</span><span class="w"> </span><span class="s2">"amplitude"</span><span class="p">,</span><span class="w"> </span><span class="s2">"trend"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Naperc"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Choose subset of bands</span><span class="w">
+</span><span class="n">im1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">im1</span><span class="p">[[</span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="m">4</span><span class="o">:</span><span class="m">8</span><span class="p">)]]</span><span class="w">
+
+</span><span class="c1"># Load a forest type layer</span><span class="w">
+</span><span class="n">forests_shp</span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"Forest_type.shp"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Reproject</span><span class="w">
+</span><span class="n">forests_shp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">forests_shp</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">st_transform</span><span class="p">(</span><span class="n">st_crs</span><span class="p">(</span><span class="n">im1</span><span class="p">[[</span><span class="m">1</span><span class="p">]]))</span><span class="w">
+
+</span><span class="c1"># Rasterize</span><span class="w">
+</span><span class="n">forests_im</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">fasterize</span><span class="p">(</span><span class="n">forests_shp</span><span class="p">,</span><span class="w"> 
+                        </span><span class="n">raster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">raster</span><span class="p">(</span><span class="n">im1</span><span class="p">[[</span><span class="m">1</span><span class="p">]]),</span><span class="w">
+                        </span><span class="n">field</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"ID"</span><span class="p">,</span><span class="w">
+                        </span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"last"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Set TF as 0</span><span class="w">
+</span><span class="n">forests_im</span><span class="p">[</span><span class="n">forests_im</span><span class="o">==</span><span class="m">2</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0</span><span class="w">
+
+</span><span class="c1"># Stack all the independent variables as a multiband raster</span><span class="w">
+</span><span class="n">im1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">stack</span><span class="p">(</span><span class="n">forests_im</span><span class="p">,</span><span class="w"> </span><span class="n">im1</span><span class="p">)</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">im1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Forest"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Magnitude"</span><span class="p">,</span><span class="w"> </span><span class="s2">"History"</span><span class="p">,</span><span class="w"> </span><span class="s2">"R2"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Ampl"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Trend"</span><span class="p">,</span><span class="w"> </span><span class="s2">"NAperc"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># plot(im1)</span><span class="w">
+
+</span><span class="c1"># Read verified areas</span><span class="w">
+</span><span class="n">tf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"238pts_Verified.shp"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Make some recoding and eliminate unused variables</span><span class="w">
+</span><span class="n">sample_extr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tf</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="c1"># Remove geometry, i.e., pass it to simple table</span><span class="w">
+  </span><span class="n">st_set_geometry</span><span class="p">(</span><span class="kc">NULL</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="c1"># Convert forest type as a numeric variable with 0 and 1</span><span class="w">
+  </span><span class="n">mutate_at</span><span class="p">(</span><span class="n">vars</span><span class="p">(</span><span class="n">Forest</span><span class="p">),</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="n">case_when</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Temperate_forest"</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w">
+                                                </span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Tropical_dry_forest"</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="m">1</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="c1"># Convert change, the dependent variable as factor                                              </span><span class="w">
+  </span><span class="n">mutate_at</span><span class="p">(</span><span class="n">vars</span><span class="p">(</span><span class="n">Change</span><span class="p">),</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="n">x</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="c1"># Eliminate unused variables</span><span class="w">
+  </span><span class="n">dplyr</span><span class="o">::</span><span class="n">select</span><span class="p">(</span><span class="o">-</span><span class="nf">c</span><span class="p">(</span><span class="n">DateChange</span><span class="p">,</span><span class="w"> </span><span class="n">Obs</span><span class="p">,</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">Breakp</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># Take a glimpse of the data</span><span class="w">
+</span><span class="c1"># glimpse(sample_extr)</span></code></pre></figure>
+
+<h2 id="divide-dataset-into-training-and-test-sets">Divide dataset into training and test sets</h2>
+
+<p>After doing that short procedure you need to divide the complete dataset into training and test sets. This can easily be done using <code class="language-plaintext highlighter-rouge">tidymodels</code>. Additionally, I decided to use a separate vfold-cv-set (cross-validation set) to test the performance of different model architectures and obtain a standard error of the mean accuracy to decide which architecture could be considered as the best. After deciding the best model architecture, the the selected model will be trained and tested on the training and test datasets, respectively.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Set seed to make everything reproducible</span><span class="w">
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">15</span><span class="p">)</span><span class="w">
+</span><span class="n">sample_split</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">initial_split</span><span class="p">(</span><span class="n">sample_extr</span><span class="p">,</span><span class="w"> 
+                              </span><span class="n">prop</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.70</span><span class="p">,</span><span class="w">
+                              </span><span class="c1"># Stratification; save same proportions for some variable in train and test</span><span class="w">
+                              </span><span class="n">strata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Change</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Create training and test set</span><span class="w">
+</span><span class="n">bfast_training</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sample_split</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">training</span><span class="p">()</span><span class="w">
+
+</span><span class="n">bfast_test</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sample_split</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">testing</span><span class="p">()</span><span class="w">
+
+</span><span class="c1"># Ensure reproducibility</span><span class="w">
+</span><span class="n">set.seed</span><span class="p">(</span><span class="m">5</span><span class="p">)</span><span class="w">
+</span><span class="n">bfast_folds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">vfold_cv</span><span class="p">(</span><span class="n">bfast_training</span><span class="p">,</span><span class="w">
+                        </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w">
+                        </span><span class="n">repeats</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span><span class="p">,</span><span class="w">
+                        </span><span class="n">strata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Change</span><span class="p">)</span></code></pre></figure>
+
+<p>Once you got the training and test sets, as well as the vfold-cv-set the next step will be to specify the models you are going to train. This can be done by specifying different recipes.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Specify algorithm to be used, engine and mode (classification or regression)</span><span class="w">
+</span><span class="n">rf_model</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rand_forest</span><span class="p">()</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">set_engine</span><span class="p">(</span><span class="s2">"randomForest"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">set_mode</span><span class="p">(</span><span class="s2">"classification"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Recipes</span><span class="w">
+</span><span class="c1"># Model with all predictors, will be the template recipe to be used in the other recipes</span><span class="w">
+</span><span class="n">bfast_recipe</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">recipe</span><span class="p">(</span><span class="n">Change</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">.</span><span class="p">,</span><span class="w"> 
+                       </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bfast_training</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">step_dummy</span><span class="p">(</span><span class="n">all_nominal</span><span class="p">(),</span><span class="w"> </span><span class="o">-</span><span class="n">all_outcomes</span><span class="p">())</span><span class="w"> 
+
+</span><span class="c1"># Baseline model</span><span class="w">
+</span><span class="n">baseline</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">bfast_recipe</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">step_mutate</span><span class="p">(</span><span class="n">base_line</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ifelse</span><span class="p">(</span><span class="n">Magnitude</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="m">-0.2</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">step_rm</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="n">Forest</span><span class="p">,</span><span class="w"> </span><span class="n">R2</span><span class="p">,</span><span class="w"> </span><span class="n">Ampl</span><span class="p">,</span><span class="w"> </span><span class="n">NAperc</span><span class="p">,</span><span class="w"> </span><span class="n">History</span><span class="p">,</span><span class="w"> </span><span class="n">Trend</span><span class="p">,</span><span class="w"> </span><span class="n">Magnitude</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># Random forests recipe</span><span class="w">
+</span><span class="c1"># Model with Magnitude, Trend,  History, NAperc, Ampl and R2, remove Forest</span><span class="w">
+</span><span class="n">pred6_rec_rf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> 
+  </span><span class="n">bfast_recipe</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">step_rm</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="n">Forest</span><span class="p">))</span><span class="w"> 
+
+</span><span class="c1"># Model with Magnitude, Trend,  History, NAperc and Ampl, remove Forest and R2</span><span class="w">
+</span><span class="n">pred5_rec_rf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> 
+  </span><span class="n">bfast_recipe</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">step_rm</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="n">Forest</span><span class="p">,</span><span class="w"> </span><span class="n">R2</span><span class="p">))</span><span class="w"> 
+
+</span><span class="c1"># Model with Magnitude, Trend,  History and NAperc</span><span class="w">
+</span><span class="n">pred4_rec_rf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> 
+  </span><span class="n">bfast_recipe</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">step_rm</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="n">Forest</span><span class="p">,</span><span class="w"> </span><span class="n">R2</span><span class="p">,</span><span class="w"> </span><span class="n">NAperc</span><span class="p">))</span><span class="w"> 
+
+</span><span class="c1"># Model with Magnitude, Trend and History</span><span class="w">
+</span><span class="n">pred3_rec_rf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> 
+  </span><span class="n">bfast_recipe</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">step_rm</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="n">Forest</span><span class="p">,</span><span class="w"> </span><span class="n">R2</span><span class="p">,</span><span class="w"> </span><span class="n">NAperc</span><span class="p">,</span><span class="w"> </span><span class="n">Ampl</span><span class="p">))</span><span class="w"> 
+
+</span><span class="c1"># Model with only Magnitude and Trend</span><span class="w">
+</span><span class="n">pred2_rec_rf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> 
+  </span><span class="n">bfast_recipe</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">step_rm</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="n">Forest</span><span class="p">,</span><span class="w"> </span><span class="n">R2</span><span class="p">,</span><span class="w"> </span><span class="n">NAperc</span><span class="p">,</span><span class="w"> </span><span class="n">Ampl</span><span class="p">,</span><span class="w"> </span><span class="n">History</span><span class="p">))</span><span class="w"> 
+
+</span><span class="c1"># Model with only Magnitude</span><span class="w">
+</span><span class="n">pred1_rec_rf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> 
+  </span><span class="n">bfast_recipe</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">step_rm</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="n">Forest</span><span class="p">,</span><span class="w"> </span><span class="n">R2</span><span class="p">,</span><span class="w"> </span><span class="n">NAperc</span><span class="p">,</span><span class="w"> </span><span class="n">Ampl</span><span class="p">,</span><span class="w"> </span><span class="n">History</span><span class="p">,</span><span class="w"> </span><span class="n">Trend</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># Create a list of the models that area going to be trained</span><span class="w">
+</span><span class="n">preprocessing</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> 
+  </span><span class="nf">list</span><span class="p">(</span><span class="n">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">baseline</span><span class="p">,</span><span class="w">
+       </span><span class="n">pred1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred1_rec_rf</span><span class="p">,</span><span class="w">
+       </span><span class="n">pred2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred2_rec_rf</span><span class="p">,</span><span class="w">
+       </span><span class="n">pred3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred3_rec_rf</span><span class="p">,</span><span class="w">
+       </span><span class="n">pred4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred4_rec_rf</span><span class="p">,</span><span class="w">
+       </span><span class="n">pred5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred5_rec_rf</span><span class="p">,</span><span class="w">
+       </span><span class="n">pred6</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pred6_rec_rf</span><span class="p">,</span><span class="w">
+       </span><span class="n">all</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bfast_recipe</span><span class="w">
+  </span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Create a workflow set</span><span class="w">
+</span><span class="n">rf_models</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">workflow_set</span><span class="p">(</span><span class="n">preproc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">preprocessing</span><span class="p">,</span><span class="w"> 
+                          </span><span class="n">models</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">rf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rf_model</span><span class="p">),</span><span class="w"> 
+                          </span><span class="n">cross</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span></code></pre></figure>
+
+<p>Once all the recipes and workflow have been defined the next step is to fit or train the models. Remember we are going to first evaluate the models on the vfold-cv-set, then train it using the training dataset and evaluate it on the test set.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># This is for running all variations of the model</span><span class="w">
+</span><span class="c1"># Define the number of nodes to be used for the training procedure. I recommend using 1 less than the total number of cores available in your computer</span><span class="w">
+</span><span class="n">cl</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">makePSOCKcluster</span><span class="p">(</span><span class="m">5</span><span class="p">)</span><span class="w">
+</span><span class="n">registerDoParallel</span><span class="p">(</span><span class="n">cl</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Fit all models using the vfold-cv-dataset</span><span class="w">
+</span><span class="n">rf_results</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> 
+  </span><span class="n">rf_models</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="c1"># First argument tells type of fitting to be made</span><span class="w">
+  </span><span class="c1"># Fit resample takes vfolds of training and trains / tests</span><span class="w">
+  </span><span class="n">workflow_map</span><span class="p">(</span><span class="s2">"fit_resamples"</span><span class="p">,</span><span class="w"> 
+               </span><span class="c1"># Options to `workflow_map()`: </span><span class="w">
+               </span><span class="n">seed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+               </span><span class="c1"># Options to `fit_resamples()`: </span><span class="w">
+               </span><span class="n">resamples</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bfast_folds</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Collect metrics from the workflow and write the results to disk</span><span class="w">
+</span><span class="n">rf_results</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">collect_metrics</span><span class="p">()</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="c1"># filter(.metric == "accuracy") %&gt;%</span><span class="w">
+  </span><span class="n">write.csv</span><span class="p">(</span><span class="s2">"Results/rf_modelcomp_allForest.csv"</span><span class="p">)</span></code></pre></figure>
+
+<p>After fitting all the models, you should choose the best architecture. In this case, I chose the one with non-significant difference in accuracy with the highest achieved one and tht included less independent variables. You can make a plot to see the results in a graphic way.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Choose best model according to accuracy</span><span class="w">
+</span><span class="n">autoplot</span><span class="p">(</span><span class="w">
+  </span><span class="n">rf_results</span><span class="p">,</span><span class="w">
+  </span><span class="n">rank_metric</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"accuracy"</span><span class="p">,</span><span class="w">  </span><span class="c1"># &lt;- how to order models</span><span class="w">
+  </span><span class="n">metric</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"accuracy"</span><span class="p">,</span><span class="w">       </span><span class="c1"># &lt;- which metric to visualize</span><span class="w">
+  </span><span class="n">select_best</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="w">     </span><span class="c1"># &lt;- one point per workflow</span><span class="w">
+</span><span class="p">)</span><span class="w">
+
+</span><span class="n">print</span><span class="p">(</span><span class="s2">"Select simplest best model"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Select model architecture with highest accuracy</span><span class="w">
+</span><span class="n">rf_results</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">rank_results</span><span class="p">(</span><span class="n">rank_metric</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"accuracy"</span><span class="p">,</span><span class="w"> </span><span class="n">select_best</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">filter</span><span class="p">(</span><span class="n">.metric</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"accuracy"</span><span class="p">)</span><span class="w"> </span></code></pre></figure>
+
+<p>After evaluating the results obtained in the vfold-cv-dataset, I chose the best model: “pred3_rf”. So we are using that name as the model name to do the rest of the process. This names are automatically created when training the model.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Best model name</span><span class="w">
+</span><span class="n">rf_best_model_id</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"pred3_rf"</span><span class="w">
+
+</span><span class="c1"># Pull the best model according to its id from workflow</span><span class="w">
+</span><span class="c1"># Then choose the model with highest accuracy parameters</span><span class="w">
+</span><span class="c1"># according to accuracy. This contains only the model that obtained the </span><span class="w">
+</span><span class="c1"># highest accuracy in the vfold-cv-sets</span><span class="w">
+</span><span class="n">rf_baseline_results</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rf_results</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">extract_workflow_set_result</span><span class="p">(</span><span class="s2">"base_rf"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">select_best</span><span class="p">(</span><span class="n">metric</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"accuracy"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">rf_truebest_results</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rf_results</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">extract_workflow_set_result</span><span class="p">(</span><span class="n">rf_best_model_id</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">select_best</span><span class="p">(</span><span class="n">metric</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"accuracy"</span><span class="p">)</span><span class="w"> 
+
+</span><span class="c1"># Make last fit (i.e., train model from scratch using complete training data</span><span class="w">
+</span><span class="c1"># and then validate over validation data)</span><span class="w">
+</span><span class="c1"># Select best model using the previous object (bfast_best_results)</span><span class="w">
+</span><span class="c1"># These object contained the trained and verified model (using training and test sets)</span><span class="w">
+</span><span class="n">rf_baseline_last_fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rf_results</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">extract_workflow</span><span class="p">(</span><span class="s2">"base_rf"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">finalize_workflow</span><span class="p">(</span><span class="n">rf_baseline_results</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">last_fit</span><span class="p">(</span><span class="n">split</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sample_split</span><span class="p">)</span><span class="w">
+
+</span><span class="n">rf_truebest_last_fit</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rf_results</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">extract_workflow</span><span class="p">(</span><span class="n">rf_best_model_id</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">finalize_workflow</span><span class="p">(</span><span class="n">rf_truebest_results</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">last_fit</span><span class="p">(</span><span class="n">split</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sample_split</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Get trained models for prediction</span><span class="w">
+</span><span class="c1"># Fit not last fit, aka, withouth predictions (only trained model).</span><span class="w">
+</span><span class="c1"># This are going to be used to make the predictions over the rasters</span><span class="w">
+</span><span class="n">rf_baseline_fit_notlast</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rf_results</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">extract_workflow</span><span class="p">(</span><span class="s2">"base_rf"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">finalize_workflow</span><span class="p">(</span><span class="n">rf_baseline_results</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">fit</span><span class="p">(</span><span class="n">bfast_training</span><span class="p">)</span><span class="w">
+
+</span><span class="n">rf_truebest_fit_notlast</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rf_results</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">extract_workflow</span><span class="p">(</span><span class="n">rf_best_model_id</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">finalize_workflow</span><span class="p">(</span><span class="n">rf_truebest_results</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">fit</span><span class="p">(</span><span class="n">bfast_training</span><span class="p">)</span></code></pre></figure>
+
+<p>Now we have the trained models (<code class="language-plaintext highlighter-rouge">*_notlast</code>) and the trained and evaluated models (<code class="language-plaintext highlighter-rouge">*_last_fit</code>) on the test set. So the next step is to collect the predictions from the trained and evaluated models to calculate different evaluation metrics.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Collect predicions</span><span class="w">
+</span><span class="n">rf_baseline_wkfl_preds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rf_baseline_last_fit</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">collect_predictions</span><span class="p">()</span><span class="w">
+</span><span class="n">rf_truebest_wkfl_preds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rf_truebest_last_fit</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">collect_predictions</span><span class="p">()</span><span class="w">
+
+</span><span class="c1"># Write predictions vs truth</span><span class="w">
+</span><span class="n">rf_baseline_wkfl_preds</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="n">Change</span><span class="p">,</span><span class="w"> </span><span class="n">.pred_class</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">write.csv</span><span class="p">(</span><span class="s2">"Results/PredictionsTruthRFBaseline.csv"</span><span class="p">)</span><span class="w">
+</span><span class="n">rf_truebest_wkfl_preds</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="n">Change</span><span class="p">,</span><span class="w"> </span><span class="n">.pred_class</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">write.csv</span><span class="p">(</span><span class="s2">"Results/PredictionsTruthRFBest.csv"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Set the metrics to calculate</span><span class="w">
+</span><span class="n">bfast_metrics</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">metric_set</span><span class="p">(</span><span class="n">accuracy</span><span class="p">,</span><span class="w"> 
+                            </span><span class="n">roc_auc</span><span class="p">,</span><span class="w"> 
+                            </span><span class="n">precision</span><span class="p">,</span><span class="w"> 
+                            </span><span class="n">recall</span><span class="p">,</span><span class="w">
+                            </span><span class="n">f_meas</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Calculate metrics and write them to disk</span><span class="w">
+</span><span class="n">rf_baseline_wkfl_preds</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">bfast_metrics</span><span class="p">(</span><span class="n">truth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Change</span><span class="p">,</span><span class="w"> 
+                </span><span class="n">estimate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">.pred_class</span><span class="p">,</span><span class="w">
+                </span><span class="n">event_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"second"</span><span class="p">,</span><span class="w"> </span><span class="c1">#To focus evaluation on 1</span><span class="w">
+                </span><span class="n">.pred_1</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">write.csv</span><span class="p">(</span><span class="s2">"Results/EvalMetricsRFBaseline.csv"</span><span class="p">)</span><span class="w">
+</span><span class="n">rf_truebest_wkfl_preds</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">bfast_metrics</span><span class="p">(</span><span class="n">truth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Change</span><span class="p">,</span><span class="w"> 
+                </span><span class="n">estimate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">.pred_class</span><span class="p">,</span><span class="w">
+                </span><span class="n">event_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"second"</span><span class="p">,</span><span class="w"> </span><span class="c1">#To focus evaluation on 1</span><span class="w">
+                </span><span class="n">.pred_1</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">write.csv</span><span class="p">(</span><span class="s2">"Results/EvalMetricsRFBest.csv"</span><span class="p">)</span></code></pre></figure>
+
+<p>Additionally, you might be interested in obtaining the ROC curves of each model, so you can do it using the following script. In this step, we will create a data frame containing the ROC curves, which can afterwards used to construct a plot showing this results.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># ROC plots</span><span class="w">
+</span><span class="n">rf_baseline_roc</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rf_baseline_wkfl_preds</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">roc_curve</span><span class="p">(</span><span class="n">truth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Change</span><span class="p">,</span><span class="w"> 
+            </span><span class="n">event_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"second"</span><span class="p">,</span><span class="w">
+            </span><span class="n">.pred_1</span><span class="p">)</span><span class="w">  </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">add_column</span><span class="p">(</span><span class="n">Model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Baseline"</span><span class="p">)</span><span class="w">
+</span><span class="n">rf_truebest_roc</span><span class="w"> </span><span class="o">&lt;-</span><span class="n">rf_truebest_wkfl_preds</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">roc_curve</span><span class="p">(</span><span class="n">truth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Change</span><span class="p">,</span><span class="w"> 
+            </span><span class="n">event_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"second"</span><span class="p">,</span><span class="w">
+            </span><span class="n">.pred_1</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">add_column</span><span class="p">(</span><span class="n">Model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rf_best_model_id</span><span class="p">)</span><span class="w">
+
+</span><span class="n">plotter_rf</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">bind_rows</span><span class="p">(</span><span class="n">rf_baseline_roc</span><span class="p">,</span><span class="w"> </span><span class="n">rf_truebest_roc</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="s2">"1 - specificity"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">-</span><span class="n">specificity</span><span class="p">)</span><span class="w"> </span></code></pre></figure>
+
+<p>The last step of the workflow is to spatialize the model, i.e., apply the model using the rasters to obtain a final disturbance / non-disturbance map.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Use model to make raster</span><span class="w">
+</span><span class="c1"># Function for applying model to rasters and obtain a raster as results</span><span class="w">
+</span><span class="n">fun</span><span class="o">&lt;-</span><span class="k">function</span><span class="p">(</span><span class="n">...</span><span class="p">){</span><span class="w">
+  </span><span class="n">p</span><span class="o">&lt;-</span><span class="n">predict</span><span class="p">(</span><span class="n">...</span><span class="p">)</span><span class="w">
+  </span><span class="nf">return</span><span class="p">(</span><span class="n">as.matrix</span><span class="p">(</span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">p</span><span class="p">[,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">drop</span><span class="o">=</span><span class="nb">T</span><span class="p">])))</span><span class="w"> 
+</span><span class="p">}</span><span class="w">
+
+</span><span class="c1"># Make prediction</span><span class="w">
+</span><span class="n">rf_baseline_pred_im</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raster</span><span class="o">::</span><span class="n">predict</span><span class="p">(</span><span class="n">im1</span><span class="p">,</span><span class="w"> 
+                              </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rf_baseline_fit_notlast</span><span class="p">,</span><span class="w"> 
+                              </span><span class="n">type</span><span class="o">=</span><span class="s2">"class"</span><span class="p">,</span><span class="w"> 
+                              </span><span class="n">fun</span><span class="o">=</span><span class="n">fun</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Write raster</span><span class="w">
+</span><span class="n">writeRaster</span><span class="p">(</span><span class="n">rf_baseline_pred_im</span><span class="p">,</span><span class="w">
+            </span><span class="n">paste0</span><span class="p">(</span><span class="s2">"ClassRaster/RFBaselineClass_"</span><span class="p">,</span><span class="s2">"pred_AllForest.tif"</span><span class="p">),</span><span class="w">
+            </span><span class="n">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"GTiff"</span><span class="p">,</span><span class="w">
+            </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Make prediction</span><span class="w">
+</span><span class="n">rf_truebest_pred_im</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raster</span><span class="o">::</span><span class="n">predict</span><span class="p">(</span><span class="n">im1</span><span class="p">,</span><span class="w"> 
+                              </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rf_truebest_fit_notlast</span><span class="p">,</span><span class="w"> 
+                              </span><span class="n">type</span><span class="o">=</span><span class="s2">"class"</span><span class="p">,</span><span class="w"> 
+                              </span><span class="n">fun</span><span class="o">=</span><span class="n">fun</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Write raster</span><span class="w">
+</span><span class="n">writeRaster</span><span class="p">(</span><span class="n">rf_truebest_pred_im</span><span class="p">,</span><span class="w">
+            </span><span class="n">paste0</span><span class="p">(</span><span class="s2">"ClassRaster/RFTruebestClass_"</span><span class="p">,</span><span class="s2">"pred_AllForest.tif"</span><span class="p">),</span><span class="w">
+            </span><span class="n">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"GTiff"</span><span class="p">,</span><span class="w">
+            </span><span class="n">overwrite</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span></code></pre></figure>
+
+    </section>
+  </article>
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/JonathanVSV" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://stackoverflow.com/users/9022665/jonathan-v-sol%c3%b3rzano" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-stack-overflow" aria-hidden="true"></i> Stack Overflow</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Jonathan V. Solórzano. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

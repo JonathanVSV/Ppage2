@@ -1,0 +1,450 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Volcanos 3d maps - Jonathan V. Solórzano</title>
+<meta name="description" content="Volcanos 3d maps">
+
+
+  <meta name="author" content="Jonathan V. Solórzano">
+  
+  <meta property="article:author" content="Jonathan V. Solórzano">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Jonathan V. Solórzano">
+<meta property="og:title" content="Volcanos 3d maps">
+<meta property="og:url" content="http://localhost:4000/blog/Volcanos-rayshader/">
+
+
+  <meta property="og:description" content="Volcanos 3d maps">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2023-03-09T16:15:00-06:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/blog/Volcanos-rayshader/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Jonathan V. Solórzano Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--splash">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Jonathan V. Solórzano
+          <span class="site-subtitle">My personal site</span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/courses/">Courses</a>
+            </li><li class="masthead__menu-item">
+              <a href="/mini-packages/">Mini-packages</a>
+            </li><li class="masthead__menu-item">
+              <a href="/gee/">GEE</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+<div id="main" role="main">
+  <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Volcanos 3d maps">
+    <meta itemprop="description" content="Volcanos 3d maps">
+    <meta itemprop="datePublished" content="2023-03-09T16:15:00-06:00">
+    
+
+    <section class="page__content" itemprop="text">
+      <h1 id="volcanos-3d-maps">Volcanos 3d maps</h1>
+
+<p>I have continued playing with <code class="language-plaintext highlighter-rouge">rayshader</code>, <code class="language-plaintext highlighter-rouge">rayvista</code> and <code class="language-plaintext highlighter-rouge">magick</code> packages to make beautiful 3d maps. This post shows the code used to make a 3d map with some of the highest peaks in Mexico, which all have a volcanic origin. Additionally, the area shown in the map is part of the Trans-Mexican Volcanic Belt. The code used to obtain this map is shown in the first section. The second section of the post contains the code used to make the zoom-ins to each volcano, while the third section contains the code used to merge all the images.</p>
+
+<p>First load the required packages.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">rayvista</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">rayshader</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">terra</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">magrittr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">magick</span><span class="p">)</span></code></pre></figure>
+
+<p>Load the roi polygon to make the large map and also a geopackage file that contains points with the locations of each volcano, with its name and altitude. Although initially I wanted to label also Sierra Negra peak, it was overlapping with the Pico de Orizaba so I removed it. Then, the coordinates are extracted from that same file, added as columns and then added a color column to indicate the color of the labels (white: for names that overlapped with the rgb composite and black those that did not). Finally, calculate the area to add it in the end as a label. The data used in this example can be downloaded from: https://github.com/JonathanVSV/Ppage2/tree/master/assets/data</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Zscale for 3d map</span><span class="w">
+</span><span class="n">zscale</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">60</span><span class="w">
+</span><span class="c1"># Background color for all maps</span><span class="w">
+</span><span class="n">bg_col</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"gray60"</span><span class="w">
+
+</span><span class="c1"># ROI</span><span class="w">
+</span><span class="n">picos_poly</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"Data/Picos.gpkg"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Points of each peak with its name and altitude</span><span class="w">
+</span><span class="n">picos_names</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"Data/picos_names.gpkg"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Removed Sierra Negra because was overlapping with Pico de Orizaba</span><span class="w">
+  </span><span class="n">filter</span><span class="p">(</span><span class="n">Name</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s2">"Sierra Negra"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Get its coordinates</span><span class="w">
+</span><span class="n">coords</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">picos_names</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">st_coordinates</span><span class="p">()</span><span class="w">
+</span><span class="c1"># Add the coordinates as another column and add a color column</span><span class="w">
+</span><span class="n">picos_names</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">picos_names</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">bind_cols</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"white"</span><span class="p">,</span><span class="w"> </span><span class="s2">"white"</span><span class="p">,</span><span class="w"> </span><span class="s2">"white"</span><span class="p">,</span><span class="w">
+                              </span><span class="s2">"white"</span><span class="p">,</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w"> </span><span class="s2">"white"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Arrange by altitude for the individual volcanos plots</span><span class="w">
+  </span><span class="n">arrange</span><span class="p">(</span><span class="n">desc</span><span class="p">(</span><span class="n">Alt</span><span class="p">))</span><span class="w">
+
+ </span><span class="c1"># Calculate area in sq. km </span><span class="w">
+</span><span class="n">areasqkm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">25000</span><span class="w">
+
+</span><span class="c1"># Aprox area without zoom</span><span class="w">
+</span><span class="c1"># picos_poly |&gt;</span><span class="w">
+  </span><span class="c1"># st_transform(32614) |&gt;</span><span class="w">
+  </span><span class="c1"># st_area() |&gt;</span><span class="w">
+  </span><span class="c1"># as.numeric() |&gt;</span><span class="w">
+  </span><span class="c1"># multiply_by(1/1000000)</span></code></pre></figure>
+
+<p>Then, obtain the RGB data with the DEM.</p>
+
+<h2 id="large-map">Large map</h2>
+
+<p>Obtain rgb composite and DEM data.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">picos</span><span class="o">&lt;-</span><span class="w"> </span><span class="n">plot_3d_vista</span><span class="p">(</span><span class="n">req_area</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">picos_poly</span><span class="p">,</span><span class="w">
+                          </span><span class="n">overlay_detail</span><span class="o">=</span><span class="m">10</span><span class="p">,</span><span class="w"> 
+                          </span><span class="n">overlay_alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.7</span><span class="p">,</span><span class="w"> 
+                          </span><span class="n">elevation_detail</span><span class="o">=</span><span class="m">9</span><span class="p">,</span><span class="w"> 
+                          </span><span class="n">show_vista</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">)</span></code></pre></figure>
+
+<p>Then, create the 3d representation and add the labels and save a snapshot of the rendered image.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Use dem matrix data</span><span class="w">
+</span><span class="n">picos</span><span class="o">$</span><span class="n">dem_matrix</span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Add texture</span><span class="w">
+  </span><span class="n">add_overlay</span><span class="p">(</span><span class="n">texture_shade</span><span class="p">(</span><span class="n">picos</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w">
+                            </span><span class="n">detail</span><span class="o">=</span><span class="m">0.9</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Add snowy peaks effect</span><span class="w">
+  </span><span class="n">add_overlay</span><span class="p">(</span><span class="n">generate_altitude_overlay</span><span class="p">(</span><span class="n">height_shade</span><span class="p">(</span><span class="n">picos</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w"> 
+                                                     </span><span class="n">texture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"white"</span><span class="p">,</span><span class="w">
+                                                     </span><span class="n">range</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">5000</span><span class="p">,</span><span class="m">5700</span><span class="p">)),</span><span class="w">
+                                        </span><span class="n">picos</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w"> 
+                                        </span><span class="n">start_transition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4500</span><span class="p">,</span><span class="w"> 
+                                        </span><span class="n">end_transition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5000</span><span class="p">,</span><span class="w"> 
+                                        </span><span class="n">lower</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">),</span><span class="w">
+              </span><span class="n">alphalayer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">  </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Add Shadow</span><span class="w">
+  </span><span class="n">add_shadow</span><span class="p">(</span><span class="n">ray_shade</span><span class="p">(</span><span class="n">picos</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w"> </span><span class="n">zscale</span><span class="o">=</span><span class="n">zscale</span><span class="p">),</span><span class="w"> </span><span class="m">0.7</span><span class="p">)</span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Add RGB composite</span><span class="w">
+  </span><span class="n">add_overlay</span><span class="p">(</span><span class="n">picos</span><span class="o">$</span><span class="n">texture</span><span class="p">,</span><span class="n">rescale_original</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Plot 3d</span><span class="w">
+  </span><span class="n">plot_3d</span><span class="p">(</span><span class="n">picos</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w"> 
+          </span><span class="n">zscale</span><span class="o">=</span><span class="n">zscale</span><span class="p">,</span><span class="w">
+          </span><span class="n">windowsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1200</span><span class="p">,</span><span class="w"> 
+          </span><span class="n">zoom</span><span class="o">=</span><span class="m">0.17</span><span class="p">,</span><span class="w"> 
+          </span><span class="n">phi</span><span class="o">=</span><span class="m">7</span><span class="p">,</span><span class="w"> 
+          </span><span class="n">theta</span><span class="o">=</span><span class="m">280</span><span class="p">,</span><span class="w">
+          </span><span class="n">background</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bg_col</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Add labels</span><span class="w">
+</span><span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">picos_names</span><span class="p">)){</span><span class="w">
+  </span><span class="c1"># color &lt;- "black"</span><span class="w">
+  </span><span class="n">render_label</span><span class="p">(</span><span class="n">picos</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w">
+               </span><span class="n">long</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">picos_names</span><span class="o">$</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w">
+               </span><span class="n">lat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">picos_names</span><span class="o">$</span><span class="n">Y</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w">
+               </span><span class="n">zscale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zscale</span><span class="m">+60</span><span class="p">,</span><span class="w">
+               </span><span class="n">extent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">attr</span><span class="p">(</span><span class="n">picos</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w"> </span><span class="s2">"extent"</span><span class="p">),</span><span class="w">
+               </span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="n">picos_names</span><span class="o">$</span><span class="n">Name</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span><span class="w">
+               </span><span class="n">linecolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">picos_names</span><span class="o">$</span><span class="n">color</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w">
+               </span><span class="n">textcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">picos_names</span><span class="o">$</span><span class="n">color</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="c1"># Save as png</span><span class="w">
+</span><span class="n">render_snapshot</span><span class="p">(</span><span class="n">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Plots/Volcanos_snap.png"</span><span class="p">,</span><span class="w">
+                </span><span class="n">software_render</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">,</span><span class="w">
+                </span><span class="n">background</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bg_col</span><span class="p">)</span></code></pre></figure>
+
+<h2 id="individual-volcanoes">Individual volcanoes</h2>
+
+<p>This section contains the code used to make the zoom-ins to each volcano. It contains basically the same code as the previous sections but obtains the DEM and RGB composite using the location of each volcano. Finally, to make everything more easy, an lapply is used to make the exact same process for each volcano and save the rendered image as a png.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">picos_names</span><span class="p">),</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">){</span><span class="w">
+  </span><span class="c1"># Get RGB and DEM for each volcano</span><span class="w">
+  </span><span class="n">volcano</span><span class="o">&lt;-</span><span class="w"> </span><span class="n">plot_3d_vista</span><span class="p">(</span><span class="w">
+    </span><span class="n">lat</span><span class="o">=</span><span class="n">picos_names</span><span class="o">$</span><span class="n">Y</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w">
+    </span><span class="n">long</span><span class="o">=</span><span class="n">picos_names</span><span class="o">$</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w">
+    </span><span class="n">radius</span><span class="o">=</span><span class="m">10000</span><span class="p">,</span><span class="w">
+    </span><span class="n">overlay_detail</span><span class="o">=</span><span class="m">12</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">overlay_alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.7</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">elevation_detail</span><span class="o">=</span><span class="m">12</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">show_vista</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">)</span><span class="w">
+  
+  </span><span class="c1"># Make similar visualization to the large map</span><span class="w">
+  </span><span class="n">volcano</span><span class="o">$</span><span class="n">dem_matrix</span><span class="o">|&gt;</span><span class="w">
+    </span><span class="n">add_overlay</span><span class="p">(</span><span class="n">texture_shade</span><span class="p">(</span><span class="n">volcano</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w">
+                              </span><span class="n">detail</span><span class="o">=</span><span class="m">0.9</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+    </span><span class="c1"># Add RGB composite</span><span class="w">
+    </span><span class="n">add_overlay</span><span class="p">(</span><span class="n">volcano</span><span class="o">$</span><span class="n">texture</span><span class="p">,</span><span class="w">
+                </span><span class="n">rescale_original</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+                </span><span class="n">alphalayer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.7</span><span class="p">)</span><span class="o">|&gt;</span><span class="w">
+    </span><span class="n">add_overlay</span><span class="p">(</span><span class="n">generate_altitude_overlay</span><span class="p">(</span><span class="n">height_shade</span><span class="p">(</span><span class="n">volcano</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w">
+                                                       </span><span class="n">texture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"white"</span><span class="p">,</span><span class="w">
+                                                       </span><span class="n">range</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">5000</span><span class="p">,</span><span class="m">5700</span><span class="p">)),</span><span class="w">
+                                          </span><span class="n">volcano</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w">
+                                          </span><span class="n">start_transition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4500</span><span class="p">,</span><span class="w">
+                                          </span><span class="n">end_transition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5000</span><span class="p">,</span><span class="w">
+                                          </span><span class="n">lower</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">),</span><span class="w">
+                </span><span class="n">alphalayer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.7</span><span class="p">)</span><span class="w">  </span><span class="o">|&gt;</span><span class="w">
+    </span><span class="n">plot_3d</span><span class="p">(</span><span class="n">volcano</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w"> 
+            </span><span class="n">zscale</span><span class="o">=</span><span class="m">10</span><span class="p">,</span><span class="w">
+            </span><span class="n">windowsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1200</span><span class="p">,</span><span class="w"> 
+            </span><span class="n">zoom</span><span class="o">=</span><span class="m">0.6</span><span class="p">,</span><span class="w"> 
+            </span><span class="n">phi</span><span class="o">=</span><span class="m">0</span><span class="p">,</span><span class="w"> 
+            </span><span class="n">theta</span><span class="o">=</span><span class="m">90</span><span class="p">,</span><span class="w">
+            </span><span class="n">baseshape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"rectangle"</span><span class="p">,</span><span class="w">
+            </span><span class="n">background</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bg_col</span><span class="p">)</span><span class="w">
+  
+  </span><span class="c1"># Save as png          </span><span class="w">
+  </span><span class="n">render_snapshot</span><span class="p">(</span><span class="n">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="s2">"Plots/"</span><span class="p">,</span><span class="n">picos_names</span><span class="o">$</span><span class="n">Name</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="s2">"_snap.png"</span><span class="p">),</span><span class="w">
+                  </span><span class="n">software_render</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">,</span><span class="w">
+                  </span><span class="n">title_position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"north"</span><span class="p">,</span><span class="w">
+                  </span><span class="n">title_font</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"sans"</span><span class="p">,</span><span class="w">
+                  </span><span class="n">title_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">,</span><span class="w">
+                  </span><span class="n">title_text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="n">picos_names</span><span class="o">$</span><span class="n">Name</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w"> 
+                                      </span><span class="s2">"\n"</span><span class="p">,</span><span class="w"> 
+                                      </span><span class="n">picos_names</span><span class="o">$</span><span class="n">Alt</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w">
+                                      </span><span class="s2">" m amsl"</span><span class="p">),</span><span class="w">
+                  </span><span class="n">title_offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">100</span><span class="p">),</span><span class="w">
+                  </span><span class="n">gravity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"north"</span><span class="p">,</span><span class="w">
+                  </span><span class="n">background</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bg_col</span><span class="p">)</span><span class="w">
+</span><span class="p">})</span></code></pre></figure>
+
+<h2 id="image-composition-and-final-adjustments">Image composition and final adjustments</h2>
+
+<p>Finally, this part makes use of the <code class="language-plaintext highlighter-rouge">magick</code> package to stitch together all the images and add some labels</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Read the large map image and make some adjustments</span><span class="w">
+</span><span class="n">imall</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">image_read</span><span class="p">(</span><span class="s2">"Plots/Volcanos_snap.png"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Make it bigger</span><span class="w">
+  </span><span class="n">image_resize</span><span class="p">(</span><span class="s2">"1975"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Add title</span><span class="w">
+  </span><span class="n">image_annotate</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Mexico's Highest Peaks"</span><span class="p">,</span><span class="w"> 
+                 </span><span class="n">weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">700</span><span class="p">,</span><span class="w">
+                 </span><span class="n">font</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"sans"</span><span class="p">,</span><span class="w"> 
+                 </span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"+100+20"</span><span class="p">,</span><span class="w">
+                 </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w"> 
+                 </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">80</span><span class="p">,</span><span class="w"> 
+                 </span><span class="n">gravity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"north"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Add a label of aprox. area shown               </span><span class="w">
+  </span><span class="n">image_annotate</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="s2">"Aprox. area shown: "</span><span class="p">,</span><span class="w"> </span><span class="n">scales</span><span class="o">::</span><span class="n">comma</span><span class="p">(</span><span class="n">areasqkm</span><span class="p">),</span><span class="w"> </span><span class="s2">" km\U00B2"</span><span class="p">),</span><span class="w"> 
+                 </span><span class="n">weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">400</span><span class="p">,</span><span class="w">
+                 </span><span class="n">font</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"sans"</span><span class="p">,</span><span class="w"> 
+                 </span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"+0+10"</span><span class="p">,</span><span class="w">
+                 </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w"> 
+                 </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">32</span><span class="p">,</span><span class="w"> 
+                 </span><span class="n">gravity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"south"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Eliminate empty spaces               </span><span class="w">
+  </span><span class="n">image_trim</span><span class="p">()</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> 
+  </span><span class="c1"># Add border</span><span class="w">
+  </span><span class="n">image_border</span><span class="p">(</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bg_col</span><span class="p">,</span><span class="w">
+               </span><span class="n">geometry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"50x50"</span><span class="p">)</span><span class="w"> 
+
+</span><span class="c1"># Read individual volcanoes images into a list</span><span class="w">
+</span><span class="n">imsingle</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lapply</span><span class="p">(</span><span class="n">picos_names</span><span class="o">$</span><span class="n">Name</span><span class="p">,</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span><span class="w">
+  </span><span class="n">image_read</span><span class="p">(</span><span class="n">paste0</span><span class="p">(</span><span class="s2">"Plots/"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="s2">"_snap.png"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+    </span><span class="c1"># Eliminate empty spaces</span><span class="w">
+    </span><span class="n">image_trim</span><span class="p">()</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+    </span><span class="c1"># Add new border</span><span class="w">
+    </span><span class="n">image_border</span><span class="p">(</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bg_col</span><span class="p">,</span><span class="w">
+                 </span><span class="n">geometry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"20x20"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+    </span><span class="c1"># Resize image</span><span class="w">
+    </span><span class="n">image_resize</span><span class="p">(</span><span class="s2">"400"</span><span class="p">)</span><span class="w">
+</span><span class="p">})</span><span class="w">
+
+</span><span class="c1"># Stack all single volcanos vertically</span><span class="w">
+</span><span class="n">stacked_im</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">image_append</span><span class="p">(</span><span class="n">Reduce</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">imsingle</span><span class="p">),</span><span class="w"> </span><span class="n">stack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Stitch horizontally the map and the stacked volcanoes images</span><span class="w">
+</span><span class="n">image_append</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="n">imall</span><span class="p">,</span><span class="w"> </span><span class="n">stacked_im</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+</span><span class="c1"># Add color saturation and contrast</span><span class="w">
+  </span><span class="n">image_modulate</span><span class="p">(</span><span class="n">brightness</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">150</span><span class="p">,</span><span class="w"> 
+                 </span><span class="n">saturation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">130</span><span class="p">,</span><span class="w"> 
+                 </span><span class="n">hue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Increase contrast</span><span class="w">
+  </span><span class="n">image_contrast</span><span class="p">(</span><span class="n">sharpen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Write image</span><span class="w">
+  </span><span class="n">image_write</span><span class="p">(</span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Plots/Volcanos_all_final.png"</span><span class="p">,</span><span class="w"> 
+              </span><span class="n">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"png"</span><span class="p">)</span></code></pre></figure>
+
+<p>The result:</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/Volcanos_all_final.png"><img src="http://localhost:4000/assets/images/Volcanos_all_final.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Mexico’s highest peaks.</p>
+
+<p>In the final map, the tallest peaks can be appreciated with its labels, as well as a zoom-in to all of them individually (right-side panel). I like to think of the resulting image as a simple infography.</p>
+
+    </section>
+  </article>
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/JonathanVSV" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://stackoverflow.com/users/9022665/jonathan-v-sol%c3%b3rzano" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-stack-overflow" aria-hidden="true"></i> Stack Overflow</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Jonathan V. Solórzano. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

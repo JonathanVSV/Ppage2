@@ -1,0 +1,411 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Shaded relief maps in R - Jonathan V. Solórzano</title>
+<meta name="description" content="Shaded relief maps in R">
+
+
+  <meta name="author" content="Jonathan V. Solórzano">
+  
+  <meta property="article:author" content="Jonathan V. Solórzano">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Jonathan V. Solórzano">
+<meta property="og:title" content="Shaded relief maps in R">
+<meta property="og:url" content="http://localhost:4000/blog/shaded-relief-maps-in-r_2/">
+
+
+  <meta property="og:description" content="Shaded relief maps in R">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2023-03-05T03:15:00-06:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/blog/shaded-relief-maps-in-r_2/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Jonathan V. Solórzano Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--splash">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Jonathan V. Solórzano
+          <span class="site-subtitle">My personal site</span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/courses/">Courses</a>
+            </li><li class="masthead__menu-item">
+              <a href="/mini-packages/">Mini-packages</a>
+            </li><li class="masthead__menu-item">
+              <a href="/gee/">GEE</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+<div id="main" role="main">
+  <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Shaded relief maps in R">
+    <meta itemprop="description" content="Shaded relief maps in R">
+    <meta itemprop="datePublished" content="2023-03-05T03:15:00-06:00">
+    
+
+    <section class="page__content" itemprop="text">
+      <h1 id="shaded-relief-maps-in-r">Shaded relief maps in R</h1>
+
+<p>This is a follow up of the series of experiments I have been working with <code class="language-plaintext highlighter-rouge">rayshader</code>. In this post, I will focus on making a shaded relief map using different colors to represent different altitudes. Also, in this post I will show you how to visualize the shaded relief map with a given projection and add some labels to the final map.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">elevatr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">terra</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">rayshader</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">magick</span><span class="p">)</span></code></pre></figure>
+
+<p>Define some variables: name of the polygon to save the files, the name used to add a label at the end, the CRS to project the visualization of the map, and some variables to render the shaded relief and final labels. In this case, I had to use PROJ notation to define the projection to which I wanted the map to be projected to; although, nowadays this notation is discouraged in favor of WKT2 notation or EPSG or ESRI codes.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">name_poly</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"Mexico"</span><span class="w">
+</span><span class="n">name_legend</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"Mexico"</span><span class="w">
+</span><span class="c1"># Had to use proj4, although it is not prefered over epsg codes</span><span class="w">
+</span><span class="c1"># However there was no epsg:6361</span><span class="w">
+</span><span class="n">newProj</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"+proj=lcc +lat_0=12 +lon_0=-102 +lat_1=17.5 +lat_2=29.5 +x_0=2500000 +y_0=0"</span><span class="w">
+</span><span class="n">sunangle</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">315</span><span class="w">
+</span><span class="c1"># Lower value more z exaggeration</span><span class="w">
+</span><span class="n">zscale</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">20</span><span class="w">
+</span><span class="n">zoom_val</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">6</span><span class="w">
+</span><span class="n">sunaltitude</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">30</span><span class="w">
+</span><span class="n">font</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"sans"</span><span class="w">
+</span><span class="n">font_color</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"#01611F"</span></code></pre></figure>
+
+<p>Then, read the roi polygon file and use it to obtain the DEM data.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Get polygon of roi</span><span class="w">
+</span><span class="c1"># Can be downloaded from: https://github.com/JonathanVSV/Ppage2/tree/master/assets/data</span><span class="w">
+</span><span class="n">poly</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"MX_inegi.gpkg"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Get RGB mosaic</span><span class="w">
+</span><span class="c1"># Get elevation data using elevatr</span><span class="w">
+</span><span class="n">dem</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">get_elev_raster</span><span class="p">(</span><span class="n">poly</span><span class="p">,</span><span class="w">
+                      </span><span class="n">prj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"EPSG:4326"</span><span class="p">,</span><span class="w">
+                      </span><span class="n">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"aws"</span><span class="p">,</span><span class="w">
+                      </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zoom_val</span><span class="p">,</span><span class="w">
+                      </span><span class="n">neg_to_na</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span></code></pre></figure>
+
+<p>Then, extract the bounding box coordinates of the polygon to add them in the add as a notation in the final image. Do some adjustments such as round to two decimals and add N and W letters.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">box_coords</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_bbox</span><span class="p">(</span><span class="n">poly</span><span class="p">)</span><span class="w">
+</span><span class="n">coords_df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">c1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="nf">abs</span><span class="p">(</span><span class="nf">round</span><span class="p">(</span><span class="n">box_coords</span><span class="p">[</span><span class="m">2</span><span class="p">],</span><span class="m">2</span><span class="p">)),</span><span class="w"> </span><span class="s2">"° N, "</span><span class="p">,</span><span class="w">
+                                    </span><span class="nf">abs</span><span class="p">(</span><span class="nf">round</span><span class="p">(</span><span class="n">box_coords</span><span class="p">[</span><span class="m">1</span><span class="p">],</span><span class="m">2</span><span class="p">)),</span><span class="w"> </span><span class="s2">"° W"</span><span class="p">),</span><span class="w">
+                        </span><span class="n">c2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="nf">abs</span><span class="p">(</span><span class="nf">round</span><span class="p">(</span><span class="n">box_coords</span><span class="p">[</span><span class="m">4</span><span class="p">],</span><span class="m">2</span><span class="p">)),</span><span class="w"> </span><span class="s2">"° N, "</span><span class="p">,</span><span class="w">
+                                    </span><span class="nf">abs</span><span class="p">(</span><span class="nf">round</span><span class="p">(</span><span class="n">box_coords</span><span class="p">[</span><span class="m">3</span><span class="p">],</span><span class="m">2</span><span class="p">)),</span><span class="w"> </span><span class="s2">"° W"</span><span class="p">))</span></code></pre></figure>
+
+<p>Then, mask the images using the roi’s polygon and crop the dem to the extent of the same polygon.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Convert raster to spatRast</span><span class="w">
+</span><span class="n">dem</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rast</span><span class="p">(</span><span class="n">dem</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Mask areas according to polygon</span><span class="w">
+</span><span class="n">dem</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mask</span><span class="p">(</span><span class="n">dem</span><span class="p">,</span><span class="w"> </span><span class="n">poly</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Crop dem extent to poly</span><span class="w">
+</span><span class="n">dem</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">crop</span><span class="p">(</span><span class="n">dem</span><span class="p">,</span><span class="w"> </span><span class="n">poly</span><span class="p">)</span></code></pre></figure>
+
+<p>Afterward, transform the dem into a matrix.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># And convert it to a matrix:</span><span class="w">
+</span><span class="n">dem_mat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raster_to_matrix</span><span class="p">(</span><span class="n">dem</span><span class="p">)</span></code></pre></figure>
+
+<p>Define color palette for the topography colors, using hexadecimal codes.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">my_pal</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">grDevices</span><span class="o">::</span><span class="n">colorRampPalette</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"#026449"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#12722c"</span><span class="p">,</span><span class="s2">"#d7d17e"</span><span class="p">,</span><span class="w">
+                    </span><span class="s2">"#95400d"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#980802"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#746c69"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#f1f1f1"</span><span class="p">,</span><span class="s2">"#fdfdfd"</span><span class="p">),</span><span class="w">
+                    </span><span class="n">interpolate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"spline"</span><span class="p">,</span><span class="w">
+                    </span><span class="n">bias</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)(</span><span class="m">256</span><span class="p">)</span></code></pre></figure>
+
+<p>Then create the hillshade map under the topographic color representation and add shadows. I added some transparency to the height shade layer (resulting from <code class="language-plaintext highlighter-rouge">height_shade</code>) so it can be better combined with the hillshaded image (resulting from <code class="language-plaintext highlighter-rouge">sphere_shade</code>).</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">im</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dem_mat</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">sphere_shade</span><span class="p">(</span><span class="n">sunangle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sunangle</span><span class="p">,</span><span class="w">
+               </span><span class="n">texture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'bw'</span><span class="p">,</span><span class="w">
+               </span><span class="n">zscale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zscale</span><span class="p">,</span><span class="w">
+               </span><span class="n">colorintensity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.9</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_overlay</span><span class="p">(</span><span class="n">height_shade</span><span class="p">(</span><span class="n">dem_mat</span><span class="p">,</span><span class="w"> 
+                           </span><span class="n">texture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_pal</span><span class="p">),</span><span class="w">
+              </span><span class="n">alphalayer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.7</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">add_shadow</span><span class="p">(</span><span class="n">ray_shade</span><span class="p">(</span><span class="n">dem_mat</span><span class="p">,</span><span class="w">
+                       </span><span class="n">sunaltitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sunaltitude</span><span class="p">,</span><span class="w">
+                       </span><span class="n">zscale</span><span class="o">=</span><span class="n">zscale</span><span class="p">),</span><span class="w">
+             </span><span class="n">max_darken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.9</span><span class="p">,</span><span class="w">
+             </span><span class="n">rescale_original</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w"> </span></code></pre></figure>
+
+<p>Then convert the array obtained in the previous step to spatRast again and project it.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Pass it to raster again and set CRS params</span><span class="w">
+</span><span class="n">im</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rast</span><span class="p">(</span><span class="n">im</span><span class="p">)</span><span class="w">
+</span><span class="n">crs</span><span class="p">(</span><span class="n">im</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">crs</span><span class="p">(</span><span class="s2">"EPSG:4326"</span><span class="p">)</span><span class="w">
+</span><span class="n">ext</span><span class="p">(</span><span class="n">im</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ext</span><span class="p">(</span><span class="n">dem</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Reproject</span><span class="w">
+</span><span class="c1"># EPSG:6361 Mexico LCC</span><span class="w">
+</span><span class="c1"># https://epsg.io/6361</span><span class="w">
+
+</span><span class="n">newProj</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_crs</span><span class="p">(</span><span class="n">newProj</span><span class="p">)</span><span class="o">$</span><span class="n">wkt</span><span class="w">
+</span><span class="n">im_rep</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">project</span><span class="p">(</span><span class="n">im</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newProj</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Return image to 0 - 255 range</span><span class="w">
+</span><span class="n">im_rep</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">im_rep</span><span class="o">*</span><span class="m">255</span></code></pre></figure>
+
+<p>Then export the image into a png. In this case, you need to create a folder named “Plots” outside R in your working directory or use <code class="language-plaintext highlighter-rouge">dir.create("Plots")</code> inside R, so you can export the file in the exact same location as in the example. Other alternative, might be to delete the folder part (i.e., “Plots/”) and just export it directly in the working directory.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Export to png</span><span class="w">
+</span><span class="n">png</span><span class="p">(</span><span class="n">paste0</span><span class="p">(</span><span class="s2">"Plots/"</span><span class="p">,</span><span class="n">name_poly</span><span class="p">,</span><span class="s2">"_AltCol.png"</span><span class="p">),</span><span class="w">
+    </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span><span class="p">,</span><span class="w">
+    </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">20</span><span class="p">,</span><span class="w">
+    </span><span class="n">units</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"cm"</span><span class="p">,</span><span class="w">
+    </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">300</span><span class="p">)</span><span class="w">
+</span><span class="n">plotRGB</span><span class="p">(</span><span class="n">im_rep</span><span class="p">,</span><span class="w">
+        </span><span class="c1"># stretch = "hist",</span><span class="w">
+        </span><span class="n">smooth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">,</span><span class="w">
+        </span><span class="c1"># completely opaque</span><span class="w">
+        </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">255</span><span class="p">,</span><span class="w">
+        </span><span class="n">add</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">,</span><span class="w">
+        </span><span class="n">maxcell</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">Inf</span><span class="p">,</span><span class="w"> 
+        </span><span class="n">bgalpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w">
+</span><span class="n">dev.off</span><span class="p">()</span></code></pre></figure>
+
+<p>Once you obtain the png, you can make some enhancements using the <code class="language-plaintext highlighter-rouge">magick</code> package to crop the image, increase the saturation of the colors, increase the contrast, among other adjustments.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Final enhancements</span><span class="w">
+</span><span class="n">im1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">image_read</span><span class="p">(</span><span class="n">paste0</span><span class="p">(</span><span class="s2">"Plots/"</span><span class="p">,</span><span class="n">name_poly</span><span class="p">,</span><span class="s2">"_AltCol.png"</span><span class="p">))</span><span class="w">
+</span><span class="c1"># Crop image to remove borders</span><span class="w">
+</span><span class="n">im2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">image_trim</span><span class="p">(</span><span class="n">im1</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Add color saturation</span><span class="w">
+</span><span class="n">im2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">image_modulate</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">brightness</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">saturation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">120</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">hue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Increase contrast</span><span class="w">
+</span><span class="n">im2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">image_contrast</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">sharpen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span></code></pre></figure>
+
+<p>Finally, using the same package you can make some annotations, add some borders to the image and write the final image into another png.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Main title</span><span class="w">
+</span><span class="n">im2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">image_annotate</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">paste0</span><span class="p">(</span><span class="n">name_poly</span><span class="p">),</span><span class="w">
+                      </span><span class="n">font</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">font</span><span class="p">,</span><span class="w">
+                      </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">font_color</span><span class="p">,</span><span class="w"> 
+                      </span><span class="c1"># bold</span><span class="w">
+                      </span><span class="n">weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">700</span><span class="p">,</span><span class="w">
+                      </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">140</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">gravity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"southwest"</span><span class="p">,</span><span class="w">
+                      </span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"+200+200"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Subtitle                      </span><span class="w">
+</span><span class="n">im2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">image_annotate</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"shaded relief"</span><span class="p">),</span><span class="w"> 
+                      </span><span class="n">weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">700</span><span class="p">,</span><span class="w">
+                      </span><span class="n">font</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">font</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"+190+130"</span><span class="p">,</span><span class="w">
+                      </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">font_color</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">80</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">gravity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"southwest"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Coordinates                      </span><span class="w">
+</span><span class="n">im2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">image_annotate</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="n">coords_df</span><span class="o">$</span><span class="n">c1</span><span class="p">,</span><span class="w"> </span><span class="s2">" - "</span><span class="p">,</span><span class="w"> </span><span class="n">coords_df</span><span class="o">$</span><span class="n">c2</span><span class="p">),</span><span class="w">
+                      </span><span class="c1"># Normal face </span><span class="w">
+                      </span><span class="n">weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">400</span><span class="p">,</span><span class="w">
+                      </span><span class="n">font</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">font</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"+165+60"</span><span class="p">,</span><span class="w">
+                      </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">font_color</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">30</span><span class="p">,</span><span class="w"> 
+                      </span><span class="n">gravity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"southwest"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Add white border</span><span class="w">
+</span><span class="n">im2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">image_border</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span><span class="w"> 
+                    </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"white"</span><span class="p">,</span><span class="w">
+                    </span><span class="n">geometry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"10x10"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Add black border                    </span><span class="w">
+</span><span class="n">im2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">image_border</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span><span class="w"> 
+                    </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+                    </span><span class="n">geometry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"10x10"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">image_write</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span><span class="w"> 
+            </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="s2">"Plots/"</span><span class="p">,</span><span class="n">name_poly</span><span class="p">,</span><span class="s2">"_AltCol_final.png"</span><span class="p">),</span><span class="w"> 
+            </span><span class="n">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"png"</span><span class="p">,</span><span class="w">
+            </span><span class="n">quality</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">95</span><span class="p">)</span></code></pre></figure>
+
+<p>The result:</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/Mexico_AltCol_final.png"><img src="http://localhost:4000/assets/images/Mexico_AltCol_final.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Shaded relief map of Mexico.</p>
+
+<p>In the final map, the tallest peaks can be appreciated in white, such as the Pico de Orizaba (Citlaltépetl), Iztaccihuátl, Nevado de Toluca, Popocatépetl, Cofre de Perote, among others. As a final annotation I was planning to add the altitude range of the map, but the resulting range from the DEM is not very precise, so I decided not to include it (DEM highest point was 5139 m, while highest point should be around 5600 m).</p>
+
+    </section>
+  </article>
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/JonathanVSV" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://stackoverflow.com/users/9022665/jonathan-v-sol%c3%b3rzano" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-stack-overflow" aria-hidden="true"></i> Stack Overflow</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Jonathan V. Solórzano. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

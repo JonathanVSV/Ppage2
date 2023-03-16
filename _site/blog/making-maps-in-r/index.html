@@ -1,0 +1,419 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Making maps in R - Jonathan V. Solórzano</title>
+<meta name="description" content="Making a map in R">
+
+
+  <meta name="author" content="Jonathan V. Solórzano">
+  
+  <meta property="article:author" content="Jonathan V. Solórzano">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Jonathan V. Solórzano">
+<meta property="og:title" content="Making maps in R">
+<meta property="og:url" content="http://localhost:4000/blog/making-maps-in-r/">
+
+
+  <meta property="og:description" content="Making a map in R">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2022-02-07T08:34:30-06:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/blog/making-maps-in-r/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Jonathan V. Solórzano Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--splash">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Jonathan V. Solórzano
+          <span class="site-subtitle">My personal site</span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/courses/">Courses</a>
+            </li><li class="masthead__menu-item">
+              <a href="/mini-packages/">Mini-packages</a>
+            </li><li class="masthead__menu-item">
+              <a href="/gee/">GEE</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+<div id="main" role="main">
+  <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Making maps in R">
+    <meta itemprop="description" content="Making a map in R">
+    <meta itemprop="datePublished" content="2022-02-07T08:34:30-06:00">
+    
+
+    <section class="page__content" itemprop="text">
+      <h1 id="making-a-map-in-r">Making a map in R</h1>
+
+<p>In this post I will show you how to make a map with a reference map of the location of the study site. To achieve the desired map you will need to load several packages.</p>
+
+<p><code class="language-plaintext highlighter-rouge">tmap</code> is a package that lets you create plots from spatial information. <code class="language-plaintext highlighter-rouge">sf</code> is a package that has a lot of tools to work with vector information. <code class="language-plaintext highlighter-rouge">tidyverse</code> contains several packages such as <code class="language-plaintext highlighter-rouge">tidyr</code>, <code class="language-plaintext highlighter-rouge">dplyr</code>, <code class="language-plaintext highlighter-rouge">ggplot2</code>, which contain great functions to wrangle, plot and clean data. <code class="language-plaintext highlighter-rouge">stars</code> is a package that contains functions to work with raster information. <code class="language-plaintext highlighter-rouge">RStoolbox</code> is a package designed to work with remote sensing information, mainly rasters. <code class="language-plaintext highlighter-rouge">cowplot</code> is a package that easily lets you join several plots into a single one. Finally, <code class="language-plaintext highlighter-rouge">gridExtra</code> contains several functions designed to conver objects into graphical objects (grob) and arrange several plots into a single one.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">tmap</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">stars</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">RStoolbox</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">cowplot</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">gridExtra</span><span class="p">)</span></code></pre></figure>
+
+<p>The next step is to load the vector and raster information used for the map. In this case, I will load a Sentinel-2 4 band image (R, G, B, NIR) and several shapes containing the world’s countries, Mexico and Guatemala polygons and a deforested areas shapefile. Finally, I am using <code class="language-plaintext highlighter-rouge">st_make_valid</code> to fix invalid geometries in the Guatemala and defor shapefiles.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">masterIm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read_stars</span><span class="p">(</span><span class="s2">"Sentinel-2_4B.tif"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">world</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"WorldWithoutMX.shp"</span><span class="p">)</span><span class="w">
+</span><span class="n">mx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"Mexico.shp"</span><span class="p">)</span><span class="w">
+</span><span class="n">gt</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"Guatemala.shp"</span><span class="p">)</span><span class="w">
+</span><span class="n">gt</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_make_valid</span><span class="p">(</span><span class="n">gt</span><span class="p">)</span><span class="w">
+
+</span><span class="n">defor</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"deforestation.shp"</span><span class="p">)</span><span class="w">
+</span><span class="n">defor</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_make_valid</span><span class="p">(</span><span class="n">defor</span><span class="p">)</span></code></pre></figure>
+
+<p>Next, I will transform the Sentinel-2 image into a stars object. Sometimes, very large rasters will be read as stars proxy objects, so you need to cast them into a stars object to apply several transformations. Finally, I define an RGB image from the Sentinel-2 one.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Transform proxy object into stars</span><span class="w">
+</span><span class="n">rgbIm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_as_stars</span><span class="p">(</span><span class="n">masterIm</span><span class="p">[,,,</span><span class="m">3</span><span class="o">:</span><span class="m">1</span><span class="p">])</span><span class="w">
+</span><span class="n">rgbIm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_rgb</span><span class="p">(</span><span class="n">rgbIm</span><span class="p">,</span><span class="w">
+                </span><span class="n">dimension</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"band"</span><span class="p">,</span><span class="w">
+                </span><span class="n">maxColorValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6000</span><span class="p">,</span><span class="w">
+                </span><span class="n">use_alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w">
+                </span><span class="n">probs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.02</span><span class="p">,</span><span class="w"> </span><span class="m">0.98</span><span class="p">),</span><span class="w"> </span><span class="c1">#Probabilities for percent clip</span><span class="w">
+                </span><span class="n">stretch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span></code></pre></figure>
+
+<p>Additionally, I wish to create a bounding box polygon so the area covered by the image can be shown in the reference map.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">box</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_bbox</span><span class="p">(</span><span class="n">rgbIm</span><span class="p">)</span><span class="w">
+</span><span class="n">box</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">box</span><span class="p">[</span><span class="m">1</span><span class="p">]</span><span class="m">+0.2</span><span class="p">,</span><span class="n">box</span><span class="p">[</span><span class="m">2</span><span class="p">]</span><span class="m">+0.2</span><span class="p">,</span><span class="n">box</span><span class="p">[</span><span class="m">3</span><span class="p">]</span><span class="m">-0.2</span><span class="p">,</span><span class="n">box</span><span class="p">[</span><span class="m">4</span><span class="p">]</span><span class="m">-0.2</span><span class="p">)</span></code></pre></figure>
+
+<p>Afterward, the main map is created. Each element will be added to the map by using the <code class="language-plaintext highlighter-rouge">tm_shape</code> functions to indicate the source data to plot, followed by a <code class="language-plaintext highlighter-rouge">tm_*</code> function indicating the type of object, i.e., raster or filled polygons (<code class="language-plaintext highlighter-rouge">tm_fill</code>). Then, the graticules of the map are added using <code class="language-plaintext highlighter-rouge">tm_graticules</code> and the scale bar, using <code class="language-plaintext highlighter-rouge">tm_scale_bar</code>. Finally, you can make further customisations to the default theme, using <code class="language-plaintext highlighter-rouge">tm_layout</code>. Finally, the map is converted to a graphical object (grob) using <code class="language-plaintext highlighter-rouge">tmap_grob()</code></p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Normal map</span><span class="w">
+</span><span class="n">plot_im</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tm_shape</span><span class="p">(</span><span class="n">rgbIm</span><span class="p">,</span><span class="w">
+                    </span><span class="n">bbox</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">box</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+            </span><span class="n">tm_raster</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+            </span><span class="n">tm_shape</span><span class="p">(</span><span class="n">gt</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+            </span><span class="n">tm_fill</span><span class="p">(</span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gray90"</span><span class="p">,</span><span class="w">
+                    </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.95</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+            </span><span class="n">tm_shape</span><span class="p">(</span><span class="n">defor</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+            </span><span class="n">tm_fill</span><span class="p">(</span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"finid"</span><span class="p">,</span><span class="w">
+                    </span><span class="n">border.col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"transparent"</span><span class="p">,</span><span class="w">
+                    </span><span class="n">lwd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w">
+                    </span><span class="n">legend.show</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">,</span><span class="w">
+                    </span><span class="n">palette</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"1"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"firebrick2"</span><span class="p">,</span><span class="w"> </span><span class="s2">"2"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"yellow2"</span><span class="p">,</span><span class="w"> </span><span class="s2">"3"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"royalblue"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+            </span><span class="n">tm_graticules</span><span class="p">(</span><span class="n">n.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w">
+                          </span><span class="n">n.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">,</span><span class="w">
+                          </span><span class="n">labels.show</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">,</span><span class="w">
+                          </span><span class="n">labels.format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">fun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span><span class="w">                  
+                            </span><span class="n">degs</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w">
+                            </span><span class="n">decs</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">%%</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">
+                            </span><span class="n">mins</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="n">decs</span><span class="o">*</span><span class="m">60</span><span class="p">)</span><span class="w">     
+                            </span><span class="n">paste0</span><span class="p">(</span><span class="n">degs</span><span class="p">,</span><span class="w"> </span><span class="s2">"°"</span><span class="p">,</span><span class="w"> </span><span class="n">mins</span><span class="p">,</span><span class="w"> </span><span class="s2">"\'"</span><span class="p">)}),</span><span class="w">
+                          </span><span class="n">labels.rot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">90</span><span class="p">,</span><span class="m">0</span><span class="p">),</span><span class="w">
+                          </span><span class="n">labels.cardinal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">,</span><span class="w">
+                          </span><span class="n">ticks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">,</span><span class="w">
+                          </span><span class="n">lines</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+            </span><span class="n">tm_layout</span><span class="p">(</span><span class="n">legend.only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">,</span><span class="w">
+                      </span><span class="n">legend.outside</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">,</span><span class="w">
+                      </span><span class="n">attr.outside</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">,</span><span class="w">
+                      </span><span class="n">legend.outside.position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"right"</span><span class="p">,</span><span class="w">
+                      </span><span class="c1"># legend.position = c(0.1,0.7),</span><span class="w">
+                      </span><span class="c1"># attr.position = c(1.2, -0.05),</span><span class="w">
+                      </span><span class="n">between.margin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">),</span><span class="w">
+                      </span><span class="n">outer.margins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.1</span><span class="p">),</span><span class="w">
+                      </span><span class="n">inner.margins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.1</span><span class="p">),</span><span class="w">
+                      </span><span class="n">fontface</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bold"</span><span class="p">,</span><span class="w">
+                      </span><span class="n">fontfamily</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"sans"</span><span class="p">)</span><span class="w">  </span><span class="o">+</span><span class="w">
+            </span><span class="n">tm_scale_bar</span><span class="p">(</span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">10</span><span class="p">,</span><span class="m">5</span><span class="p">),</span><span class="w">
+                         </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.35</span><span class="p">,</span><span class="w"> </span><span class="m">0.001</span><span class="p">),</span><span class="w">
+                         </span><span class="n">text.size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.6</span><span class="p">,</span><span class="w">
+                         </span><span class="n">text.color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"white"</span><span class="p">,</span><span class="w">
+                         </span><span class="n">color.dark</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gray10"</span><span class="p">,</span><span class="w">
+                         </span><span class="n">color.light</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"white"</span><span class="p">,</span><span class="w">
+                         </span><span class="n">just</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"right"</span><span class="p">,</span><span class="w">
+                         </span><span class="n">bg.color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gray90"</span><span class="p">,</span><span class="w">
+                         </span><span class="n">bg.alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.2</span><span class="p">)</span><span class="w">
+
+</span><span class="n">plot_im</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tmap_grob</span><span class="p">(</span><span class="n">plot_im</span><span class="p">)</span></code></pre></figure>
+
+<p>Once the main map has been created, you will need to create the legend of the map. So you can place it in the desired position outside the main map. To do this, you need to draw a map containing the information shown in the legend. Notice that the <code class="language-plaintext highlighter-rouge">tm_layout</code> enables a <code class="language-plaintext highlighter-rouge">legend.only</code> option to just create an object containing the legend. Then, the legend is converted to a grob.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">legend_im</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tm_shape</span><span class="p">(</span><span class="n">defor</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">tm_fill</span><span class="p">(</span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"finid"</span><span class="p">,</span><span class="w">
+          </span><span class="n">border.col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"transparent"</span><span class="p">,</span><span class="w">
+          </span><span class="n">lwd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">,</span><span class="w">
+          </span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Type of observation"</span><span class="p">,</span><span class="w">
+          </span><span class="n">labels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Old-growth forest loss"</span><span class="p">,</span><span class="w">
+                     </span><span class="s2">"Secondary forest or plantation loss"</span><span class="p">,</span><span class="w">
+                     </span><span class="s2">"Loss in the next year"</span><span class="p">),</span><span class="w">
+          </span><span class="n">palette</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"1"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"firebrick2"</span><span class="p">,</span><span class="w"> </span><span class="s2">"2"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"yellow2"</span><span class="p">,</span><span class="w"> </span><span class="s2">"3"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"royalblue"</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">tm_layout</span><span class="p">(</span><span class="n">legend.only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">,</span><span class="w">
+            </span><span class="n">legend.outside</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">,</span><span class="w">
+            </span><span class="n">legend.outside.size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w">
+            </span><span class="n">attr.outside</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">,</span><span class="w">
+            </span><span class="n">legend.outside.position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"right"</span><span class="p">,</span><span class="w">
+            </span><span class="c1"># legend.position = c(0.1,0.7),</span><span class="w">
+            </span><span class="c1"># attr.position = c(1.2, -0.05),</span><span class="w">
+            </span><span class="n">between.margin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">),</span><span class="w">
+            </span><span class="n">outer.margins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.1</span><span class="p">),</span><span class="w">
+            </span><span class="n">inner.margins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.1</span><span class="p">))</span><span class="w">  
+
+</span><span class="n">legend_im</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tmap_grob</span><span class="p">(</span><span class="n">legend_im</span><span class="p">)</span></code></pre></figure>
+
+<p>Then, you will need the bounding box as a spatial feature, so it can be added to the map. Additionally, you need to create an object containing the bounding box to be drawn on the reference map (<code class="language-plaintext highlighter-rouge">mx_box</code>).</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">box_shape</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_bbox</span><span class="p">(</span><span class="n">rgbIm</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> 
+              </span><span class="n">st_as_sfc</span><span class="p">()</span><span class="w">
+
+</span><span class="n">mx_box</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_bbox</span><span class="p">(</span><span class="n">mx</span><span class="p">)</span></code></pre></figure>
+
+<p>The next step is to create the reference or inset map that will show the context of the study area. In this case, this map will show neighboring countries of Mexico, as well as the study site location. Similar to the first map, the result is converted to a grob.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">inset_im</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tm_shape</span><span class="p">(</span><span class="n">world</span><span class="p">,</span><span class="w">
+                     </span><span class="n">bbox</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mx_box</span><span class="p">)</span><span class="o">+</span><span class="w">
+  </span><span class="n">tm_polygons</span><span class="p">(</span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gray90"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">tm_shape</span><span class="p">(</span><span class="n">mx</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">tm_polygons</span><span class="p">(</span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"gray75"</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">tm_text</span><span class="p">(</span><span class="s2">"COUNTRY"</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">tm_shape</span><span class="p">(</span><span class="n">box_shape</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">tm_borders</span><span class="p">(</span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"firebrick2"</span><span class="p">,</span><span class="w">
+             </span><span class="n">lwd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> 
+
+</span><span class="n">inset_im</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tmap_grob</span><span class="p">(</span><span class="n">inset_im</span><span class="p">)</span></code></pre></figure>
+
+<p>To have better control of the position of every element in the map, you will need to create an empty plot as base plot, so afterward, all the other elements will be placed over this empty plot. Additionally, you need to create an additional grob with text that shows the datum of the showed data.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Create empty plot as base</span><span class="w">
+</span><span class="n">p1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ggplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_blank</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">theme_void</span><span class="p">()</span><span class="w">
+
+</span><span class="n">texto</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">text_grob</span><span class="p">(</span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"WGS 84"</span><span class="p">,</span><span class="w">
+                   </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span><span class="p">)</span><span class="w"> </span></code></pre></figure>
+
+<p>Next, you need to draw all the elements on the empty plot and set its x and y positions, as well as width and height values. All these values are limited to a 0-1 range. However, negative values can be used to reduce the size of certain margins and obtain the desired position.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">exp_plot</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ggdraw</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">draw_plot</span><span class="p">(</span><span class="n">plot_im</span><span class="p">,</span><span class="w">
+            </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">-0.17</span><span class="p">,</span><span class="w">
+            </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">-0.14</span><span class="p">,</span><span class="w">
+            </span><span class="n">hjust</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w">
+            </span><span class="n">vjust</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w">
+            </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w">
+            </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1.2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">draw_plot</span><span class="p">(</span><span class="n">inset_im</span><span class="p">,</span><span class="w">
+          </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.75</span><span class="p">,</span><span class="w">
+          </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.72</span><span class="p">,</span><span class="w">
+          </span><span class="n">hjust</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w">
+          </span><span class="n">vjust</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w">
+          </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.2</span><span class="p">,</span><span class="w">
+          </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">draw_plot</span><span class="p">(</span><span class="n">legend_im</span><span class="p">,</span><span class="w">
+            </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.55</span><span class="p">,</span><span class="w">
+            </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">-0.12</span><span class="p">,</span><span class="w">
+            </span><span class="n">hjust</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w">
+            </span><span class="n">vjust</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w">
+            </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w">
+            </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.8</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">draw_plot</span><span class="p">(</span><span class="n">texto</span><span class="p">,</span><span class="w">
+            </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.73</span><span class="p">,</span><span class="w">
+            </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.1</span><span class="p">,</span><span class="w">
+            </span><span class="n">hjust</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w">
+            </span><span class="n">vjust</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w">
+            </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.2</span><span class="p">,</span><span class="w">
+            </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.2</span><span class="p">)</span></code></pre></figure>
+
+<p>Finally, you can export the resulting map using <code class="language-plaintext highlighter-rouge">save_plot</code>.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">save_plot</span><span class="p">(</span><span class="n">exp_plot</span><span class="p">,</span><span class="w">
+          </span><span class="c1"># asp = 1.5,</span><span class="w">
+          </span><span class="n">base_width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">20</span><span class="p">,</span><span class="w">
+          </span><span class="n">base_height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">,</span><span class="w">
+          </span><span class="n">units</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"cm"</span><span class="p">,</span><span class="w">
+          </span><span class="n">dpi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">300</span><span class="p">,</span><span class="w">
+          </span><span class="n">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Map/Map1.jpeg"</span><span class="p">)</span></code></pre></figure>
+
+<p>Here is the resulting map.</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/Map1.jpeg"><img src="http://localhost:4000/assets/images/Map1.jpeg" alt="styled-image" class="align-center" style="width: 60%;" /></a> Map of the study site with an inset map.</p>
+
+    </section>
+  </article>
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/JonathanVSV" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://stackoverflow.com/users/9022665/jonathan-v-sol%c3%b3rzano" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-stack-overflow" aria-hidden="true"></i> Stack Overflow</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Jonathan V. Solórzano. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>
