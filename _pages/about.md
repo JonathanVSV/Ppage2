@@ -52,7 +52,7 @@ gallery:
 
 I am a biologist interested in studying tropical forests using remote sensing, mainly multispectral and radar images, as well as LiDAR point clouds. My research includes identifying forest's structure and diversity patterns, evaluating the use of remote sensing information to model these attributes and monitor land cover / land use change,  deforestation and forest degradation. 
 
-I obtained my Bachelor's and Master's degree in Biology and Biological sciences, respectively, by the Universidad Nacional Autónoma de México (UNAM). Currently, I am doing my PhD in Geography in the UNAM. My current thesis evaluates the use of Sentinel-1 and -2 imagery with deep learning algorithms to obtain land cover / land use classifications and detect deforested and degradaded areas in tropical forests in Mexico.
+I obtained my Bachelor's and Master's degree in Biology and Biological sciences, respectively, by the Universidad Nacional Autónoma de México (UNAM). Currently, I am doing my PhD in Geography in the UNAM. My current thesis evaluates the use of Sentinel-1 and -2 imagery with deep learning algorithms to obtain land cover / land use classifications, as well as to detect deforested and degradaded areas in tropical forests in Mexico.
 
 I believe that the use of open programming languages such as R or Python, free software such as QGIS and other freely available cloud computing tools such as Google Earth Engine, help in making analyses more transparent and reproducible. Thus, most of my work make use of these tools.
 
