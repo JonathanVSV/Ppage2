@@ -40,9 +40,17 @@ gallery:
     image_path: /assets/images/unetpred.jpg
     alt: "unetpred"
     title: "Land use land cover map obtained using Sentinel-1 and Sentinel-2 imagery and a U-net architecture. Figure from Solórzano et al. (2021)."
+  - url: /assets/images/Mexico_hillshade_final.png
+    image_path: /assets/images/Mexico_hillshade_final.png
+    alt: "Mexico RGB hillshade"
+    title: "RGB hillshade of Mexico."
+  - url: /assets/images/Volcanos_all_final.png
+    image_path: /assets/images/Volcanos_all_final.png
+    alt: "volcanos 3d"
+    title: "Mexico's highest peaks - 3D plot (missing the Nevado de Colima)."
 ---
 
-I am a biologist interested in studying tropical forests using remote sensing, mainly multispectral and radar images, as well as LiDAR point clouds. My research includes identifying forest's structure and diversity patterns, evaluating the use of remote sensing information to model these attributes and monitor land cover / land use change. 
+I am a biologist interested in studying tropical forests using remote sensing, mainly multispectral and radar images, as well as LiDAR point clouds. My research includes identifying forest's structure and diversity patterns, evaluating the use of remote sensing information to model these attributes and monitor land cover / land use change,  deforestation and forest degradation. 
 
 I obtained my Bachelor's and Master's degree in Biology and Biological sciences, respectively, by the Universidad Nacional Autónoma de México (UNAM). Currently, I am doing my PhD in Geography in the UNAM. My current thesis evaluates the use of Sentinel-1 and -2 imagery with deep learning algorithms to obtain land cover / land use classifications and detect deforested and degradaded areas in tropical forests in Mexico.
 
