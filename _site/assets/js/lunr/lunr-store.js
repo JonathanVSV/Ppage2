@@ -134,7 +134,7 @@ var store = [{
         "title": "Shaded relief maps in R",
         "excerpt":"Shaded relief maps in R This is a follow up of the series of experiments I have been working with rayshader. In this post, I will focus on making a shaded relief map using different colors to represent different altitudes. Also, in this post I will show you how to...","categories": ["blog"],
         "tags": ["post","r","rayshader","terra","shaded relief","RGB shaded relief","DEM","Relief"],
-        "url": "/blog/shaded-relief-maps-in-r_2/",
+        "url": "/blog/shaded-relief-maps-in-r/",
         "teaser": null
       },{
         "title": "Volcanos 3d maps",
