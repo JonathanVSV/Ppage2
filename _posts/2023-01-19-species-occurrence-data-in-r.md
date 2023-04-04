@@ -1,5 +1,5 @@
 ---
-title: "Species-occurrence-data-in-r"
+title: "Species occurrence data in r"
 date: 2023-01-19T11:52:00-00:00
 categories:
   - blog
