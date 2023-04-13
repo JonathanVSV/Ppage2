@@ -18,7 +18,7 @@ This post will show you how to connect to the Spotify API using R and the `spoti
 
 The first step is registering in the Spotify Developer App: https://developer.spotify.com/. Once you are registered, you should create a new app. In that new window you only need to give the app a name, and app description and set some redirect URIs. All the other entries you can leave them empty. For example:
 
-[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/.png){: .align-center style="width: 60%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/spotifyDash.png) Example of fields entered in the spotify dashboard.
+[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/spotifyDash.png){: .align-center style="width: 60%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/spotifyDash.png) Example of fields entered in the spotify dashboard.
 {: style="text-align: center; font-size:0.75em;"}
 
 Then you, just need to open R, load the libraries we are going to use.
