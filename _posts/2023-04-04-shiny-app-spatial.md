@@ -147,7 +147,9 @@ Finally, run the app.
 shinyApp(ui, server)
 {% endhighlight %}
 
-The result:
+A snapshot of the result:
 
 [![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/App.png){: .align-center style="width: 90%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/App.png) Shiny app to visualize and explore spatial data.
 {: style="text-align: center; font-size:0.75em;"}
+
+The real results hosted in shinyapps.io: https://jonathanvsv.shinyapps.io/cuilalaapp/
