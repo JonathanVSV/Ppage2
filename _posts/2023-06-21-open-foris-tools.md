@@ -67,7 +67,7 @@ options(shiny.launch.browser = TRUE)
 runGitHub("openforis/accuracy-assessment",subdir="aa_analysis")
 {% endhighlight %}
 
-[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/of2.png){: .align-center style="width: 90%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/of2.png) Open Foris design app
+[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/of2.png){: .align-center style="width: 90%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/of2.png) Open Foris analysis app
 {: style="text-align: center; font-size:0.75em;"}
 
 Once you see this window in your web browser, you can click on the first submenu: Inputs.
