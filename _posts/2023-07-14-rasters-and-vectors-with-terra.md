@@ -43,7 +43,7 @@ plot(pts1, add = T)
 plot(poly1, add = T)
 {% endhighlight %}
 
-[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/terra1.png){: .align-center style="width: 30%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/terra1.png) Scatterplot.
+[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/terra1.png){: .align-center style="width: 30%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/terra1.png) Data.
 {: style="text-align: center; font-size:0.75em;"}
 
 # Vector operations
@@ -56,7 +56,7 @@ plot(poly2)
 plot(poly1, add = T)
 {% endhighlight %}
 
-[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/terra2.png){: .align-center style="width: 30%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/terra2.png) Line plot
+[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/terra2.png){: .align-center style="width: 30%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/terra2.png) Buffer.
 {: style="text-align: center; font-size:0.75em;"}
 
 ## Intersection
@@ -66,7 +66,7 @@ poly3 <- intersect(poly2, poly1)
 plot(poly3[[1]])
 {% endhighlight %}
 
-[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/terra3.png){: .align-center style="width: 30%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/terra3.png) Bar plot.
+[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/terra3.png){: .align-center style="width: 30%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/terra3.png) Intersection.
 {: style="text-align: center; font-size:0.75em;"}
 
 # Raster operations
@@ -79,7 +79,7 @@ im2[im2>=5] <- NA
 plot(im2)
 {% endhighlight %}
 
-[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/terra4.png){: .align-center style="width: 30%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/terra4.png) Column plot.
+[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/terra4.png){: .align-center style="width: 30%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/terra4.png) Masked raster.
 {: style="text-align: center; font-size:0.75em;"}
 
 ## Operations over all cells
@@ -92,7 +92,7 @@ im4 <- app(im3, fun = "sum")
 plot(im4)
 {% endhighlight %}
 
-[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/terra5.png){: .align-center style="width: 30%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/terra5.png) Boxplot.
+[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/terra5.png){: .align-center style="width: 30%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/terra5.png) Sum of both bands.
 {: style="text-align: center; font-size:0.75em;"}
 
 ## Global operations
@@ -110,7 +110,7 @@ im5 <- focal(im1, w = 3, fun = "max")
 plot(im5)
 {% endhighlight %}
 
-[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/terra6.png){: .align-center style="width: 30%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/terra6.png) Histogram plot.
+[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/terra6.png){: .align-center style="width: 30%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/terra6.png) Focal max.
 {: style="text-align: center; font-size:0.75em;"}
 
 # Raster vector operations
@@ -122,7 +122,7 @@ im1_c <- crop(im1, poly1)
 plot(im1_c)
 {% endhighlight %}
 
-[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/terra7.png){: .align-center style="width: 30%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/terra7.png) Scatterplot with colors by factor.
+[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/terra7.png){: .align-center style="width: 30%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/terra7.png) Cropped images.
 {: style="text-align: center; font-size:0.75em;"}
 
 ## Mask
@@ -132,7 +132,7 @@ im2_c <- mask(im1, poly1)
 plot(im2_c)
 {% endhighlight %}
 
-[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/terra8.png){: .align-center style="width: 30%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/terra8.png) Barplot with fill by factor.
+[![styled-image]({{ site.url }}{{ site.baseurl }}/assets/images/terra8.png){: .align-center style="width: 30%;"}]({{ site.url }}{{ site.baseurl }}/assets/images/terra8.png) Masked image (seems nothing happened due to overlap between raster and polygon).
 {: style="text-align: center; font-size:0.75em;"}
 
 ## Extract values
