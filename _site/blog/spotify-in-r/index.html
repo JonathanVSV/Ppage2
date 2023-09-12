@@ -1,0 +1,345 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Spotify API in R - Jonathan V. Solórzano</title>
+<meta name="description" content="Spotify API in R">
+
+
+  <meta name="author" content="Jonathan V. Solórzano">
+  
+  <meta property="article:author" content="Jonathan V. Solórzano">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Jonathan V. Solórzano">
+<meta property="og:title" content="Spotify API in R">
+<meta property="og:url" content="http://localhost:4000/blog/spotify-in-r/">
+
+
+  <meta property="og:description" content="Spotify API in R">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2023-04-04T05:02:00-06:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/blog/spotify-in-r/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Jonathan V. Solórzano Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--splash">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Jonathan V. Solórzano
+          <span class="site-subtitle">My personal site</span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/courses/">Courses</a>
+            </li><li class="masthead__menu-item">
+              <a href="/mini-packages/">Mini-packages</a>
+            </li><li class="masthead__menu-item">
+              <a href="/gee/">GEE</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+<div id="main" role="main">
+  <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Spotify API in R">
+    <meta itemprop="description" content="Spotify API in R">
+    <meta itemprop="datePublished" content="2023-04-04T05:02:00-06:00">
+    
+
+    <section class="page__content" itemprop="text">
+      <h1 id="spotify-api-in-r">Spotify API in R</h1>
+
+<p>This post will show you how to connect to the Spotify API using R and the <code class="language-plaintext highlighter-rouge">spotifyR</code> package. This API enables you to extract data for particular artists or songs from the Spotify database.</p>
+
+<p>The first step is registering in the Spotify Developer App: https://developer.spotify.com/. Once you are registered, you should create a new app. In that new window you only need to give the app a name, and app description and set some redirect URIs. All the other entries you can leave them empty. For example:</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/spotifyDash.png"><img src="http://localhost:4000/assets/images/spotifyDash.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Example of fields entered in the spotify dashboard.</p>
+
+<p>Then you, just need to open R, load the libraries we are going to use.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">spotifyr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">tidyr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">readr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">purrr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">stringr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">forcats</span><span class="p">)</span></code></pre></figure>
+
+<p>and then copy the client id and client secret into R and get the access_token.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">Sys.setenv</span><span class="p">(</span><span class="n">SPOTIFY_CLIENT_ID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"My-client-id"</span><span class="p">)</span><span class="w">
+</span><span class="n">Sys.setenv</span><span class="p">(</span><span class="n">SPOTIFY_CLIENT_SECRET</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"My-client-secret"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">access_token</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">get_spotify_access_token</span><span class="p">()</span></code></pre></figure>
+
+<p>Then you need to read the artist and album database or any other data frame. In this case, I am going to use a small example with some albums I like.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tibble</span><span class="p">(</span><span class="n">artist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Warbringer"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Satyricon"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Meshuggah"</span><span class="p">),</span><span class="w">
+            </span><span class="n">album</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Woe to the Vanquished"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Rebel Extravanganza"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Obzen"</span><span class="p">))</span></code></pre></figure>
+
+<p>Then we are going to use <code class="language-plaintext highlighter-rouge">mutate</code> to extract the genre associated with each artist. Since, not all artists have an associated genre (or can be found in spotify), it is advisable to use <code class="language-plaintext highlighter-rouge">possibly</code> to avoid errors if no genre was find in the Spotify database. Then use this function and finally, do some data wrangling to obtain each genre associated with an artist in a single row.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">safer_process_file</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">possibly</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="n">resul</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">search_spotify</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"artist"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+    </span><span class="n">slice</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+    </span><span class="n">select</span><span class="p">(</span><span class="n">genres</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+    </span><span class="n">unnest</span><span class="p">(</span><span class="n">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">genres</span><span class="p">))</span><span class="w">
+  </span><span class="n">ifelse</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">resul</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="n">resul</span><span class="p">)</span><span class="w">
+</span><span class="p">},</span><span class="w">
+</span><span class="n">otherwise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="s2">"Error in file"</span><span class="p">))</span><span class="w">
+
+</span><span class="n">resul</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># slice(1:9) |&gt;</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">genre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">map</span><span class="p">(</span><span class="n">df</span><span class="o">$</span><span class="n">artist</span><span class="p">,</span><span class="w"> </span><span class="n">safer_process_file</span><span class="p">))</span><span class="w">
+
+</span><span class="n">resul_exp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">resul</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># slice(377) |&gt;</span><span class="w">
+  </span><span class="n">unnest</span><span class="p">(</span><span class="n">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">genre</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">unnest</span><span class="p">(</span><span class="n">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">genre</span><span class="p">,</span><span class="w">
+         </span><span class="n">keep_empty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span></code></pre></figure>
+
+<p>Finally, you might want to summarise this information into a plot of the most common genres in your df. So we are going to use a circular plot to show this.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Make counts by genre and arrange by n</span><span class="w">
+</span><span class="n">plotter</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">resul_exp</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">genre</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">count</span><span class="p">()</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">arrange</span><span class="p">(</span><span class="n">desc</span><span class="p">(</span><span class="n">n</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">ungroup</span><span class="p">()</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">row_number</span><span class="p">())</span><span class="w">
+
+</span><span class="c1"># Based on: https://r-graph-gallery.com/296-add-labels-to-circular-barplot.html</span><span class="w">
+</span><span class="c1"># Get the name and the y position of each label</span><span class="w">
+</span><span class="n">label_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">genre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">plotter</span><span class="o">$</span><span class="n">genre</span><span class="p">,</span><span class="w">
+                         </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">plotter</span><span class="o">$</span><span class="n">id</span><span class="p">,</span><span class="w">
+                         </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">plotter</span><span class="o">$</span><span class="n">n</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># calculate the ANGLE of the labels</span><span class="w">
+</span><span class="n">number_of_bar</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">nrow</span><span class="p">(</span><span class="n">label_data</span><span class="p">)</span><span class="w">
+</span><span class="n">angle</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="m">90</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="m">360</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">label_data</span><span class="o">$</span><span class="n">id</span><span class="m">-0.5</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="n">number_of_bar</span><span class="w">     </span><span class="c1"># I substract 0.5 because the letter must have the angle of the center of the bars. Not extreme right(1) or extreme left (0)</span><span class="w">
+
+</span><span class="c1"># calculate the alignment of labels: right or left</span><span class="w">
+</span><span class="c1"># Left part of the plot labels will have an angle &lt; -90</span><span class="w">
+</span><span class="n">label_data</span><span class="o">$</span><span class="n">hjust</span><span class="o">&lt;-</span><span class="n">ifelse</span><span class="p">(</span><span class="n">angle</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">-90</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># flip angle BY to make them readable</span><span class="w">
+</span><span class="n">label_data</span><span class="o">$</span><span class="n">angle</span><span class="o">&lt;-</span><span class="n">ifelse</span><span class="p">(</span><span class="n">angle</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">-90</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="m">+180</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Start the plot</span><span class="w">
+</span><span class="n">plotter</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">as.factor</span><span class="p">(</span><span class="n">id</span><span class="p">),</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="n">n</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">       
+  </span><span class="c1"># This add the bars with a purple color</span><span class="w">
+  </span><span class="n">geom_bar</span><span class="p">(</span><span class="n">stat</span><span class="o">=</span><span class="s2">"identity"</span><span class="p">,</span><span class="w"> </span><span class="n">fill</span><span class="o">=</span><span class="n">alpha</span><span class="p">(</span><span class="s2">"#8b1c61"</span><span class="p">,</span><span class="w"> </span><span class="m">0.7</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="c1"># First parameter: size of inner circle, second one, margins on the outer circle</span><span class="w">
+  </span><span class="n">ylim</span><span class="p">(</span><span class="m">-50</span><span class="p">,</span><span class="m">100</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="c1"># Minimal theme</span><span class="w">
+  </span><span class="n">theme_minimal</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="c1"># Transform normal bar plot to circular</span><span class="w">
+  </span><span class="n">coord_polar</span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="c1"># Add the labels, using the label_data dataframe that we have created before</span><span class="w">
+  </span><span class="n">geom_text</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">label_data</span><span class="p">,</span><span class="w">
+            </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">id</span><span class="p">,</span><span class="w">
+                </span><span class="n">y</span><span class="o">=</span><span class="n">value</span><span class="m">+0.5</span><span class="p">,</span><span class="w"> </span><span class="n">label</span><span class="o">=</span><span class="n">genre</span><span class="p">,</span><span class="w"> </span><span class="n">hjust</span><span class="o">=</span><span class="n">hjust</span><span class="p">),</span><span class="w">
+            </span><span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+            </span><span class="n">fontface</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">,</span><span class="w">
+            </span><span class="n">alpha</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w">
+            </span><span class="n">size</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="w">
+            </span><span class="n">angle</span><span class="o">=</span><span class="w"> </span><span class="n">label_data</span><span class="o">$</span><span class="n">angle</span><span class="p">,</span><span class="w">
+            </span><span class="n">inherit.aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">theme</span><span class="p">(</span><span class="n">plot.margin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">margin</span><span class="p">(</span><span class="m">-3</span><span class="p">,</span><span class="w"> </span><span class="m">-10</span><span class="p">,</span><span class="w"> </span><span class="m">-3</span><span class="p">,</span><span class="w"> </span><span class="m">-10</span><span class="p">,</span><span class="w"> </span><span class="s2">"cm"</span><span class="p">),</span><span class="w">
+        </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_blank</span><span class="p">(),</span><span class="w">
+        </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_blank</span><span class="p">(),</span><span class="w">
+        </span><span class="n">panel.grid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_blank</span><span class="p">()</span><span class="c1">#,</span><span class="w">
+  </span><span class="p">)</span><span class="w">
+
+</span><span class="n">ggsave</span><span class="p">(</span><span class="s2">"genreSimple.png"</span><span class="p">,</span><span class="w">
+       </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"pdf"</span><span class="p">,</span><span class="w">
+       </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">,</span><span class="w">
+       </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">,</span><span class="w">
+       </span><span class="n">units</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"cm"</span><span class="p">,</span><span class="w">
+       </span><span class="n">dpi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">300</span><span class="p">)</span></code></pre></figure>
+
+<p>The result:</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/genreSimple.png"><img src="http://localhost:4000/assets/images/genreSimple.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Circular bar plot of the genres.</p>
+
+<p>It is pretty obvious I like metal! 🤘</p>
+
+    </section>
+  </article>
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/JonathanVSV" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://stackoverflow.com/users/9022665/jonathan-v-sol%c3%b3rzano" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-stack-overflow" aria-hidden="true"></i> Stack Overflow</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Jonathan V. Solórzano. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

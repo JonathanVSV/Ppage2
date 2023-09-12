@@ -34,7 +34,7 @@
 
 
 
-  <meta property="article:published_time" content="2023-01-27T05:52:00-06:00">
+  <meta property="article:published_time" content="2023-06-22T06:35:00-06:00">
 
 
 
@@ -151,96 +151,231 @@
   <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
     <meta itemprop="headline" content="Beautiful-plots(ggplot2)-in-r">
     <meta itemprop="description" content="Beautiful plots in R using ggplot2">
-    <meta itemprop="datePublished" content="2023-01-27T05:52:00-06:00">
+    <meta itemprop="datePublished" content="2023-06-22T06:35:00-06:00">
     
 
     <section class="page__content" itemprop="text">
       <h1 id="beautiful-plots-in-r-using-ggplot2">Beautiful plots in R using ggplot2</h1>
 
-<p>The purpose of this post is to show how to use the basic syntax of ggplot2, do some of the most common types of plots, show some customizations and facets.</p>
+<p>The purpose of this post is to show how to use the basic syntax of ggplot2, do some of the most common types of plots, as well as some customizations and facets. For this post we are going to use the iris dataset, as well as the skimr and cowplot packages. The first step consists of loading the desired packages, as well as the data and skimming over it. The first section will show some basic plots, while the next ones will show how to customize certain elements of the plots, like color, fill, facets and theme.</p>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">rgbif</span><span class="p">)</span><span class="w">
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span><span class="w">
 </span><span class="n">library</span><span class="p">(</span><span class="n">skimr</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">tidyr</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">rnaturalearth</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">tmap</span><span class="p">)</span></code></pre></figure>
+</span><span class="n">library</span><span class="p">(</span><span class="n">cowplot</span><span class="p">)</span><span class="w">
 
-<p>The first step will be to set your credentials to be able to acess GBIF. If you do not have these credentials, you can register in their website and obtain them (https://www.gbif.org/user/profile). Then rewrite that information into the R environment</p>
+</span><span class="n">data</span><span class="p">(</span><span class="n">iris</span><span class="p">)</span><span class="w">
+</span><span class="n">skim</span><span class="p">(</span><span class="n">iris</span><span class="p">)</span></code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># ---------------1. Set credentials----------------------</span><span class="w">
-</span><span class="c1"># Set credentials</span><span class="w">
-</span><span class="c1"># usethis::edit_r_environ()</span><span class="w">
+<p>Then we can start building our different plots.</p>
 
-</span><span class="c1"># Edit .Renviron</span><span class="w">
-</span><span class="c1"># GBIF_USER="myname"</span><span class="w">
-</span><span class="c1"># GBIF_PWD="mypass"</span><span class="w">
-</span><span class="c1"># GBIF_EMAIL="yeahyeahyeah@myorg.org"</span></code></pre></figure>
+<h1 id="basic-plots">Basic plots</h1>
 
-<p>The next step is downloading the data of interest. In this example, I am going to download the data for <em>Rhizhophora mangle</em> in Mexico. You will have to wait for the download to complete. Meanwhile, you can check the status of the download using <code class="language-plaintext highlighter-rouge">occ_download_wait</code> and putting in the key of numbers that will appear in the console. Once the download have been finished, you can import the data into R.</p>
+<h2 id="scatterplot">Scatterplot</h2>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># -----------2. Search and download data-----------------</span><span class="w">
-</span><span class="c1"># Now you can use without logging in every session</span><span class="w">
-</span><span class="n">id</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">name_backbone</span><span class="p">(</span><span class="s2">"Rhizophora mangle"</span><span class="p">)</span><span class="o">$</span><span class="n">usageKey</span><span class="w">
-</span><span class="c1"># Send download request</span><span class="w">
-</span><span class="n">occ_download</span><span class="p">(</span><span class="n">pred</span><span class="p">(</span><span class="s2">"taxonKey"</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">),</span><span class="w">
-             </span><span class="n">pred</span><span class="p">(</span><span class="s2">"country"</span><span class="p">,</span><span class="w"> </span><span class="s2">"MX"</span><span class="p">),</span><span class="w">
-             </span><span class="n">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"SIMPLE_CSV"</span><span class="p">)</span><span class="w">
-</span><span class="c1"># Check status of download</span><span class="w">
-</span><span class="n">occ_download_wait</span><span class="p">(</span><span class="s1">'key_of_numbers'</span><span class="p">)</span><span class="w">
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_point</span><span class="p">()</span></code></pre></figure>
 
-</span><span class="c1"># Once finished download to hard drive and save it in df</span><span class="w">
-</span><span class="n">df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">occ_download_get</span><span class="p">(</span><span class="s1">'key_of_numbers'</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
-  </span><span class="n">occ_download_import</span><span class="p">()</span></code></pre></figure>
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/scatter.png"><img src="http://localhost:4000/assets/images/scatter.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot.</p>
 
-<p>Next, you can use <code class="language-plaintext highlighter-rouge">skimr</code> to take a look at the general structure of the data and select the columns of interest. Additinoally, you can drop registries without location. (longitude / latitude).</p>
+<h2 id="line-plot">Line plot</h2>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># ---------3. Select vars of interest-------------------</span><span class="w">
-</span><span class="n">skim</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="w">
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_line</span><span class="p">()</span></code></pre></figure>
 
-</span><span class="c1"># Select columns of importance</span><span class="w">
-</span><span class="n">rhizMang</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">select</span><span class="p">(</span><span class="n">scientificName</span><span class="p">,</span><span class="w"> </span><span class="n">identifiedBy</span><span class="p">,</span><span class="w">
-         </span><span class="n">decimalLatitude</span><span class="p">,</span><span class="w"> </span><span class="n">decimalLongitude</span><span class="p">,</span><span class="w"> </span><span class="n">coordinateUncertaintyInMeters</span><span class="p">,</span><span class="w">
-         </span><span class="n">year</span><span class="p">,</span><span class="w"> </span><span class="n">month</span><span class="p">,</span><span class="w"> </span><span class="n">day</span><span class="p">,</span><span class="w">
-         </span><span class="n">elevation</span><span class="p">,</span><span class="w"> </span><span class="n">elevationAccuracy</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Drop registries without spatial reference</span><span class="w">
-  </span><span class="n">drop_na</span><span class="p">(</span><span class="n">decimalLatitude</span><span class="p">,</span><span class="w"> </span><span class="n">decimalLongitude</span><span class="p">)</span></code></pre></figure>
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/line.png"><img src="http://localhost:4000/assets/images/line.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Line plot</p>
 
-<p>Finally, you can transform the data into a spatial object and make a map. Here, I use <code class="language-plaintext highlighter-rouge">ne_countries</code> to get the polygon of Mexico and <code class="language-plaintext highlighter-rouge">tmap</code> to create the map. Finally, you can export the map.</p>
+<h2 id="bar-plot">Bar plot</h2>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># ---------4. Geo transformation and map------------------</span><span class="w">
-</span><span class="c1"># Transform into sf object</span><span class="w">
-</span><span class="n">rhizMang</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_as_sf</span><span class="p">(</span><span class="n">rhizMang</span><span class="p">,</span><span class="w"> 
-                     </span><span class="n">coords</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"decimalLongitude"</span><span class="p">,</span><span class="w"> </span><span class="s2">"decimalLatitude"</span><span class="p">),</span><span class="w">
-                     </span><span class="n">crs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">st_crs</span><span class="p">(</span><span class="m">4326</span><span class="p">))</span><span class="w">
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_bar</span><span class="p">()</span></code></pre></figure>
 
-</span><span class="c1"># Get map of Mexico</span><span class="w">
-</span><span class="n">mx</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ne_countries</span><span class="p">(</span><span class="n">scale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">110</span><span class="p">,</span><span class="w"> 
-                   </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"countries"</span><span class="p">,</span><span class="w"> 
-                   </span><span class="c1"># continent = NULL,</span><span class="w">
-                   </span><span class="n">country</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Mexico"</span><span class="p">,</span><span class="w"> 
-                   </span><span class="n">returnclass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"sf"</span><span class="p">))</span><span class="w">
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/bar.png"><img src="http://localhost:4000/assets/images/bar.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Bar plot.</p>
 
-</span><span class="c1"># Do a quick map to see the location of the registries</span><span class="w">
-</span><span class="n">map1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tm_shape</span><span class="p">(</span><span class="n">mx</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">tm_borders</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">tm_shape</span><span class="p">(</span><span class="n">rhizMang</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">tm_dots</span><span class="p">(</span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"firebrick2"</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.05</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">tm_graticules</span><span class="p">(</span><span class="n">lines</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">tm_scale_bar</span><span class="p">(</span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.01</span><span class="p">,</span><span class="m">0</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">tm_compass</span><span class="p">(</span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"arrow"</span><span class="p">,</span><span class="w">
-             </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0.90</span><span class="p">,</span><span class="m">0.85</span><span class="p">))</span><span class="w">
+<h2 id="column-plot">Column plot</h2>
 
-</span><span class="n">tmap_save</span><span class="p">(</span><span class="n">tm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">map1</span><span class="p">,</span><span class="w">
-          </span><span class="n">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Plots/Map1.png"</span><span class="p">,</span><span class="w">
-          </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">,</span><span class="w">
-          </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">,</span><span class="w">
-          </span><span class="n">units</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"cm"</span><span class="p">,</span><span class="w">
-          </span><span class="n">dpi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">300</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">Species</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">summarise</span><span class="p">(</span><span class="n">meanSL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mean</span><span class="p">(</span><span class="n">Sepal.Length</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">,</span><span class="w">
+             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">meanSL</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_col</span><span class="p">()</span></code></pre></figure>
 
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/Map_Rm.png"><img src="http://localhost:4000/assets/images/Map_Rm.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Map with <em>Rhizophora mangle</em> registries in Mexico.</p>
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/col.png"><img src="http://localhost:4000/assets/images/col.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Column plot.</p>
+
+<h2 id="box-plot">Box plot</h2>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">,</span><span class="w">
+             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_boxplot</span><span class="p">()</span></code></pre></figure>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/box.png"><img src="http://localhost:4000/assets/images/box.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Boxplot.</p>
+
+<h2 id="histogram-plot">Histogram plot</h2>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+</span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_histogram</span><span class="p">()</span></code></pre></figure>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/hist.png"><img src="http://localhost:4000/assets/images/hist.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Histogram plot.</p>
+
+<h1 id="adding-colors">Adding colors</h1>
+
+<h2 id="color">Color</h2>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> 
+             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">,</span><span class="w">
+             </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_point</span><span class="p">()</span></code></pre></figure>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/color.png"><img src="http://localhost:4000/assets/images/color.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with colors by factor.</p>
+
+<h2 id="fill">Fill</h2>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">,</span><span class="w">
+             </span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_bar</span><span class="p">()</span></code></pre></figure>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/fill.png"><img src="http://localhost:4000/assets/images/fill.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Barplot with fill by factor.</p>
+
+<h2 id="customized-colors">Customized colors</h2>
+
+<h3 id="manual-colors">Manual colors</h3>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> 
+             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">,</span><span class="w">
+             </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_point</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">scale_colour_manual</span><span class="p">(</span><span class="n">values</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"forestgreen"</span><span class="p">,</span><span class="w"> </span><span class="s2">"royalblue"</span><span class="p">,</span><span class="w"> </span><span class="s2">"firebrick2"</span><span class="p">))</span></code></pre></figure>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/manualcol.png"><img src="http://localhost:4000/assets/images/manualcol.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with manual colors by factor.</p>
+
+<h3 id="rcolorbrewer">Rcolorbrewer</h3>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> 
+             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">,</span><span class="w">
+             </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_point</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">scale_colour_brewer</span><span class="p">(</span><span class="n">palette</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"RdYlBu"</span><span class="p">)</span></code></pre></figure>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/colorbrewer.png"><img src="http://localhost:4000/assets/images/colorbrewer.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplots with colors set by RColorbrewer.</p>
+
+<h1 id="axes">Axes</h1>
+
+<h2 id="axes-1">Axes</h2>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> 
+             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">,</span><span class="w">
+             </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_point</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">scale_y_continuous</span><span class="p">(</span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">4.5</span><span class="p">,</span><span class="w"> </span><span class="m">0.25</span><span class="p">),</span><span class="w">
+                     </span><span class="n">limits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">4.5</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">scale_x_continuous</span><span class="p">(</span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="p">(</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="m">8</span><span class="p">,</span><span class="w"> </span><span class="m">0.5</span><span class="p">),</span><span class="w">
+                     </span><span class="n">limits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="m">8</span><span class="p">))</span></code></pre></figure>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/axes.png"><img src="http://localhost:4000/assets/images/axes.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with customized axes.</p>
+
+<h2 id="axes-labels">Axes labels</h2>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> 
+             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">,</span><span class="w">
+             </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_point</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">labs</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Sepal length (cm)"</span><span class="p">,</span><span class="w"> 
+       </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Sepal width (cm)"</span><span class="p">)</span></code></pre></figure>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/axeslab.png"><img src="http://localhost:4000/assets/images/axeslab.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with customized axes labels.</p>
+
+<h1 id="facets">Facets</h1>
+
+<h2 id="facet-grid">Facet grid</h2>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> 
+             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">,</span><span class="w">
+             </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_point</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">facet_grid</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">Species</span><span class="p">)</span></code></pre></figure>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/facetgrid.png"><img src="http://localhost:4000/assets/images/facetgrid.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with facets set as a grid.</p>
+
+<h2 id="facet-wrap">Facet wrap</h2>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> 
+             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">,</span><span class="w">
+             </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_point</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">facet_grid</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">Species</span><span class="p">)</span></code></pre></figure>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/facetwrap.png"><img src="http://localhost:4000/assets/images/facetwrap.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with facets set as a wrap (multiple factors will be accumulated by each panel).</p>
+
+<h1 id="theme">Theme</h1>
+
+<h2 id="personalized-theme">Personalized theme</h2>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">my_theme</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">theme_bw</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+  </span><span class="n">theme</span><span class="p">(</span><span class="n">plot.title</span><span class="o">=</span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">18</span><span class="p">,</span><span class="n">hjust</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">),</span><span class="w">
+        </span><span class="n">text</span><span class="o">=</span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">24</span><span class="p">,</span><span class="n">colour</span><span class="o">=</span><span class="s2">"black"</span><span class="p">),</span><span class="w">
+        </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">18</span><span class="p">,</span><span class="w">
+                                   </span><span class="n">colour</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+                                   </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">90</span><span class="p">,</span><span class="w"> 
+                                   </span><span class="n">hjust</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w">
+                                   </span><span class="n">vjust</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">),</span><span class="w">
+        </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">18</span><span class="p">,</span><span class="w">
+                                   </span><span class="n">colour</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+                                   </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> 
+                                   </span><span class="n">vjust</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w">
+                                   </span><span class="n">hjust</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">),</span><span class="w">
+        </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">18</span><span class="p">,</span><span class="w">
+                                  </span><span class="n">colour</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+                                  </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bold"</span><span class="p">),</span><span class="w"> 
+        </span><span class="n">axis.line</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_line</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">),</span><span class="w">
+        </span><span class="n">legend.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">18</span><span class="p">),</span><span class="w">
+        </span><span class="n">legend.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">18</span><span class="p">),</span><span class="w">
+        </span><span class="n">axis.line.x</span><span class="w"> </span><span class="o">=</span><span class="n">element_line</span><span class="p">(</span><span class="n">colour</span><span class="o">=</span><span class="s2">"black"</span><span class="p">),</span><span class="w">
+        </span><span class="n">axis.line.y</span><span class="w"> </span><span class="o">=</span><span class="n">element_line</span><span class="p">(</span><span class="n">colour</span><span class="o">=</span><span class="s2">"black"</span><span class="p">),</span><span class="w">
+        </span><span class="n">panel.grid.major</span><span class="o">=</span><span class="n">element_blank</span><span class="p">(),</span><span class="w">
+        </span><span class="n">panel.grid.minor</span><span class="o">=</span><span class="n">element_blank</span><span class="p">(),</span><span class="w">
+        </span><span class="n">panel.border</span><span class="o">=</span><span class="n">element_blank</span><span class="p">(),</span><span class="w">
+        </span><span class="n">panel.background</span><span class="o">=</span><span class="n">element_blank</span><span class="p">(),</span><span class="w">
+        </span><span class="n">strip.background</span><span class="w"> </span><span class="o">=</span><span class="n">element_rect</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s2">"gray90"</span><span class="p">,</span><span class="w">
+                                       </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">),</span><span class="w">
+        </span><span class="n">strip.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">18</span><span class="p">,</span><span class="w">
+                                  </span><span class="n">colour</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+                                  </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bold"</span><span class="p">),</span><span class="w">
+        </span><span class="n">plot.margin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">unit</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">0.01</span><span class="p">,</span><span class="m">0.01</span><span class="p">,</span><span class="m">0.01</span><span class="p">,</span><span class="m">0.01</span><span class="p">),</span><span class="w"> </span><span class="s2">"cm"</span><span class="p">))</span><span class="w">
+
+</span><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> 
+             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">,</span><span class="w">
+             </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_point</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">facet_wrap</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">Species</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+  </span><span class="n">my_theme</span></code></pre></figure>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/mytheme.png"><img src="http://localhost:4000/assets/images/mytheme.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with facet wrap where several theme elements have been customized according to personal criteria.</p>
+
+<h2 id="cowplot-theme">Cowplot theme</h2>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> 
+             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">,</span><span class="w">
+             </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_point</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">facet_wrap</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">Species</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> 
+  </span><span class="n">theme_cowplot</span><span class="p">()</span></code></pre></figure>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/cowplottheme.png"><img src="http://localhost:4000/assets/images/cowplottheme.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with facet wrap where several theme elements have been customized according to the cowplot theme.</p>
 
     </section>
   </article>

@@ -1,0 +1,355 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Shiny App with spatial data - Jonathan V. Solórzano</title>
+<meta name="description" content="Shiny App with spatial data">
+
+
+  <meta name="author" content="Jonathan V. Solórzano">
+  
+  <meta property="article:author" content="Jonathan V. Solórzano">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Jonathan V. Solórzano">
+<meta property="og:title" content="Shiny App with spatial data">
+<meta property="og:url" content="http://localhost:4000/blog/shiny-app-spatial/">
+
+
+  <meta property="og:description" content="Shiny App with spatial data">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2023-05-31T10:19:00-06:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/blog/shiny-app-spatial/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Jonathan V. Solórzano Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--splash">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Jonathan V. Solórzano
+          <span class="site-subtitle">My personal site</span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/courses/">Courses</a>
+            </li><li class="masthead__menu-item">
+              <a href="/mini-packages/">Mini-packages</a>
+            </li><li class="masthead__menu-item">
+              <a href="/gee/">GEE</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+<div id="main" role="main">
+  <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Shiny App with spatial data">
+    <meta itemprop="description" content="Shiny App with spatial data">
+    <meta itemprop="datePublished" content="2023-05-31T10:19:00-06:00">
+    
+
+    <section class="page__content" itemprop="text">
+      <h1 id="shiny-app-with-spatial-data">Shiny App with spatial data</h1>
+
+<p>This post will show you how to build a shiny app to visualize spatial data (mainly in raster and vector format). Remember that you can also build other types of shiny apps, but I decided to focus this post on spatial data.</p>
+
+<p>So the first thing is going to open RStudio, click on New Project -&gt; New Project -&gt; Shiny application and create new shiny app folder.</p>
+
+<p>The first thing is to load the necessary packages</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">shiny</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">raster</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">leaflet</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">RColorBrewer</span><span class="p">)</span></code></pre></figure>
+
+<p>Then you are going to load the raster and vector data.
+Additionally, you need to create a palette to show the DEM we loaded and set customized icons to show the vector data. Finally, you will create the legend entries for each of the customized icons.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Load the raster and vector data</span><span class="w">
+</span><span class="n">sitios</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"Data/SitiosPtsAll.gpkg"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">st_transform</span><span class="p">(</span><span class="m">4326</span><span class="p">)</span><span class="w">
+</span><span class="n">barrancas</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"Data/BarrancasAll.gpkg"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">st_transform</span><span class="p">(</span><span class="m">4326</span><span class="p">)</span><span class="w">
+</span><span class="n">DEM</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raster</span><span class="p">(</span><span class="s2">"Data/DEM.tif"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Palette to show DEM</span><span class="w">
+</span><span class="n">mypal</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">palette</span><span class="p">(</span><span class="n">gray</span><span class="p">(</span><span class="n">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="n">length.out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">)))</span><span class="w">
+
+</span><span class="n">myIcons</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">icons</span><span class="p">(</span><span class="w">
+  </span><span class="n">iconUrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">case_when</span><span class="p">(</span><span class="n">sitios</span><span class="o">$</span><span class="n">Geositio</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Localidad"</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"www/house.png"</span><span class="p">,</span><span class="w">
+                      </span><span class="n">sitios</span><span class="o">$</span><span class="n">Geositio</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Templo"</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"www/iglesia.png"</span><span class="p">,</span><span class="w">
+                      </span><span class="n">sitios</span><span class="o">$</span><span class="n">Geositio</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Arbol"</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"www/tree.png"</span><span class="p">,</span><span class="w">
+                      </span><span class="n">sitios</span><span class="o">$</span><span class="n">Geositio</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Cerro"</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"www/peak.png"</span><span class="p">,</span><span class="w">
+                      </span><span class="n">sitios</span><span class="o">$</span><span class="n">Geositio</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Paraje"</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"www/walker.png"</span><span class="p">,</span><span class="w">
+                      </span><span class="n">sitios</span><span class="o">$</span><span class="n">Geositio</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Ranchería"</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"www/hostel.png"</span><span class="p">,</span><span class="w">
+                      </span><span class="n">sitios</span><span class="o">$</span><span class="n">Geositio</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Crucero"</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"www/crossroad.png"</span><span class="p">,</span><span class="w">
+                      </span><span class="kc">TRUE</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"www/circle.png"</span><span class="p">),</span><span class="w">
+  </span><span class="n">iconWidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">,</span><span class="w"> 
+  </span><span class="n">iconHeight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">,</span><span class="w">
+  </span><span class="n">iconAnchorX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7</span><span class="p">,</span><span class="w">
+  </span><span class="n">iconAnchorY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7</span><span class="p">,</span><span class="w">
+  </span><span class="n">className</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Sitios"</span><span class="w">
+</span><span class="p">)</span><span class="w">
+
+</span><span class="n">html_legend</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'&lt;img src="house.png" height="15" width="15"&gt;Localidad&lt;br&gt;
+                &lt;img src="iglesia.png" height="15" width="15"&gt;Templo&lt;br&gt;
+                &lt;img src="tree.png" height="15" width="15"&gt;Árbol&lt;br&gt;
+                &lt;img src="peak.png" height="15" width="15"&gt;Cerro&lt;br&gt;
+                &lt;img src="walker.png" height="15" width="15"&gt;Paraje&lt;br&gt;
+                &lt;img src="hostel.png" height="15" width="15"&gt;Ranchería&lt;br&gt;
+                &lt;img src="crossroad.png" height="15" width="15"&gt;Crucero&lt;br&gt;
+                &lt;img src="circle.png" height="15" width="15"&gt;Otro&lt;br&gt;'</span></code></pre></figure>
+
+<p>Then, you need to set up the users interface. In this case, since we are interested in navigating spatial data, we are using a vertical layout.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Define the UI for the app</span><span class="w">
+</span><span class="n">ui</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">fluidPage</span><span class="p">(</span><span class="w">
+  </span><span class="n">titlePanel</span><span class="p">(</span><span class="s2">"Cuilala App"</span><span class="p">),</span><span class="w">
+  </span><span class="n">verticalLayout</span><span class="p">(</span><span class="w">
+    </span><span class="n">titlePanel</span><span class="p">(</span><span class="s2">"Cuilala información espacial"</span><span class="p">),</span><span class="w">
+  </span><span class="p">)</span><span class="w">
+</span><span class="p">)</span></code></pre></figure>
+
+<p>Then create below that same script the server side script. Most of this part is setting up the leaflet visualization, adding a basemap (ESRI world imagery), adding the markers (point data), DEM (raster data) and other features (lines data), adding control layers buttons, as well as the legend for our customized icons and a scale bar. Finally, you need to create an observe event to watch for clicks over the markers, to show up their details when clicked.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Define the server for the app</span><span class="w">
+</span><span class="n">server</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="c1"># Render the map</span><span class="w">
+  </span><span class="n">output</span><span class="o">$</span><span class="n">map</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderLeaflet</span><span class="p">({</span><span class="w">
+    </span><span class="c1"># Create the leaflet map</span><span class="w">
+    </span><span class="n">leaflet</span><span class="p">(</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sitios</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+      </span><span class="n">addProviderTiles</span><span class="p">(</span><span class="s1">'Esri.WorldImagery'</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+      </span><span class="c1"># Add markers for vector data</span><span class="w">
+      </span><span class="n">addMarkers</span><span class="p">(</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sitios</span><span class="p">,</span><span class="w">
+                 </span><span class="n">popup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">Nombre</span><span class="p">,</span><span class="w">
+                 </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Sitios"</span><span class="p">,</span><span class="w">
+                 </span><span class="n">icon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">myIcons</span><span class="p">,</span><span class="w">
+               </span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+      </span><span class="c1"># Add the raster layer</span><span class="w">
+      </span><span class="n">addRasterImage</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DEM</span><span class="p">,</span><span class="w">
+                     </span><span class="n">colors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mypal</span><span class="p">,</span><span class="w">
+                     </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"ngb"</span><span class="p">,</span><span class="w">
+                     </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"MDE"</span><span class="p">,</span><span class="w">
+                     </span><span class="n">opacity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">70</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+      </span><span class="c1"># Add polylines layer</span><span class="w">
+      </span><span class="n">addPolylines</span><span class="p">(</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">barrancas</span><span class="p">,</span><span class="w">
+        </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"royalblue"</span><span class="p">,</span><span class="w">
+        </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Barrancas"</span><span class="p">,</span><span class="w">
+        </span><span class="n">popup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">Nombre</span><span class="w">
+      </span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+      </span><span class="c1"># Add Layers control (turn on and off)</span><span class="w">
+      </span><span class="n">addLayersControl</span><span class="p">(</span><span class="w">
+        </span><span class="n">baseGroups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"ESRI Imagery"</span><span class="p">),</span><span class="w">
+        </span><span class="n">overlayGroups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Sitios"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Barrancas"</span><span class="p">,</span><span class="w"> </span><span class="s2">"MDE"</span><span class="p">),</span><span class="w">
+        </span><span class="n">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">layersControlOptions</span><span class="p">(</span><span class="n">collapsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+      </span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+      </span><span class="c1"># Add legend for custom icons</span><span class="w">
+      </span><span class="n">addControl</span><span class="p">(</span><span class="w">
+        </span><span class="n">html</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">html_legend</span><span class="p">,</span><span class="w">
+        </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bottomleft"</span><span class="w">
+      </span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+      </span><span class="c1"># Add scale bar</span><span class="w">
+      </span><span class="n">addScaleBar</span><span class="p">(</span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bottomright"</span><span class="p">,</span><span class="w">
+                  </span><span class="n">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">scaleBarOptions</span><span class="p">(</span><span class="w">
+                    </span><span class="n">maxWidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">,</span><span class="w">
+                    </span><span class="n">metric</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+                    </span><span class="n">imperial</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w">
+                    </span><span class="n">updateWhenIdle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="w">
+                  </span><span class="p">))</span><span class="w">
+  </span><span class="p">})</span><span class="w"> 
+  
+  </span><span class="c1"># Observe event for clicking over a marker and showing details</span><span class="w">
+  </span><span class="n">observeEvent</span><span class="p">(</span><span class="n">input</span><span class="o">$</span><span class="n">mapmarker_click</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> 
+    </span><span class="n">p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">input</span><span class="o">$</span><span class="n">map_marker_click</span><span class="w"> 
+    </span><span class="n">print</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="w">
+  </span><span class="p">})</span><span class="w">
+</span><span class="p">}</span></code></pre></figure>
+
+<p>Finally, run the app.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Run the app</span><span class="w">
+</span><span class="n">shinyApp</span><span class="p">(</span><span class="n">ui</span><span class="p">,</span><span class="w"> </span><span class="n">server</span><span class="p">)</span></code></pre></figure>
+
+<p>A snapshot of the result:</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/App.png"><img src="http://localhost:4000/assets/images/App.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Shiny app to visualize and explore spatial data.</p>
+
+<p>The real results hosted in shinyapps.io: https://jonathanvsv.shinyapps.io/cuilalaapp/</p>
+
+    </section>
+  </article>
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/JonathanVSV" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://stackoverflow.com/users/9022665/jonathan-v-sol%c3%b3rzano" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-stack-overflow" aria-hidden="true"></i> Stack Overflow</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Jonathan V. Solórzano. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

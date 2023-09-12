@@ -34,7 +34,7 @@
 
 
 
-  <meta property="article:published_time" content="2021-02-18T08:10:30-06:00">
+  <meta property="article:published_time" content="2023-06-22T08:10:30-06:00">
 
 
 
@@ -151,121 +151,85 @@
   <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
     <meta itemprop="headline" content="Working with LiDAR data in R">
     <meta itemprop="description" content="Working with LiDAR data in R">
-    <meta itemprop="datePublished" content="2021-02-18T08:10:30-06:00">
+    <meta itemprop="datePublished" content="2023-06-22T08:10:30-06:00">
     
 
     <section class="page__content" itemprop="text">
       <h1 id="working-with-lidar-data-in-r">Working with LiDAR data in R</h1>
 
-<p>For this example we are going to use the <code class="language-plaintext highlighter-rouge">lidR</code> package. Additionally, we are going to load <code class="language-plaintext highlighter-rouge">raster</code> <code class="language-plaintext highlighter-rouge">rgdal</code> and <code class="language-plaintext highlighter-rouge">plyr</code>.
-The first thing is to load the LiDAR data as a catalog and load a shapefile with the areas of interest (that can correspond to in-field measurements).</p>
+<p>For this example we are going to use the <code class="language-plaintext highlighter-rouge">lidR</code> package. Additionally, we are going to load <code class="language-plaintext highlighter-rouge">terra</code> <code class="language-plaintext highlighter-rouge">sf</code> and <code class="language-plaintext highlighter-rouge">dplyr</code>. In this example, we will work with lascatalogs, which enables working with several las files at once.</p>
+
+<p>The first thing is to load the LiDAR data as a catalog and load a shapefile with the areas of interest (that can correspond to in-field measurements). Reading data as a catalog enables refering to the original files without loading all of them into memory.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">lidR</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">raster</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">rgdal</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="w"> </span><span class="p">(</span><span class="n">plyr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">terra</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span><span class="w">
 
 </span><span class="c1"># Load files</span><span class="w">
 </span><span class="n">archivos</span><span class="o">&lt;-</span><span class="n">list.files</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span><span class="w">
     </span><span class="n">pattern</span><span class="o">=</span><span class="s2">"*.las"</span><span class="p">,</span><span class="w">
     </span><span class="n">full.names</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
-</span><span class="n">lidares</span><span class="o">&lt;-</span><span class="n">catalog</span><span class="p">(</span><span class="n">archivos</span><span class="p">)</span><span class="w">
+</span><span class="n">lidares</span><span class="o">&lt;-</span><span class="n">readLAScatalog</span><span class="p">(</span><span class="n">archivos</span><span class="p">)</span><span class="w">
 
-</span><span class="c1"># Plot them to take a look</span><span class="w">
-</span><span class="n">plot</span><span class="p">(</span><span class="n">lidares</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Load plots data</span><span class="w">
+</span><span class="n">ptos</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s2">"Data/Plots.csv"</span><span class="p">)</span></code></pre></figure>
 
-</span><span class="c1"># Load shapefiles</span><span class="w">
-</span><span class="n">ptos</span><span class="o">&lt;-</span><span class="n">readOGR</span><span class="p">(</span><span class="n">paste0</span><span class="p">(</span><span class="s2">"shapes"</span><span class="p">),</span><span class="w">
-              </span><span class="s2">"buffer"</span><span class="p">)</span><span class="w">
+<p>Since <code class="language-plaintext highlighter-rouge">ptos</code> is a csv table, first we need to transform it to an sf object and then project it in the same crs as the LiDAR data (EPSG:32615). So lets do that by first indicating the crs in which the coordinates in the original table are and then transforming them to the target EPSG and then create a buffer of radius = 10 m. We also can select only the columns of interest and rename it.</p>
 
-</span><span class="n">buff</span><span class="o">&lt;-</span><span class="n">readOGR</span><span class="p">(</span><span class="n">paste0</span><span class="p">(</span><span class="s2">"shapes"</span><span class="p">),</span><span class="w">
-              </span><span class="s2">"buffer_50m"</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ptos</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_as_sf</span><span class="p">(</span><span class="n">ptos</span><span class="p">,</span><span class="w"> 
+                  </span><span class="n">coords</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Easting_Geo"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Northing_Geo"</span><span class="p">),</span><span class="w">
+                  </span><span class="n">crs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4326</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">st_transform</span><span class="p">(</span><span class="m">32615</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">st_buffer</span><span class="p">(</span><span class="m">10</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="n">Id_parcela</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">rename</span><span class="p">(</span><span class="s2">"PLOT_ID"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Id_parcela"</span><span class="p">)</span></code></pre></figure>
 
-<p>Sometimes the CRS LiDAR data is lost when opening the file, so we can check the metadata of the image and set it accordingly. In this case, the target CRS was the same as the shapefile so let’s assign the CRS that way.</p>
+<p>Now, lets check if everything is ok. First, lets run some tests to see if everything is ok.</p>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Set CRS for LiDAR point cloud</span><span class="w">
-</span><span class="n">crs</span><span class="p">(</span><span class="n">lidares</span><span class="p">)</span><span class="o">&lt;-</span><span class="n">crs</span><span class="p">(</span><span class="n">ptos</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">las_check</span><span class="p">(</span><span class="n">lidares</span><span class="p">)</span></code></pre></figure>
 
-<p>Clip the LiDAR data to the regions of interest.</p>
+<p>Now let’s check if both datasets have the same crs and overlap. In this case, I will select a single property of the <code class="language-plaintext highlighter-rouge">sf</code> object named “Id_parcela”.</p>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Clip</span><span class="w">
-</span><span class="n">clipeados</span><span class="o">&lt;-</span><span class="n">lasclip</span><span class="p">(</span><span class="n">lidares</span><span class="p">,</span><span class="n">ptos</span><span class="p">)</span><span class="w">
-</span><span class="n">clipeados2</span><span class="o">&lt;-</span><span class="n">lasclip</span><span class="p">(</span><span class="n">lidares</span><span class="p">,</span><span class="n">buff</span><span class="p">)</span><span class="w">
-</span><span class="n">plot</span><span class="p">(</span><span class="n">clipeados</span><span class="p">[[</span><span class="m">1</span><span class="p">]])</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">plot</span><span class="p">(</span><span class="n">lidares</span><span class="p">)</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">ptos</span><span class="p">[</span><span class="s2">"Id_parcela"</span><span class="p">],</span><span class="w"> </span><span class="n">add</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span></code></pre></figure>
 
-<p>This LiDAR data was preclassified by the distributer, so we are using that classification values to determine vegetation points and ground points. Additionally, we will clip the LiDAR data by each in-field plot (ptos data).</p>
+<p>You should see something similar to the following image:</p>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Vegetación</span><span class="w">
-</span><span class="n">Veg</span><span class="o">&lt;-</span><span class="n">lapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">clipeados</span><span class="p">),</span><span class="w">
-            </span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">lasfilter</span><span class="p">(</span><span class="n">clipeados</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span><span class="n">Classification</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">1</span><span class="p">))</span><span class="w">
-</span><span class="n">parcelas</span><span class="o">&lt;-</span><span class="n">sapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">clipeados</span><span class="p">),</span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="nf">as.character</span><span class="p">(</span><span class="n">ptos</span><span class="o">@</span><span class="n">data</span><span class="o">$</span><span class="n">Id_parcela</span><span class="p">[[</span><span class="n">i</span><span class="p">]]))</span><span class="w">
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/yaxlidarptos.png"><img src="http://localhost:4000/assets/images/yaxlidarptos.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Example of spatial overlap between the liDAR data and field plots.</p>
 
-</span><span class="c1"># Suelo</span><span class="w">
-</span><span class="n">Suelo</span><span class="o">&lt;-</span><span class="n">lapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">clipeados2</span><span class="p">),</span><span class="w">
-              </span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">lasfilter</span><span class="p">(</span><span class="n">clipeados2</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span><span class="n">Classification</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">2</span><span class="p">))</span><span class="w">
-</span><span class="c1"># If you need additional filtering, you might do it according to the z values.</span><span class="w">
-</span><span class="c1"># Suelo&lt;-lapply(1:length(Suelo),</span><span class="w">
-</span><span class="c1">#              function(i) lasfilter(Suelo[[i]],Z &gt;=90 &amp; Z &lt;=250))</span><span class="w">
-</span><span class="c1"># plot(Suelo[[60]])</span></code></pre></figure>
+<p>After making those tests, we are ready to process the data.</p>
 
-<p>The next step is creating a digital terrain model (DTM) using kriging from the ground data.</p>
+<p>Since we are working with a LAScatalog, in order to calculate the metrics of interest we can focus to work with only the places where we have field data (ptos). Thus, we can clip the field data plots to the las catalog. There could be plots that do not fall inside the LiDAR data, so we can filter just to stay with the ones that have LiDAR associated data.</p>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">DTM</span><span class="o">&lt;-</span><span class="n">lapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">Suelo</span><span class="p">),</span><span class="w">
-            </span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">grid_terrain</span><span class="p">(</span><span class="n">Suelo</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span><span class="n">res</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w">
-                                     </span><span class="n">algorithm</span><span class="o">=</span><span class="n">kriging</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="m">10</span><span class="p">),</span><span class="n">keep_lowest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">))</span><span class="w">
-</span><span class="n">plot</span><span class="p">(</span><span class="n">DTM</span><span class="p">[[</span><span class="m">60</span><span class="p">]])</span><span class="w">
-</span><span class="n">DTM</span><span class="w">
-</span><span class="n">plot</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">DTM</span><span class="p">[[</span><span class="m">1</span><span class="p">]]))</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">ext_lidares</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ext</span><span class="p">(</span><span class="n">lidares</span><span class="p">)</span><span class="w">
+</span><span class="n">ptos</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_crop</span><span class="p">(</span><span class="n">ptos</span><span class="p">,</span><span class="w">
+                </span><span class="n">ext_lidares</span><span class="p">)</span></code></pre></figure>
 
-<p>Then we can use the DTM to subtract those values to the vegetation points in order to get the vegetation height values.</p>
+<p>The next step is creating a digital terrain model (DTM) using a knn nearest neighbor algorithm. Here you can select another algorithm such as knnidw, tin and kriging.</p>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Normalize point cloud</span><span class="w">
-</span><span class="n">Veg_Norm</span><span class="o">&lt;-</span><span class="n">lapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">Veg</span><span class="p">),</span><span class="w">
-                 </span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">lasnormalize</span><span class="p">(</span><span class="n">Veg</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span><span class="n">DTM</span><span class="p">[[</span><span class="n">i</span><span class="p">]]))</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">dtm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rasterize_terrain</span><span class="p">(</span><span class="n">lidares</span><span class="p">,</span><span class="w">
+                         </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w">
+                         </span><span class="n">algorithm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">knnidw</span><span class="p">(</span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">6L</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="p">))</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">dtm</span><span class="p">)</span><span class="w">                         </span></code></pre></figure>
 
-<p>The next step is to rasterize the normalized vegetation data to get a canopy height model (CHM).</p>
+<p>Then we can use the DTM to subtract those values to the vegetation points in order to get the vegetation height values. This is usually known as normalization. Here we need to set additional options to process chunks.</p>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Canopy height model</span><span class="w">
-</span><span class="n">trees</span><span class="o">&lt;-</span><span class="n">grid_canopy</span><span class="p">(</span><span class="n">Veg_Norm</span><span class="p">,</span><span class="n">res</span><span class="o">=</span><span class="m">0.5</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Set output for normalized data, here I will use a files folder</span><span class="w">
+</span><span class="n">opt_chunk_size</span><span class="p">(</span><span class="n">lidares</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="n">opt_output_files</span><span class="p">(</span><span class="n">lidares</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="n">paste0</span><span class="p">(</span><span class="s2">"files"</span><span class="p">,</span><span class="w"> </span><span class="s2">"/{*}_norm"</span><span class="p">)</span><span class="w">
+</span><span class="n">nlas</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">normalize_height</span><span class="p">(</span><span class="n">lidares</span><span class="p">,</span><span class="w"> 
+                         </span><span class="n">algorithm</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">tin</span><span class="p">(),</span><span class="w">
+                         </span><span class="n">dtm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dtm</span><span class="p">)</span></code></pre></figure>
 
-<p>Additionlly, we can extract the point data, without making the rasterization and get height values according to different percentile values (z values).</p>
+<p>The next step is to get the point cloud metrics by plot. In this case, we are going to use the default std metrics from z. Here you can set any function using the folowing notation: <code class="language-plaintext highlighter-rouge">~list(q10 = quantile(Z, probs = 0.10),q95 = quantile(Z, probs = 0.95))</code>. Before running the following code, we need to change the options to export the files produced for each plot. Here I will use the pattern “ID” to get each file with a consecutive number.</p>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Extract Metrics from Z</span><span class="w">
-</span><span class="n">Veg_Z</span><span class="o">&lt;-</span><span class="n">sapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">Veg_Norm</span><span class="p">),</span><span class="w">
-              </span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">lasmetrics</span><span class="p">(</span><span class="n">Veg_Norm</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span><span class="w"> </span><span class="n">.stdmetrics</span><span class="p">))</span><span class="w">
-</span><span class="n">resuls_Z</span><span class="o">&lt;-</span><span class="n">Veg_Z</span><span class="w">
-</span><span class="n">metrics</span><span class="o">&lt;-</span><span class="n">row.names</span><span class="p">(</span><span class="n">resuls_Z</span><span class="p">)</span><span class="w">
-</span><span class="n">resuls_Z</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="n">unlist</span><span class="p">(</span><span class="n">resuls_Z</span><span class="p">),</span><span class="w"> </span><span class="n">nrow</span><span class="o">=</span><span class="m">57</span><span class="p">,</span><span class="w"> </span><span class="n">byrow</span><span class="o">=</span><span class="nb">F</span><span class="p">),</span><span class="w">
-                       </span><span class="n">stringsAsFactors</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
-</span><span class="n">resuls_Z</span><span class="o">&lt;-</span><span class="n">t</span><span class="p">(</span><span class="n">resuls_Z</span><span class="p">)</span><span class="w">
-</span><span class="n">row.names</span><span class="p">(</span><span class="n">resuls_Z</span><span class="p">)</span><span class="o">&lt;-</span><span class="n">parcelas</span><span class="w">
-</span><span class="n">colnames</span><span class="p">(</span><span class="n">resuls_Z</span><span class="p">)</span><span class="o">&lt;-</span><span class="n">metrics</span><span class="w">
-</span><span class="n">resuls_Z</span><span class="o">&lt;-</span><span class="n">resuls_Z</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="n">row.names</span><span class="p">(</span><span class="n">resuls_Z</span><span class="p">)),]</span><span class="w">
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">opt_output_files</span><span class="p">(</span><span class="n">nlas</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="n">paste0</span><span class="p">(</span><span class="s2">"files"</span><span class="p">,</span><span class="w"> </span><span class="s2">"/{ID}"</span><span class="p">)</span><span class="w">
+</span><span class="n">metrics</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">plot_metrics</span><span class="p">(</span><span class="n">nlas</span><span class="p">,</span><span class="w"> 
+                        </span><span class="n">.stdmetrics_z</span><span class="p">,</span><span class="w">
+                        </span><span class="n">ptos</span><span class="p">)</span></code></pre></figure>
 
-</span><span class="n">write.csv</span><span class="p">(</span><span class="n">resuls_Z</span><span class="p">,</span><span class="s2">"/Users/ccgss/Drive2/Jonathan_DD/R/ChajulLidar/MetricsZ.csv"</span><span class="p">,</span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span></code></pre></figure>
-
-<p>Or make the same procedure for the intensity values.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Extract Metrics from I</span><span class="w">
-</span><span class="n">Veg_I</span><span class="o">&lt;-</span><span class="n">sapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">Veg</span><span class="p">),</span><span class="w">
-              </span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">lasmetrics</span><span class="p">(</span><span class="n">Veg_Norm</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span><span class="w"> </span><span class="n">.stdmetrics_i</span><span class="p">))</span><span class="w">
-</span><span class="n">resuls_I</span><span class="o">&lt;-</span><span class="n">Veg_I</span><span class="w">
-</span><span class="n">metrics</span><span class="o">&lt;-</span><span class="n">row.names</span><span class="p">(</span><span class="n">resuls_I</span><span class="p">)</span><span class="w">
-
-</span><span class="n">resuls_I</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">matrix</span><span class="p">(</span><span class="n">unlist</span><span class="p">(</span><span class="n">resuls_I</span><span class="p">),</span><span class="w"> </span><span class="n">nrow</span><span class="o">=</span><span class="m">12</span><span class="p">,</span><span class="w"> </span><span class="n">byrow</span><span class="o">=</span><span class="nb">F</span><span class="p">),</span><span class="w">
-                       </span><span class="n">stringsAsFactors</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
-</span><span class="n">resuls_I</span><span class="o">&lt;-</span><span class="n">t</span><span class="p">(</span><span class="n">resuls_I</span><span class="p">)</span><span class="w">
-</span><span class="n">row.names</span><span class="p">(</span><span class="n">resuls_I</span><span class="p">)</span><span class="o">&lt;-</span><span class="n">parcelas</span><span class="w">
-</span><span class="n">colnames</span><span class="p">(</span><span class="n">resuls_I</span><span class="p">)</span><span class="o">&lt;-</span><span class="n">metrics</span><span class="w">
-</span><span class="n">resuls_I</span><span class="o">&lt;-</span><span class="n">resuls_I</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="n">row.names</span><span class="p">(</span><span class="n">resuls_I</span><span class="p">)),]</span><span class="w">
-
-</span><span class="n">write.csv</span><span class="p">(</span><span class="n">resuls_I</span><span class="p">,</span><span class="s2">"/Users/ccgss/Drive2/Jonathan_DD/R/ChajulLidar/MetricsI.csv"</span><span class="p">,</span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span></code></pre></figure>
-
-<p>Finally, we can try to detect individual crowns.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Individual crown detection</span><span class="w">
-</span><span class="n">trees</span><span class="o">&lt;-</span><span class="n">lapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">Veg</span><span class="p">),</span><span class="w">
-                 </span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">lastrees</span><span class="p">(</span><span class="n">Veg_Norm</span><span class="p">[[</span><span class="n">i</span><span class="p">]],</span><span class="n">li2012</span><span class="p">(</span><span class="n">R</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">speed_up</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)))</span></code></pre></figure>
+<p>Finally, you will obtain a data frame with the plot’s ID and its corresponding z- metrics.</p>
 
 
     </section>

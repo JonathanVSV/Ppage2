@@ -1,0 +1,290 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Open Foris tools in r - Jonathan V. Solórzano</title>
+<meta name="description" content="Open Foris tools in R">
+
+
+  <meta name="author" content="Jonathan V. Solórzano">
+  
+  <meta property="article:author" content="Jonathan V. Solórzano">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Jonathan V. Solórzano">
+<meta property="og:title" content="Open Foris tools in r">
+<meta property="og:url" content="http://localhost:4000/blog/open-foris-tools/">
+
+
+  <meta property="og:description" content="Open Foris tools in R">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2023-06-09T12:19:00-06:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/blog/open-foris-tools/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Jonathan V. Solórzano Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--splash">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Jonathan V. Solórzano
+          <span class="site-subtitle">My personal site</span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/courses/">Courses</a>
+            </li><li class="masthead__menu-item">
+              <a href="/mini-packages/">Mini-packages</a>
+            </li><li class="masthead__menu-item">
+              <a href="/gee/">GEE</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+<div id="main" role="main">
+  <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Open Foris tools in r">
+    <meta itemprop="description" content="Open Foris tools in R">
+    <meta itemprop="datePublished" content="2023-06-09T12:19:00-06:00">
+    
+
+    <section class="page__content" itemprop="text">
+      <h1 id="open-foris-tools-in-r">Open Foris tools in R</h1>
+
+<p>In this post I will show you how to easily run two Open Foris tools in R to easily validate a map and obtain the area estimates corrected by the producer’s accuracies obtained in the confusion matrix. The repository of these tools can be found here: https://github.com/openforis/accuracy-assessment</p>
+
+<p>There are several ways you can run the apps; however the easiest is to run the shiny app directly from the github repo.</p>
+
+<h2 id="design">Design</h2>
+
+<p>First, we will explore the design app.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">shiny</span><span class="p">)</span><span class="w">
+</span><span class="n">options</span><span class="p">(</span><span class="n">shiny.launch.browser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="n">runGitHub</span><span class="p">(</span><span class="s2">"openforis/accuracy-assessment"</span><span class="p">,</span><span class="n">subdir</span><span class="o">=</span><span class="s2">"aa_design"</span><span class="p">)</span></code></pre></figure>
+
+<p>Once you open R and run the previous code, you should see the following screen.</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/of1.png"><img src="http://localhost:4000/assets/images/of1.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Open Foris design app</p>
+
+<h2 id="map-input">Map input</h2>
+
+<p>In this app, you will see in the left panel several submenus. The first one is the Map input, where you can load your classification. Once your image is loaded, go to the next submenu, Strata areas.</p>
+
+<h2 id="strata-areas">Strata areas</h2>
+
+<p>In this menu, the first option will read: area calculation and legend generation. Click here and wait several seconds until the menu that is under this one (Legend labeling) appears with the values of the raster. Here you can change the raster values for a description of that class. For example, Class name 1 could be water, class name 2, forest, etc. Once the descriptions have been added, click on submit legend. Once the legend is submitted the panel on the upper right side should appear with the names of the classes and its area in a table. You can download that table as a csv. Then go to the next submenu: Strata selection.</p>
+
+<h2 id="strata-selection">Strata selection</h2>
+
+<p>Here you set the expected user’s accuracy for each class. Commonly the high value is set for common classes and the low value for rare classes. Once you select the high and low expected user’s accuracy in the sliders, in the lower right panel select the confidence values for each class. Click on the empty spaces and select each class in its corresponding high or low value.</p>
+
+<h2 id="sampling-size">Sampling size</h2>
+
+<p>The next step is selecting the sample size to obtain a desired standard error of the overall accuracy of the map. Here you can select the target standard error (default value = 0.01) and the minimum sample size per strata (default value = 100). A smaller standard error will imply a higher number of points, while the minimum sample size is sometimes recommended of being around 50. If the panel on the right does not adjust its estimates once you change the values in the first panel, verify that the modify the sampling size button is turned off.</p>
+
+<h2 id="sample-allocation">Sample allocation</h2>
+
+<p>Finally, you just need to generate the sampling points by clicking in the button of the final menu. Here a vector file will be generated with the areas to be verified to get the accuracy of the map. Here you can set the size of the intepretation box (min 30 m). Once the points are generated (after several seconds) a map will appear showing the generated points and a new submenu will appear to download the points in the format you desire.</p>
+
+<h1 id="analysis">Analysis</h1>
+
+<p>The second app can be run by using the following code:</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">shiny</span><span class="p">)</span><span class="w">
+</span><span class="n">options</span><span class="p">(</span><span class="n">shiny.launch.browser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="n">runGitHub</span><span class="p">(</span><span class="s2">"openforis/accuracy-assessment"</span><span class="p">,</span><span class="n">subdir</span><span class="o">=</span><span class="s2">"aa_analysis"</span><span class="p">)</span></code></pre></figure>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/of2.png"><img src="http://localhost:4000/assets/images/of2.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Open Foris analysis app</p>
+
+<p>Once you see this window in your web browser, you can click on the first submenu: Inputs.</p>
+
+<h2 id="inputs">Inputs</h2>
+
+<p>Here you should add the csv file that contains the data for each validation points generated in the previous app. However this file has been verified an thus, it should contain one column indicating the reference data (by ground truth or visual interpretation) and the original map data (the classification). Afterward, you should add a csv file containing the area data by class (generated in the previous app).</p>
+
+<p>Once you add the two files, a new panel will appear on the right side. Here you should indicate which column has the reference data (by ground truth or visual interpretation) and which one the map class. Also, indicate the columns in the area file indicating the area and the class.</p>
+
+<h2 id="check">Check</h2>
+
+<p>Here you can check the spatial distribution of your verification data. Here you just need to indicate the columns containing the x and y coordinates data.</p>
+
+<h2 id="results">Results</h2>
+
+<p>Here you can see the confusion matrix from your data. Also, in the lower part you can set the desired confidence interval for the area estimates (by default 95 %). Finally. the corrected area estimates should appear in the right panel. In the last test I made with this app, this last part had a bug; thus, I suggest cloning the repo and running it locally as a shiny app. In this last approach, you need to open the app_analysis_bckup_20161024 file inside the Rscript folder and run eveything from start to end. Finally, this way the app should work without any error showing that the names in the two files (1) reference and map classes and 2) areas) do not match.</p>
+
+    </section>
+  </article>
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/JonathanVSV" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://stackoverflow.com/users/9022665/jonathan-v-sol%c3%b3rzano" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-stack-overflow" aria-hidden="true"></i> Stack Overflow</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Jonathan V. Solórzano. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

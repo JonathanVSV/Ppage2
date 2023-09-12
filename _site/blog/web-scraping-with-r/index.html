@@ -1,0 +1,354 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Web scraping with r - Jonathan V. Solórzano</title>
+<meta name="description" content="Web scraping with R">
+
+
+  <meta name="author" content="Jonathan V. Solórzano">
+  
+  <meta property="article:author" content="Jonathan V. Solórzano">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Jonathan V. Solórzano">
+<meta property="og:title" content="Web scraping with r">
+<meta property="og:url" content="http://localhost:4000/blog/web-scraping-with-r/">
+
+
+  <meta property="og:description" content="Web scraping with R">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2023-06-09T12:19:00-06:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/blog/web-scraping-with-r/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Jonathan V. Solórzano Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--splash">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Jonathan V. Solórzano
+          <span class="site-subtitle">My personal site</span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/courses/">Courses</a>
+            </li><li class="masthead__menu-item">
+              <a href="/mini-packages/">Mini-packages</a>
+            </li><li class="masthead__menu-item">
+              <a href="/gee/">GEE</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+<div id="main" role="main">
+  <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Web scraping with r">
+    <meta itemprop="description" content="Web scraping with R">
+    <meta itemprop="datePublished" content="2023-06-09T12:19:00-06:00">
+    
+
+    <section class="page__content" itemprop="text">
+      <h1 id="web-scraping-with-r">Web scraping with R</h1>
+
+<p>This post will show you how to get data from a webpage (also known as web scraping) with R and the rvest package. This analysis was performed to complement the data obtained from the spotify API. Since I could not obtain all the data I was interested in from the latter API, I decided to web scrape the bandcamp site.</p>
+
+<p>The first thing is to load the necessary packages: rvest for the webscraping and purrr for making loops.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">rvest</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">purrr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">stringr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">tibble</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">tidyr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span></code></pre></figure>
+
+<p>Then, indicate the website of interest. In this case, bandcamp.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">site_url</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"https://bandcamp.com/"</span></code></pre></figure>
+
+<p>Here is the dataframe I am going to use to consult the data from bandcamp.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">nogenre</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">structure</span><span class="p">(</span><span class="nf">list</span><span class="p">(</span><span class="n">artist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Discipline"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Back from the Futer"</span><span class="p">,</span><span class="w"> 
+</span><span class="s2">"La Plante Sauvage"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Quella Vecchia Locanda"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Daal"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Bobby Prince"</span><span class="p">,</span><span class="w"> 
+</span><span class="s2">"Greco Bastian"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Wayfarer"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Flub"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Schizofrnatik"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Endolith"</span><span class="p">,</span><span class="w"> 
+</span><span class="s2">"Energetic Mind"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Thanatopsis"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Mary Halvorson Octet"</span><span class="p">,</span><span class="w"> </span><span class="s2">"4 ciénegas"</span><span class="w">
+</span><span class="p">),</span><span class="w"> </span><span class="n">album</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Unfolded Like Staircase"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Aavikko"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Alain Goraguer"</span><span class="p">,</span><span class="w"> 
+</span><span class="s2">"Quella Vecchia Locanda"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Decalgue of Darkness"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Doom 2 OST"</span><span class="p">,</span><span class="w"> 
+</span><span class="s2">"Greco Bastian"</span><span class="p">,</span><span class="w"> </span><span class="s2">"A Romance with Violence"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Flub"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Funk From Hell"</span><span class="p">,</span><span class="w"> 
+</span><span class="s2">"Voyager"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Bonniesongs"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Requiem"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Away With You"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Cuatro ciénegas"</span><span class="w">
+</span><span class="p">),</span><span class="w"> </span><span class="n">genre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> 
+</span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> 
+</span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> 
+</span><span class="kc">NA_character_</span><span class="p">),</span><span class="w"> </span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="s2">"https://www.youtube.com/watch?v=OyHqGSO67wo"</span><span class="p">,</span><span class="w"> 
+</span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">)),</span><span class="w"> </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">37L</span><span class="p">,</span><span class="w"> </span><span class="m">13L</span><span class="p">,</span><span class="w"> 
+</span><span class="m">77L</span><span class="p">,</span><span class="w"> </span><span class="m">113L</span><span class="p">,</span><span class="w"> </span><span class="m">32L</span><span class="p">,</span><span class="w"> </span><span class="m">19L</span><span class="p">,</span><span class="w"> </span><span class="m">60L</span><span class="p">,</span><span class="w"> </span><span class="m">151L</span><span class="p">,</span><span class="w"> </span><span class="m">54L</span><span class="p">,</span><span class="w"> </span><span class="m">121L</span><span class="p">,</span><span class="w"> </span><span class="m">49L</span><span class="p">,</span><span class="w"> </span><span class="m">50L</span><span class="p">,</span><span class="w"> </span><span class="m">137L</span><span class="p">,</span><span class="w"> </span><span class="m">95L</span><span class="p">,</span><span class="w"> 
+</span><span class="m">2L</span><span class="p">),</span><span class="w"> </span><span class="n">class</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"data.frame"</span><span class="p">)</span></code></pre></figure>
+
+<p>The next step is creating a function that will be used to make the search in bandcamp. Some additional tweaks had to be made so that the function worked. Most of this part was defined by playing with the bandcamp’s search bar and annotating how the url of the search was processed. Then, you need to inspect the web page to see the names of the sections you are interested in extracting. Finally, I just made some data wragnling to clean the data and export it more homogeneously.</p>
+
+<p>The main functions for webscraping with rvest are <code class="language-plaintext highlighter-rouge">read_html</code>, <code class="language-plaintext highlighter-rouge">html_node</code> and <code class="language-plaintext highlighter-rouge">html_text</code>. The first one enables reading the html code of the indicated url. The second one enables extracting one node or section of this web page and finally, the third one converts the extracted object into text.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">rvest_func</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span><span class="w">
+  </span><span class="n">band_orig</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">x</span><span class="w">
+  </span><span class="c1"># These substitutions were based on trial and error on the bandcamp website.</span><span class="w">
+  </span><span class="c1"># Substitute spaces by + sign to work with the syntax used to search for terms with more than one word.</span><span class="w">
+  </span><span class="n">band</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="s2">"\\s"</span><span class="p">,</span><span class="w"> </span><span class="s2">"+"</span><span class="p">,</span><span class="w"> </span><span class="n">band_orig</span><span class="p">)</span><span class="w">
+  </span><span class="c1"># Transform ñ into the translation made in the search bar</span><span class="w">
+  </span><span class="n">band</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="s2">"ñ"</span><span class="p">,</span><span class="w"> </span><span class="s2">"%C3%B1"</span><span class="p">,</span><span class="w"> </span><span class="n">band</span><span class="p">)</span><span class="w">
+  </span><span class="c1"># Set the url to search for a particular band</span><span class="w">
+  </span><span class="n">url_sub2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="s1">'search?q='</span><span class="p">,</span><span class="n">band</span><span class="p">,</span><span class="s1">'&amp;item_type'</span><span class="p">)</span><span class="w">
+  
+  </span><span class="c1"># build the url to be scraped by combining the site url with the band url</span><span class="w">
+  </span><span class="n">df1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="n">site_url</span><span class="p">,</span><span class="w"> </span><span class="n">url_sub2</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> 
+    </span><span class="c1"># scrape the html</span><span class="w">
+    </span><span class="n">read_html</span><span class="p">()</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> 
+    </span><span class="c1"># Inspect the web page to see which sections are available and select the name of the one of interest</span><span class="w">
+    </span><span class="n">html_node</span><span class="p">(</span><span class="s1">'.result-info'</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+    </span><span class="c1"># Get the entries of interes</span><span class="w">
+    </span><span class="n">html_node</span><span class="p">(</span><span class="s1">'.tags.data-search'</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+    </span><span class="c1"># Retrieve the data as text</span><span class="w">
+    </span><span class="n">html_text</span><span class="p">()</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+    </span><span class="c1"># Replace new lines for nothing</span><span class="w">
+    </span><span class="n">str_replace_all</span><span class="p">(</span><span class="s2">"\n"</span><span class="p">,</span><span class="w"> </span><span class="s2">""</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+    </span><span class="c1"># Remove the tag "tags:"</span><span class="w">
+    </span><span class="n">str_replace_all</span><span class="p">(</span><span class="s2">"tags: "</span><span class="p">,</span><span class="w"> </span><span class="s2">""</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+    </span><span class="c1"># Substitute multiple spaces for a single one</span><span class="w">
+    </span><span class="n">str_replace_all</span><span class="p">(</span><span class="s2">"\\s+"</span><span class="p">,</span><span class="w"> </span><span class="s2">" "</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+    </span><span class="c1"># Remove spaces between commas, ^ or at the end of the string</span><span class="w">
+    </span><span class="n">str_replace_all</span><span class="p">(</span><span class="s2">"(?&lt;=\\,)\\s+|^\\s+|\\s+$"</span><span class="p">,</span><span class="w"> </span><span class="s2">""</span><span class="p">)</span><span class="w">
+  
+  </span><span class="c1"># Separate each genre into its own column</span><span class="w">
+  </span><span class="n">df1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">separate_wider_delim</span><span class="p">(</span><span class="n">tibble</span><span class="p">(</span><span class="n">genre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df1</span><span class="p">),</span><span class="w"> 
+                              </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">genre</span><span class="p">,</span><span class="w"> 
+                              </span><span class="n">delim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">","</span><span class="p">,</span><span class="w">
+                              </span><span class="n">names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="s2">"genre"</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">20</span><span class="p">),</span><span class="w">
+                              </span><span class="n">too_few</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"align_start"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+    </span><span class="c1"># Transform data into long format</span><span class="w">
+    </span><span class="n">pivot_longer</span><span class="p">(</span><span class="n">everything</span><span class="p">(),</span><span class="w">
+                 </span><span class="n">names_to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"name"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+    </span><span class="c1"># Drop NA entries </span><span class="w">
+    </span><span class="n">drop_na</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+    </span><span class="c1"># Select the value column</span><span class="w">
+    </span><span class="n">select</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+    </span><span class="c1"># Rename</span><span class="w">
+    </span><span class="n">rename</span><span class="p">(</span><span class="s2">"genre"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"value"</span><span class="p">)</span><span class="w">
+  
+  </span><span class="c1"># Return a tibble with the band name and genres extracted from bandcamp</span><span class="w">
+  </span><span class="n">resul</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tibble</span><span class="p">(</span><span class="n">artist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">rep</span><span class="p">(</span><span class="n">band_orig</span><span class="p">,</span><span class="w"> </span><span class="n">nrow</span><span class="p">(</span><span class="n">df1</span><span class="p">)),</span><span class="w">
+                  </span><span class="n">genre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df1</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">pull</span><span class="p">(</span><span class="n">genre</span><span class="p">))</span><span class="w">
+  </span><span class="nf">return</span><span class="p">(</span><span class="n">resul</span><span class="p">)</span><span class="w">
+  </span><span class="p">}</span></code></pre></figure>
+
+<p>Use map to apply the functino to each artist. Use possibly as a TryCatch; thus, if no genre was found for certain artist it will return the message “Error in file”.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">resul_exp_nogenre</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">map</span><span class="p">(</span><span class="n">nogenre</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+                             </span><span class="n">pull</span><span class="p">(</span><span class="n">artist</span><span class="p">),</span><span class="w"> 
+                         </span><span class="n">possibly</span><span class="p">(</span><span class="n">rvest_func</span><span class="p">,</span><span class="w"> 
+                                  </span><span class="n">otherwise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Error in file"</span><span class="p">))</span></code></pre></figure>
+
+<p>Then add the genres as a new column to the previous dataframe and add a counter (llist) that indicates how many genres were associated with each artist.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">prenogenre</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">nogenre</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Add the list with extracted genres to the original df</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">lista</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">resul_exp_nogenre</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Set a value that indicates if no genres were found for certain artits.</span><span class="w">
+  </span><span class="c1"># Put 0 if that is the case (using the possibly) or the number of genres found</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">llist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">map</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">resul_exp_nogenre</span><span class="p">),</span><span class="w"> </span><span class="n">possibly</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">){</span><span class="w">
+    </span><span class="n">nrow</span><span class="p">(</span><span class="n">resul_exp_nogenre</span><span class="p">[[</span><span class="n">i</span><span class="p">]])</span><span class="w">
+  </span><span class="p">},</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">)))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># unnest, extract elements from list.</span><span class="w">
+  </span><span class="n">unnest</span><span class="p">(</span><span class="n">llist</span><span class="p">)</span><span class="w"> </span></code></pre></figure>
+
+<p>Then eliminate entries without a genre, and unnest the genres list. Obtain the final data frame.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">nogenreFill</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">prenogenre</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Eliminate artist for which no genre was found</span><span class="w">
+  </span><span class="n">filter</span><span class="p">(</span><span class="n">llist</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Unnest  lista column</span><span class="w">
+  </span><span class="n">unnest</span><span class="p">(</span><span class="n">lista</span><span class="p">,</span><span class="w">
+         </span><span class="n">names_repair</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"universal"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Rename column names</span><span class="w">
+  </span><span class="n">rename</span><span class="p">(</span><span class="s2">"artist"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"artist...1"</span><span class="p">,</span><span class="w">
+         </span><span class="s2">"genre"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"genre...6"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Select columns of interest.</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="n">artist</span><span class="p">,</span><span class="w"> </span><span class="n">album</span><span class="p">,</span><span class="w"> </span><span class="n">genre</span><span class="p">,</span><span class="w"> </span><span class="n">url</span><span class="p">)</span></code></pre></figure>
+
+<p>A snapshot of the result:</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/rvesttable.png"><img src="http://localhost:4000/assets/images/rvesttable.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Example of the data obtained after web scraping the bandcamp site.</p>
+
+    </section>
+  </article>
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/JonathanVSV" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://stackoverflow.com/users/9022665/jonathan-v-sol%c3%b3rzano" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-stack-overflow" aria-hidden="true"></i> Stack Overflow</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Jonathan V. Solórzano. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

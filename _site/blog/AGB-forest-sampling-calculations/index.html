@@ -1,0 +1,481 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>AGB forest sampling calculations - Jonathan V. Solórzano</title>
+<meta name="description" content="AGB forest sampling calculations">
+
+
+  <meta name="author" content="Jonathan V. Solórzano">
+  
+  <meta property="article:author" content="Jonathan V. Solórzano">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Jonathan V. Solórzano">
+<meta property="og:title" content="AGB forest sampling calculations">
+<meta property="og:url" content="http://localhost:4000/blog/AGB-forest-sampling-calculations/">
+
+
+  <meta property="og:description" content="AGB forest sampling calculations">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2023-07-17T11:42:00-06:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/blog/AGB-forest-sampling-calculations/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Jonathan V. Solórzano Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--splash">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Jonathan V. Solórzano
+          <span class="site-subtitle">My personal site</span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/courses/">Courses</a>
+            </li><li class="masthead__menu-item">
+              <a href="/mini-packages/">Mini-packages</a>
+            </li><li class="masthead__menu-item">
+              <a href="/gee/">GEE</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+<div id="main" role="main">
+  <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="AGB forest sampling calculations">
+    <meta itemprop="description" content="AGB forest sampling calculations">
+    <meta itemprop="datePublished" content="2023-07-17T11:42:00-06:00">
+    
+
+    <section class="page__content" itemprop="text">
+      <h1 id="agb-forest-sampling-calculations">AGB forest sampling calculations</h1>
+
+<p>This post shows an example of how to calculate some common plot-level variables from a forest sampling.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">BIOMASS</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">stringr</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)</span></code></pre></figure>
+
+<p>Read data</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Field data with individual tree measures</span><span class="w">
+</span><span class="n">df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s2">"D:/Drive/Jonathan_trabaggio/Doctorado/R/Ayuquila_Degradation/CleanData/df_all.csv"</span><span class="p">,</span><span class="w">
+               </span><span class="n">na.strings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"NA"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Coordinates of each site.</span><span class="w">
+</span><span class="n">coords</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.csv</span><span class="p">(</span><span class="s2">"D:/Drive/Jonathan_trabaggio/Doctorado/R/Ayuquila_Degradation/Data/gpscoords.csv"</span><span class="p">)</span></code></pre></figure>
+
+<p>How the headers of the data look like the following for the <code class="language-plaintext highlighter-rouge">df</code> object.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="w">     </span><span class="n">Nombre</span><span class="w">              </span><span class="n">Especie</span><span class="w"> </span><span class="n">Observaciones</span><span class="w"> </span><span class="n">DAP1</span><span class="w"> </span><span class="n">DAP2</span><span class="w"> </span><span class="n">DAP3</span><span class="w"> </span><span class="n">DAP4</span><span class="w"> </span><span class="n">DAP5</span><span class="w"> </span><span class="n">DAP6</span><span class="w"> </span><span class="n">DAP7</span><span class="w"> </span><span class="n">DAP8</span><span class="w"> </span><span class="n">DAP9</span><span class="w"> </span><span class="n">DAP10</span><span class="w"> </span><span class="n">DAP11</span><span class="w">
+</span><span class="m">1</span><span class="w">      </span><span class="o">&lt;</span><span class="kc">NA</span><span class="o">&gt;</span><span class="w">                 </span><span class="o">&lt;</span><span class="kc">NA</span><span class="o">&gt;</span><span class="w">          </span><span class="o">&lt;</span><span class="kc">NA</span><span class="o">&gt;</span><span class="w"> </span><span class="m">3.44</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">
+</span><span class="m">2</span><span class="w">      </span><span class="o">&lt;</span><span class="kc">NA</span><span class="o">&gt;</span><span class="w">                 </span><span class="o">&lt;</span><span class="kc">NA</span><span class="o">&gt;</span><span class="w">          </span><span class="o">&lt;</span><span class="kc">NA</span><span class="o">&gt;</span><span class="w"> </span><span class="m">6.81</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">
+</span><span class="m">3</span><span class="w">  </span><span class="n">lysiloma</span><span class="w"> </span><span class="n">Lysiloma</span><span class="w"> </span><span class="n">divaricatum</span><span class="w">          </span><span class="o">&lt;</span><span class="kc">NA</span><span class="o">&gt;</span><span class="w"> </span><span class="m">3.12</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">
+</span><span class="m">4</span><span class="w"> </span><span class="n">leocarpus</span><span class="w">      </span><span class="n">Heliocarpus</span><span class="w"> </span><span class="n">sp.</span><span class="w">          </span><span class="o">&lt;</span><span class="kc">NA</span><span class="o">&gt;</span><span class="w"> </span><span class="m">8.72</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">
+</span><span class="m">5</span><span class="w">    </span><span class="n">muerto</span><span class="w">                 </span><span class="o">&lt;</span><span class="kc">NA</span><span class="o">&gt;</span><span class="w">          </span><span class="o">&lt;</span><span class="kc">NA</span><span class="o">&gt;</span><span class="w"> </span><span class="m">4.04</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">
+</span><span class="m">6</span><span class="w"> </span><span class="n">leocarpus</span><span class="w">      </span><span class="n">Heliocarpus</span><span class="w"> </span><span class="n">sp.</span><span class="w">          </span><span class="o">&lt;</span><span class="kc">NA</span><span class="o">&gt;</span><span class="w"> </span><span class="m">3.34</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">   </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">
+  </span><span class="n">DAP12</span><span class="w"> </span><span class="n">DAP13</span><span class="w"> </span><span class="n">DAP14</span><span class="w"> </span><span class="n">DAP15</span><span class="w"> </span><span class="n">DAP16</span><span class="w"> </span><span class="n">DAP17</span><span class="w"> </span><span class="n">DAP18</span><span class="w"> </span><span class="n">DAP19</span><span class="w"> </span><span class="n">DAP20</span><span class="w"> </span><span class="n">DAP21</span><span class="w"> </span><span class="n">DAP22</span><span class="w"> </span><span class="n">DAP23</span><span class="w"> </span><span class="n">DAP24</span><span class="w"> </span><span class="n">Altura</span><span class="w">  </span><span class="n">parcela</span><span class="w">         </span><span class="n">x</span><span class="w">
+</span><span class="m">1</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">   </span><span class="m">1.66</span><span class="w"> </span><span class="n">Amacuau1</span><span class="w"> </span><span class="m">19</span><span class="err">°</span><span class="m">53.904</span><span class="w">
+</span><span class="m">2</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">   </span><span class="m">4.56</span><span class="w"> </span><span class="n">Amacuau1</span><span class="w"> </span><span class="m">19</span><span class="err">°</span><span class="m">53.904</span><span class="w">
+</span><span class="m">3</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">   </span><span class="m">3.65</span><span class="w"> </span><span class="n">Amacuau1</span><span class="w"> </span><span class="m">19</span><span class="err">°</span><span class="m">53.904</span><span class="w">
+</span><span class="m">4</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">   </span><span class="m">5.29</span><span class="w"> </span><span class="n">Amacuau1</span><span class="w"> </span><span class="m">19</span><span class="err">°</span><span class="m">53.904</span><span class="w">
+</span><span class="m">5</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">   </span><span class="m">2.69</span><span class="w"> </span><span class="n">Amacuau1</span><span class="w"> </span><span class="m">19</span><span class="err">°</span><span class="m">53.904</span><span class="w">
+</span><span class="m">6</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">    </span><span class="kc">NA</span><span class="w">   </span><span class="m">3.02</span><span class="w"> </span><span class="n">Amacuau1</span><span class="w"> </span><span class="m">19</span><span class="err">°</span><span class="m">53.904</span><span class="w">
+           </span><span class="n">y</span><span class="w"> </span><span class="n">cobertura</span><span class="w"> </span><span class="n">register</span><span class="w"> </span><span class="n">Observaciones.sitio</span><span class="w"> </span><span class="n">id</span><span class="w">   </span><span class="n">DAP1.BA</span><span class="w"> </span><span class="n">DAP2.BA</span><span class="w"> </span><span class="n">DAP3.BA</span><span class="w"> </span><span class="n">DAP4.BA</span><span class="w"> </span><span class="n">DAP5.BA</span><span class="w"> </span><span class="n">DAP6.BA</span><span class="w">
+</span><span class="m">1</span><span class="w"> </span><span class="m">104</span><span class="err">°</span><span class="m">06.428</span><span class="w">     </span><span class="m">70-80</span><span class="w">      </span><span class="n">Yan</span><span class="w">                </span><span class="o">&lt;</span><span class="kc">NA</span><span class="o">&gt;</span><span class="w">  </span><span class="m">1</span><span class="w">  </span><span class="m">9.294088</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">
+</span><span class="m">2</span><span class="w"> </span><span class="m">104</span><span class="err">°</span><span class="m">06.428</span><span class="w">     </span><span class="m">70-80</span><span class="w">      </span><span class="n">Yan</span><span class="w">                </span><span class="o">&lt;</span><span class="kc">NA</span><span class="o">&gt;</span><span class="w">  </span><span class="m">2</span><span class="w"> </span><span class="m">36.423704</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">
+</span><span class="m">3</span><span class="w"> </span><span class="m">104</span><span class="err">°</span><span class="m">06.428</span><span class="w">     </span><span class="m">70-80</span><span class="w">      </span><span class="n">Yan</span><span class="w">                </span><span class="o">&lt;</span><span class="kc">NA</span><span class="o">&gt;</span><span class="w">  </span><span class="m">3</span><span class="w">  </span><span class="m">7.645380</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">
+</span><span class="m">4</span><span class="w"> </span><span class="m">104</span><span class="err">°</span><span class="m">06.428</span><span class="w">     </span><span class="m">70-80</span><span class="w">      </span><span class="n">Yan</span><span class="w">                </span><span class="o">&lt;</span><span class="kc">NA</span><span class="o">&gt;</span><span class="w">  </span><span class="m">4</span><span class="w"> </span><span class="m">59.720420</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">
+</span><span class="m">5</span><span class="w"> </span><span class="m">104</span><span class="err">°</span><span class="m">06.428</span><span class="w">     </span><span class="m">70-80</span><span class="w">      </span><span class="n">Yan</span><span class="w">                </span><span class="o">&lt;</span><span class="kc">NA</span><span class="o">&gt;</span><span class="w">  </span><span class="m">5</span><span class="w"> </span><span class="m">12.818955</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">
+</span><span class="m">6</span><span class="w"> </span><span class="m">104</span><span class="err">°</span><span class="m">06.428</span><span class="w">     </span><span class="m">70-80</span><span class="w">      </span><span class="n">Yan</span><span class="w">                </span><span class="o">&lt;</span><span class="kc">NA</span><span class="o">&gt;</span><span class="w">  </span><span class="m">6</span><span class="w">  </span><span class="m">8.761588</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">
+  </span><span class="n">DAP7.BA</span><span class="w"> </span><span class="n">DAP8.BA</span><span class="w"> </span><span class="n">DAP9.BA</span><span class="w"> </span><span class="n">DAP10.BA</span><span class="w"> </span><span class="n">DAP11.BA</span><span class="w"> </span><span class="n">DAP12.BA</span><span class="w"> </span><span class="n">DAP13.BA</span><span class="w"> </span><span class="n">DAP14.BA</span><span class="w"> </span><span class="n">DAP15.BA</span><span class="w"> </span><span class="n">DAP16.BA</span><span class="w"> </span><span class="n">DAP17.BA</span><span class="w"> </span><span class="n">DAP18.BA</span><span class="w">
+</span><span class="m">1</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">
+</span><span class="m">2</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">
+</span><span class="m">3</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">
+</span><span class="m">4</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">
+</span><span class="m">5</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">
+</span><span class="m">6</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">      </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">
+  </span><span class="n">DAP19.BA</span><span class="w"> </span><span class="n">DAP20.BA</span><span class="w"> </span><span class="n">DAP21.BA</span><span class="w"> </span><span class="n">DAP22.BA</span><span class="w"> </span><span class="n">DAP23.BA</span><span class="w"> </span><span class="n">DAP24.BA</span><span class="w">
+</span><span class="m">1</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">
+</span><span class="m">2</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">
+</span><span class="m">3</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">
+</span><span class="m">4</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">
+</span><span class="m">5</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">
+</span><span class="m">6</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span><span class="w">       </span><span class="kc">NA</span></code></pre></figure>
+
+<p>and like the following for the <code class="language-plaintext highlighter-rouge">coords</code> file.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="w">      </span><span class="n">name</span><span class="w"> </span><span class="n">elevation</span><span class="w">       </span><span class="n">date</span><span class="w">         </span><span class="n">x</span><span class="w">        </span><span class="n">y</span><span class="w">     </span><span class="n">xutm</span><span class="w">    </span><span class="n">ytum</span><span class="w">
+</span><span class="m">1</span><span class="w">   </span><span class="n">LIMON1</span><span class="w"> </span><span class="m">1118.1133</span><span class="w"> </span><span class="m">2022</span><span class="o">/</span><span class="m">05</span><span class="o">/</span><span class="m">12</span><span class="w"> </span><span class="m">-104.1652</span><span class="w"> </span><span class="m">19.83815</span><span class="w"> </span><span class="m">587412.5</span><span class="w"> </span><span class="m">2193788</span><span class="w">
+</span><span class="m">2</span><span class="w"> </span><span class="n">AMACUAU1</span><span class="w">  </span><span class="m">998.5761</span><span class="w"> </span><span class="m">2022</span><span class="o">/</span><span class="m">05</span><span class="o">/</span><span class="m">13</span><span class="w"> </span><span class="m">-104.1071</span><span class="w"> </span><span class="m">19.89840</span><span class="w"> </span><span class="m">593460.8</span><span class="w"> </span><span class="m">2200486</span></code></pre></figure>
+
+<h1 id="fix-taxonomy-and-get-wood-density-for-agb-calculation">Fix taxonomy and get wood density for AGB calculation</h1>
+
+<p>The first step is to get the corrected names of the species registered in the field. This information will be used to get the wood density by species, genus or family, depending on what info is available in the global woodensity database. Then this wood density is going to be used to calculate AGB as</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Separate genus and species</span><span class="w">
+</span><span class="n">df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">genus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">str_extract</span><span class="p">(</span><span class="n">Especie</span><span class="p">,</span><span class="w"> </span><span class="s2">"[A-z]+(?= )"</span><span class="p">),</span><span class="w">
+         </span><span class="n">species</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">str_extract</span><span class="p">(</span><span class="n">Especie</span><span class="p">,</span><span class="w"> </span><span class="s2">"(?&lt;= )[A-z]+(?=)"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">across</span><span class="p">(</span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="n">gsub</span><span class="p">(</span><span class="s2">"sp|sp."</span><span class="p">,</span><span class="s2">"NA"</span><span class="p">,</span><span class="n">.x</span><span class="p">)))</span><span class="w">
+
+</span><span class="c1"># Correct taxo names</span><span class="w">
+</span><span class="n">taxo</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">correctTaxo</span><span class="p">(</span><span class="n">genus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">$</span><span class="n">genus</span><span class="p">,</span><span class="w"> 
+                    </span><span class="n">species</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">$</span><span class="n">species</span><span class="p">,</span><span class="w"> 
+                    </span><span class="n">useCache</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">,</span><span class="w"> 
+                    </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Add as new columns</span><span class="w">
+</span><span class="n">df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">genuscorr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">taxo</span><span class="o">$</span><span class="n">genusCorrected</span><span class="p">,</span><span class="w">
+         </span><span class="n">speciescorr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">taxo</span><span class="o">$</span><span class="n">speciesCorrected</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Get family according to APG 3</span><span class="w">
+</span><span class="n">APG</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">getTaxonomy</span><span class="p">(</span><span class="n">df</span><span class="o">$</span><span class="n">genuscorr</span><span class="p">,</span><span class="w"> </span><span class="n">findOrder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Add to original df</span><span class="w">
+</span><span class="n">df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">APG</span><span class="o">$</span><span class="n">family</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Get wood density</span><span class="w">
+</span><span class="n">dataWD</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">getWoodDensity</span><span class="p">(</span><span class="w">
+  </span><span class="n">genus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">$</span><span class="n">genuscorr</span><span class="p">,</span><span class="w">
+  </span><span class="n">species</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">$</span><span class="n">speciescorr</span><span class="p">,</span><span class="w">
+  </span><span class="n">family</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">$</span><span class="n">family</span><span class="p">,</span><span class="w">
+  </span><span class="n">region</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"World"</span><span class="p">,</span><span class="w">
+  </span><span class="n">stand</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="o">$</span><span class="n">parcela</span><span class="w">
+</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># add as columns to df</span><span class="w">
+</span><span class="n">df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">meanwood</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dataWD</span><span class="o">$</span><span class="n">meanWD</span><span class="p">,</span><span class="w">
+         </span><span class="n">sdwood</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dataWD</span><span class="o">$</span><span class="n">sdWD</span><span class="p">,</span><span class="w">
+         </span><span class="n">levelwood</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dataWD</span><span class="o">$</span><span class="n">levelWD</span><span class="p">,</span><span class="w">
+         </span><span class="n">nInd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dataWD</span><span class="o">$</span><span class="n">nInd</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Compute AGB for all DAP</span><span class="w">
+</span><span class="n">df_agb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">across</span><span class="p">(</span><span class="n">matches</span><span class="p">(</span><span class="s2">"DAP[0-9]+$"</span><span class="p">),</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">computeAGB</span><span class="p">(</span><span class="n">D</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">.x</span><span class="p">,</span><span class="w">
+                                                    </span><span class="n">WD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">meanwood</span><span class="p">,</span><span class="w">
+                                                    </span><span class="n">H</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Altura</span><span class="p">)))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">matches</span><span class="p">(</span><span class="s2">"DAP[0-9]+$"</span><span class="p">))</span><span class="w">
+
+</span><span class="n">colnames</span><span class="p">(</span><span class="n">df_agb</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"id"</span><span class="p">,</span><span class="w"> </span><span class="n">paste0</span><span class="p">((</span><span class="s2">"AGB"</span><span class="p">),</span><span class="w"> </span><span class="n">seq</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">24</span><span class="p">)))</span><span class="w">
+
+</span><span class="c1"># Join AGB by id</span><span class="w">
+</span><span class="n">df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">left_join</span><span class="p">(</span><span class="n">df_agb</span><span class="p">,</span><span class="w"> </span><span class="s2">"id"</span><span class="p">)</span></code></pre></figure>
+
+<p>After these steps we now got the individual AGB for each stem and individual, as new columns of the original df. So the next step is going to calculate these same metrics for each individual (e.g., individual AGB sum of all of its stems). Watch that you might need to change some parameters of the <code class="language-plaintext highlighter-rouge">subplot_size</code> definition according to your own sampling design.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Max DAP, plot extent</span><span class="w">
+</span><span class="n">subplot_size</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">matches</span><span class="p">(</span><span class="s2">"DAP[0-9]+$"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">pivot_longer</span><span class="p">(</span><span class="n">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">id</span><span class="p">,</span><span class="w"> 
+               </span><span class="n">names_to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"AGB"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">drop_na</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">summarise</span><span class="p">(</span><span class="n">DAP_max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">max</span><span class="p">(</span><span class="n">value</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">subplot_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">case_when</span><span class="p">(</span><span class="n">DAP_max</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="m">500</span><span class="p">,</span><span class="w">
+                                  </span><span class="n">DAP_max</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">2.5</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">DAP_max</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="m">29</span><span class="p">,</span><span class="w">
+                                  </span><span class="n">DAP_max</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">2.5</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="m">0</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># AGB sum</span><span class="w">
+</span><span class="n">AGB</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">starts_with</span><span class="p">(</span><span class="s2">"AGB"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">pivot_longer</span><span class="p">(</span><span class="n">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">id</span><span class="p">,</span><span class="w"> 
+               </span><span class="n">names_to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"AGB"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">drop_na</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">summarise</span><span class="p">(</span><span class="n">AGB_sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">value</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># number of stems</span><span class="w">
+</span><span class="n">Stems</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">starts_with</span><span class="p">(</span><span class="s2">"AGB"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">pivot_longer</span><span class="p">(</span><span class="n">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">id</span><span class="p">,</span><span class="w"> 
+               </span><span class="n">names_to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"AGB"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">drop_na</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">summarise</span><span class="p">(</span><span class="n">Stem_sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="p">())</span><span class="w">
+
+</span><span class="c1"># Basal area</span><span class="w">
+</span><span class="n">BA</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">ends_with</span><span class="p">(</span><span class="s2">"BA"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">pivot_longer</span><span class="p">(</span><span class="n">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">id</span><span class="p">,</span><span class="w"> 
+               </span><span class="n">names_to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"BA"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">drop_na</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">summarise</span><span class="p">(</span><span class="n">BA_sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">value</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># Join previous calculation to original df</span><span class="w">
+</span><span class="n">df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">left_join</span><span class="p">(</span><span class="n">AGB</span><span class="p">,</span><span class="w"> </span><span class="s2">"id"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">left_join</span><span class="p">(</span><span class="n">BA</span><span class="p">,</span><span class="w"> </span><span class="s2">"id"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">left_join</span><span class="p">(</span><span class="n">Stems</span><span class="p">,</span><span class="w"> </span><span class="s2">"id"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">left_join</span><span class="p">(</span><span class="n">subplot_size</span><span class="p">,</span><span class="w"> </span><span class="s2">"id"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Select variables of interest</span><span class="w">
+</span><span class="n">df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="n">parcela</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">cobertura</span><span class="p">,</span><span class="w"> </span><span class="n">Observaciones.sitio</span><span class="p">,</span><span class="w"> 
+         </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">subplot_size</span><span class="p">,</span><span class="w"> </span><span class="n">AGB_sum</span><span class="p">,</span><span class="w"> </span><span class="n">BA_sum</span><span class="p">,</span><span class="w"> </span><span class="n">Stem_sum</span><span class="p">,</span><span class="w"> </span><span class="n">Altura</span><span class="p">,</span><span class="w"> 
+         </span><span class="n">genuscorr</span><span class="p">,</span><span class="w"> </span><span class="n">speciescorr</span><span class="p">,</span><span class="w"> </span><span class="n">meanwood</span><span class="p">,</span><span class="w"> </span><span class="n">levelwood</span><span class="p">,</span><span class="w">
+         </span><span class="n">register</span><span class="p">)</span><span class="w"> </span></code></pre></figure>
+
+<p>Now that we have the individual measures we need to calculate the per plot variables: AGBplot, BAplot, Dplot, Stemplot, Hmplot, H10plot. Since some of these measures are sums, extrapolated to 1 ha sums, means, etc, each one is summarised using the most common function to calculate it (e.g., AGB sum, height mean). Finally, we assume that the best registered coordinates are located in the  <code class="language-plaintext highlighter-rouge">coords</code> file; thus, these coordinates are pasted on to the final result.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># -------------------Per plot variables------------------------------</span><span class="w">
+</span><span class="c1"># Summarise variables that need to be extrapolated</span><span class="w">
+</span><span class="n">vars1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">parcela</span><span class="p">,</span><span class="w"> </span><span class="n">subplot_size</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Sums by subplot_size</span><span class="w">
+  </span><span class="n">summarise</span><span class="p">(</span><span class="n">AGBsubplot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">AGB_sum</span><span class="p">),</span><span class="w">
+            </span><span class="n">BAsubplot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">BA_sum</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="m">10000</span><span class="p">,</span><span class="w">
+            </span><span class="n">Dsubplot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="p">(),</span><span class="w">
+            </span><span class="n">Stemsubplot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">Stem_sum</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Extrapolate to 1 ha according to the subplot size</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">across</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="n">AGBsubplot</span><span class="p">,</span><span class="w"> </span><span class="n">BAsubplot</span><span class="p">,</span><span class="w"> </span><span class="n">Dsubplot</span><span class="p">,</span><span class="w"> </span><span class="n">Stemsubplot</span><span class="p">),</span><span class="w"> </span><span class="o">~</span><span class="n">.x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">10000</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">subplot_size</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">ungroup</span><span class="p">()</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">parcela</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Sum both subplot estimates</span><span class="w">
+  </span><span class="n">summarise</span><span class="p">(</span><span class="n">AGBplot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">AGBsubplot</span><span class="p">),</span><span class="w">
+            </span><span class="n">BAplot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">BAsubplot</span><span class="p">),</span><span class="w">
+            </span><span class="n">Dplot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">Dsubplot</span><span class="p">),</span><span class="w">
+            </span><span class="n">Stemplot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">Stemsubplot</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># Calculate top 10 mean height</span><span class="w">
+</span><span class="n">vars2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">parcela</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">slice_max</span><span class="p">(</span><span class="n">Altura</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">summarise</span><span class="p">(</span><span class="n">H10plot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mean</span><span class="p">(</span><span class="n">Altura</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># Cover</span><span class="w">
+</span><span class="n">vars3</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="n">parcela</span><span class="p">,</span><span class="w"> </span><span class="n">cobertura</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">separate</span><span class="p">(</span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cobertura</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">sep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"-"</span><span class="p">,</span><span class="w">
+           </span><span class="n">into</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"cob1"</span><span class="p">,</span><span class="w"> </span><span class="s2">"cob2"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">across</span><span class="p">(</span><span class="n">starts_with</span><span class="p">(</span><span class="s2">"cob"</span><span class="p">),</span><span class="w"> </span><span class="o">~</span><span class="nf">as.numeric</span><span class="p">(</span><span class="n">.x</span><span class="p">)))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">parcela</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">summarise</span><span class="p">(</span><span class="n">cob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mean</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="n">cob1</span><span class="p">,</span><span class="w"> </span><span class="n">cob2</span><span class="p">),</span><span class="w"> </span><span class="n">na.rm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># Mean height</span><span class="w">
+</span><span class="n">vars4</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">group_by</span><span class="p">(</span><span class="n">parcela</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">summarise</span><span class="p">(</span><span class="n">Hmplot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mean</span><span class="p">(</span><span class="n">Altura</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># Join all calculations</span><span class="w">
+</span><span class="n">resul</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">vars1</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">left_join</span><span class="p">(</span><span class="n">vars2</span><span class="p">,</span><span class="w"> </span><span class="s2">"parcela"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">left_join</span><span class="p">(</span><span class="n">vars3</span><span class="p">,</span><span class="w"> </span><span class="s2">"parcela"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">left_join</span><span class="p">(</span><span class="n">df</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> 
+              </span><span class="n">select</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">parcela</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+              </span><span class="n">distinct</span><span class="p">(</span><span class="n">parcela</span><span class="p">,</span><span class="w"> </span><span class="n">.keep_all</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">),</span><span class="w">
+            </span><span class="s2">"parcela"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">left_join</span><span class="p">(</span><span class="n">vars4</span><span class="p">,</span><span class="w"> </span><span class="s2">"parcela"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="n">parcela</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">cob</span><span class="p">,</span><span class="w"> </span><span class="n">AGBplot</span><span class="p">,</span><span class="w"> </span><span class="n">BAplot</span><span class="p">,</span><span class="w"> </span><span class="n">Dplot</span><span class="p">,</span><span class="w"> </span><span class="n">Stemplot</span><span class="p">,</span><span class="w"> </span><span class="n">Hmplot</span><span class="p">,</span><span class="w"> </span><span class="n">H10plot</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Rename columns</span><span class="w">
+</span><span class="n">colnames</span><span class="p">(</span><span class="n">resul</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Plot"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Lat"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Long"</span><span class="p">,</span><span class="w">
+                     </span><span class="s2">"Cob(%)"</span><span class="p">,</span><span class="w"> </span><span class="s2">"AGB(Mgha-1)"</span><span class="p">,</span><span class="w"> </span><span class="s2">"BA(m2ha-1)"</span><span class="p">,</span><span class="w">
+                     </span><span class="s2">"Dplot(indha-1)"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Stemplot(stemha-1)"</span><span class="p">,</span><span class="w">
+                     </span><span class="s2">"Hmean(m)"</span><span class="p">,</span><span class="w"> </span><span class="s2">"H10mean(m)"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">resul</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">resul</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="o">-</span><span class="nf">c</span><span class="p">(</span><span class="n">Lat</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="p">))</span><span class="w">
+
+</span><span class="n">coords</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">coords</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">rename</span><span class="p">(</span><span class="s2">"yutm"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"ytum"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">elevation</span><span class="p">,</span><span class="w"> </span><span class="n">date</span><span class="p">,</span><span class="w"> </span><span class="n">xutm</span><span class="p">,</span><span class="w"> </span><span class="n">yutm</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">across</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="n">str_to_title</span><span class="p">(</span><span class="n">.x</span><span class="p">)))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">rename</span><span class="p">(</span><span class="s2">"Plot"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"name"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">resul</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">resul</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">left_join</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span><span class="w"> </span><span class="s2">"Plot"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">select</span><span class="p">(</span><span class="n">Plot</span><span class="p">,</span><span class="w"> </span><span class="n">xutm</span><span class="p">,</span><span class="w"> </span><span class="n">yutm</span><span class="p">,</span><span class="w"> </span><span class="n">everything</span><span class="p">())</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">year</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2022</span><span class="p">)</span></code></pre></figure>
+
+<p>Results look like the following.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># A tibble: 2 × 13</span><span class="w">
+  </span><span class="n">Plot</span><span class="w">     </span><span class="n">xutm</span><span class="w">   </span><span class="n">yutm</span><span class="w"> </span><span class="n">`Cob(%)`</span><span class="w"> </span><span class="n">`AGB(Mgha-1)`</span><span class="w"> </span><span class="n">`BA(m2ha-1)`</span><span class="w"> </span><span class="n">`Dplot(indha-1)`</span><span class="w"> </span><span class="n">`Stemplot(stemha-1)`</span><span class="w"> </span><span class="n">`Hmean(m)`</span><span class="w">
+  </span><span class="o">&lt;</span><span class="n">chr</span><span class="o">&gt;</span><span class="w">   </span><span class="o">&lt;</span><span class="n">dbl</span><span class="o">&gt;</span><span class="w">  </span><span class="o">&lt;</span><span class="n">dbl</span><span class="o">&gt;</span><span class="w">    </span><span class="o">&lt;</span><span class="n">dbl</span><span class="o">&gt;</span><span class="w">         </span><span class="o">&lt;</span><span class="n">dbl</span><span class="o">&gt;</span><span class="w">        </span><span class="o">&lt;</span><span class="n">dbl</span><span class="o">&gt;</span><span class="w">            </span><span class="o">&lt;</span><span class="n">dbl</span><span class="o">&gt;</span><span class="w">                </span><span class="o">&lt;</span><span class="n">dbl</span><span class="o">&gt;</span><span class="w">      </span><span class="o">&lt;</span><span class="n">dbl</span><span class="o">&gt;</span><span class="w">
+</span><span class="m">1</span><span class="w"> </span><span class="n">Amacu</span><span class="err">…</span><span class="w"> </span><span class="m">5.93e5</span><span class="w"> </span><span class="m">2.20e6</span><span class="w">       </span><span class="m">75</span><span class="w">          </span><span class="m">37.6</span><span class="w">         </span><span class="m">18.2</span><span class="w">            </span><span class="m">2919</span><span class="n">.</span><span class="w">                </span><span class="m">5159</span><span class="n">.</span><span class="w">       </span><span class="m">4.46</span><span class="w">
+</span><span class="m">2</span><span class="w"> </span><span class="n">Limon1</span><span class="w"> </span><span class="m">5.87e5</span><span class="w"> </span><span class="m">2.19e6</span><span class="w">       </span><span class="m">75</span><span class="w">          </span><span class="m">52.8</span><span class="w">         </span><span class="m">29.4</span><span class="w">            </span><span class="m">2130</span><span class="n">.</span><span class="w">                </span><span class="m">4410</span><span class="n">.</span><span class="w">       </span><span class="m">3.77</span><span class="w">
+</span><span class="c1"># ℹ 4 more variables: `H10mean(m)` &lt;dbl&gt;, elevation &lt;dbl&gt;, date &lt;chr&gt;, year &lt;dbl&gt;</span></code></pre></figure>
+
+    </section>
+  </article>
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/JonathanVSV" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://stackoverflow.com/users/9022665/jonathan-v-sol%c3%b3rzano" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-stack-overflow" aria-hidden="true"></i> Stack Overflow</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Jonathan V. Solórzano. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>
