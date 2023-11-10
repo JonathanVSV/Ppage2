@@ -236,7 +236,7 @@ htmlwidgets::saveWidget(mapa,
                         "Map1.html")
 {% endhighlight %}
 
-The final result:
+The final result (click on the following image to access the map):
 
-[![map]({{ site.url }}{{ site.baseurl }}/assets/leaflet/Map1.html){: .align-center style="width: 80%;"}]({{ site.url }}{{ site.baseurl }}/assets/leaflet/Map1.html) Interactive leaflet map.
+[![map]({{ site.url }}{{ site.baseurl }}/assets/images/leafletmap.png){: .align-center style="width: 80%;"}]({{ site.url }}{{ site.baseurl }}/assets/leaflet/Map1.html) Interactive leaflet map.
 {: style="text-align: center; font-size:0.75em;"}
