@@ -121,6 +121,10 @@
 <lastmod>2023-07-17T11:42:00-06:00</lastmod>
 </url>
 <url>
+<loc>http://localhost:4000/blog/Leaflet-in-r/</loc>
+<lastmod>2023-11-10T11:42:00-06:00</lastmod>
+</url>
+<url>
 <loc>http://localhost:4000/about/</loc>
 </url>
 <url>
@@ -158,6 +162,10 @@
 <url>
 <loc>http://localhost:4000/assets/images/presentation.pdf</loc>
 <lastmod>2022-11-02T19:28:05-06:00</lastmod>
+</url>
+<url>
+<loc>http://localhost:4000/assets/leaflet/Map1.html</loc>
+<lastmod>2023-11-10T14:22:34-06:00</lastmod>
 </url>
 <url>
 <loc>http://localhost:4000/googlea0129d88b9aec214.html</loc>

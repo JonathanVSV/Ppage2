@@ -1,0 +1,433 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Leaflet in R - Jonathan V. Solórzano</title>
+<meta name="description" content="Leaflet in R">
+
+
+  <meta name="author" content="Jonathan V. Solórzano">
+  
+  <meta property="article:author" content="Jonathan V. Solórzano">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Jonathan V. Solórzano">
+<meta property="og:title" content="Leaflet in R">
+<meta property="og:url" content="http://localhost:4000/blog/Leaflet-in-r/">
+
+
+  <meta property="og:description" content="Leaflet in R">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2023-11-10T11:42:00-06:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/blog/Leaflet-in-r/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Jonathan V. Solórzano Feed">
+
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css"></noscript>
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--splash">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Jonathan V. Solórzano
+          <span class="site-subtitle">My personal site</span>
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/">About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/courses/">Courses</a>
+            </li><li class="masthead__menu-item">
+              <a href="/mini-packages/">Mini-packages</a>
+            </li><li class="masthead__menu-item">
+              <a href="/gee/">GEE</a>
+            </li><li class="masthead__menu-item">
+              <a href="/posts/">Posts</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <i class="fas fa-search"></i>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+<div id="main" role="main">
+  <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Leaflet in R">
+    <meta itemprop="description" content="Leaflet in R">
+    <meta itemprop="datePublished" content="2023-11-10T11:42:00-06:00">
+    
+
+    <section class="page__content" itemprop="text">
+      <h1 id="leaflet-in-r">Leaflet in R</h1>
+
+<p>This post shows how to build beautiful interactive maps in R using leaflet.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">leaflet</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">terra</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">raster</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">RColorBrewer</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">htmlwidgets</span><span class="p">)</span></code></pre></figure>
+
+<h2 id="read-data">Read data</h2>
+
+<p>Here I am reading three different datasets, a polygon (mx_states) and a point (caps) layer, as well as a raster (DEM).</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># States polygons</span><span class="w">
+</span><span class="c1"># Data downloaded from http://www.conabio.gob.mx/informacion/gis/?vns=gis_root/dipol/estata/dest22gw</span><span class="w">
+</span><span class="n">mx_states</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"dest22gw.shp"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># DEM</span><span class="w">
+</span><span class="c1"># Data downloaded from: http://www.conabio.gob.mx/informacion/gis/?vns=gis_root/dipol/estata/dest22gw</span><span class="w">
+</span><span class="n">dem</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rast</span><span class="p">(</span><span class="s2">"filled_demgw.tif"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Capitals</span><span class="w">
+</span><span class="c1"># Data downloaded from: https://www.efrainmaps.es/descargas-gratuitas/m%C3%A9xico/</span><span class="w">
+</span><span class="n">caps</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"México_Ciudades.shp"</span><span class="p">)</span></code></pre></figure>
+
+<h2 id="create-palettes">Create palettes</h2>
+
+<p>Create palettes for the data. Here we are goin to use RcolorBrewer functionalities and some leaflet functions. Also, notice that I am creating two palettes for the DEM. This is a small hack to put the legend in a reverse order (low values in the lower side and higher in the upper one).</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1">## States palette</span><span class="w">
+</span><span class="n">coul</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">brewer.pal</span><span class="p">(</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="s2">"PuOr"</span><span class="p">)</span><span class="w"> 
+</span><span class="n">pal_st</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">colorRampPalette</span><span class="p">(</span><span class="n">coul</span><span class="p">)(</span><span class="m">33</span><span class="p">)</span><span class="w">
+</span><span class="c1">## Dem palette</span><span class="w">
+</span><span class="n">coul</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">grDevices</span><span class="o">::</span><span class="n">colorRampPalette</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="s2">"#026449"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#12722c"</span><span class="p">,</span><span class="s2">"#d7d17e"</span><span class="p">,</span><span class="w">
+                                        </span><span class="s2">"#95400d"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#980802"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#746c69"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#f1f1f1"</span><span class="p">,</span><span class="s2">"#fdfdfd"</span><span class="p">),</span><span class="w">
+                                      </span><span class="n">interpolate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"spline"</span><span class="p">,</span><span class="w">
+                                      </span><span class="n">bias</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)(</span><span class="m">256</span><span class="p">)</span><span class="w">
+</span><span class="n">pal_dem</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">leaflet</span><span class="o">::</span><span class="n">colorNumeric</span><span class="p">(</span><span class="w">
+  </span><span class="nf">c</span><span class="p">(</span><span class="s2">"#026449"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#12722c"</span><span class="p">,</span><span class="s2">"#d7d17e"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"#95400d"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#980802"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#746c69"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#f1f1f1"</span><span class="p">,</span><span class="s2">"#fdfdfd"</span><span class="p">),</span><span class="w">
+  </span><span class="n">values</span><span class="p">(</span><span class="n">dem</span><span class="p">),</span><span class="w">
+  </span><span class="n">na.color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"transparent"</span><span class="p">,</span><span class="w">
+  </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w">
+  </span><span class="n">reverse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Palette hack to invert legend</span><span class="w">
+</span><span class="n">pal_dem2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">leaflet</span><span class="o">::</span><span class="n">colorNumeric</span><span class="p">(</span><span class="w">
+  </span><span class="nf">c</span><span class="p">(</span><span class="s2">"#026449"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#12722c"</span><span class="p">,</span><span class="s2">"#d7d17e"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"#95400d"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#980802"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#746c69"</span><span class="p">,</span><span class="w"> </span><span class="s2">"#f1f1f1"</span><span class="p">,</span><span class="s2">"#fdfdfd"</span><span class="p">),</span><span class="w">
+  </span><span class="n">values</span><span class="p">(</span><span class="n">dem</span><span class="p">),</span><span class="w">
+  </span><span class="n">na.color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"transparent"</span><span class="p">,</span><span class="w">
+  </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w">
+  </span><span class="n">reverse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="c1">## Capitals palette, same as states</span></code></pre></figure>
+
+<h2 id="leaflet-map">Leaflet map</h2>
+
+<p>Then create the leaflet map. First let’s add the polygons.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">mapa</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">leaflet</span><span class="o">::</span><span class="n">leaflet</span><span class="p">()</span><span class="w">
+
+</span><span class="c1">## Add Polygons</span><span class="w">
+</span><span class="n">mapa</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mapa</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+    </span><span class="n">leaflet</span><span class="o">::</span><span class="n">addPolygons</span><span class="p">(</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mx_states</span><span class="p">,</span><span class="w">
+                         </span><span class="n">stroke</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> 
+                         </span><span class="n">smoothFactor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w"> 
+                         </span><span class="n">opacity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w">
+                         </span><span class="n">fillOpacity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.9</span><span class="p">,</span><span class="w">
+                         </span><span class="n">fillColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">pal_st</span><span class="p">,</span><span class="w">
+                         </span><span class="n">weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="m">0.2</span><span class="p">,</span><span class="w">
+                         </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="s2">"black"</span><span class="p">,</span><span class="w">
+                         </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"States"</span><span class="p">,</span><span class="w">
+                         </span><span class="n">popup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">mx_states</span><span class="o">$</span><span class="n">NOMGEO</span><span class="p">)</span></code></pre></figure>
+
+<p>Add the raster. Here notice the use of <code class="language-plaintext highlighter-rouge">pal_dem2</code> in <code class="language-plaintext highlighter-rouge">addLegend</code> and sort the values in decreasing order using <code class="language-plaintext highlighter-rouge">labFormat</code>.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1">## Get tange of dem</span><span class="w">
+</span><span class="n">minmax</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">range</span><span class="p">(</span><span class="n">raster</span><span class="o">::</span><span class="n">values</span><span class="p">(</span><span class="n">dem</span><span class="p">)[</span><span class="o">!</span><span class="nf">is.na</span><span class="p">(</span><span class="n">raster</span><span class="o">::</span><span class="n">values</span><span class="p">(</span><span class="n">dem</span><span class="p">))])</span><span class="w">
+
+</span><span class="c1">## Add raster</span><span class="w">
+</span><span class="n">mapa</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mapa</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="n">leaflet</span><span class="o">::</span><span class="n">addRasterImage</span><span class="p">(</span><span class="n">raster</span><span class="o">::</span><span class="n">raster</span><span class="p">(</span><span class="n">dem</span><span class="p">),</span><span class="w"> 
+                          </span><span class="n">colors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pal_dem</span><span class="p">,</span><span class="w"> 
+                          </span><span class="n">opacity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.9</span><span class="p">,</span><span class="w">  
+                          </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"DEM"</span><span class="p">,</span><span class="w">
+                          </span><span class="n">layerId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"DEM"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">leaflet</span><span class="o">::</span><span class="n">addLegend</span><span class="p">(</span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bottomleft"</span><span class="p">,</span><span class="w"> 
+                     </span><span class="n">pal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pal_dem2</span><span class="p">,</span><span class="w"> 
+                     </span><span class="n">values</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="p">(</span><span class="n">minmax</span><span class="p">[</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">minmax</span><span class="p">[</span><span class="m">2</span><span class="p">],</span><span class="w"> </span><span class="m">100</span><span class="p">),</span><span class="w"> </span><span class="c1">#4 categorical maps terra::levels(dem)[[1]]$ID,</span><span class="w">
+                     </span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Elevación m s.n.m"</span><span class="p">,</span><span class="w">
+                     </span><span class="n">labFormat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">labelFormat</span><span class="p">(</span><span class="n">transform</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="n">sort</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">decreasing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)))</span><span class="w">
+                    </span><span class="c1"># for categorical maps</span><span class="w">
+                     </span><span class="c1"># labFormat =  leaflet::labelFormat(</span><span class="w">
+                     </span><span class="c1">#   transform = function(x) {</span><span class="w">
+                     </span><span class="c1">#     df_eq %&gt;%</span><span class="w">
+                     </span><span class="c1">#       dplyr::filter(ID == x) %&gt;%</span><span class="w">
+                     </span><span class="c1">#       dplyr::pull(!!sym(key)) </span><span class="w">
+                     </span><span class="c1">#   })) </span></code></pre></figure>
+
+<p>Add the points. Here I set a different color to the circle inside the marker.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1">## Points</span><span class="w">
+</span><span class="c1">### Create customized markers</span><span class="w">
+</span><span class="c1">### Can create in several lists, that's why two lapply are used</span><span class="w">
+</span><span class="c1">### In this case we really only need one level</span><span class="w">
+</span><span class="n">resul</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">pal_st</span><span class="p">),</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">j</span><span class="p">){</span><span class="w">
+    </span><span class="n">leaflet</span><span class="o">::</span><span class="n">makeAwesomeIcon</span><span class="p">(</span><span class="w">
+      </span><span class="n">icon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"circle"</span><span class="p">,</span><span class="w">
+      </span><span class="n">library</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"fa"</span><span class="p">,</span><span class="w">
+      </span><span class="n">iconColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pal_st</span><span class="p">[</span><span class="n">j</span><span class="p">],</span><span class="w">
+      </span><span class="n">markerColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"white"</span><span class="p">,</span><span class="w">
+      
+    </span><span class="p">)</span><span class="w">
+  </span><span class="p">})</span><span class="w"> 
+</span><span class="c1"># Cast as awesome icon list</span><span class="w">
+</span><span class="n">resul</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">structure</span><span class="p">(</span><span class="n">resul</span><span class="p">,</span><span class="w"> </span><span class="n">class</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"leaflet_awesome_icon_set"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">## Add points</span><span class="w">
+</span><span class="n">mapa</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mapa</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+    </span><span class="n">leaflet</span><span class="o">::</span><span class="n">addAwesomeMarkers</span><span class="p">(</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">caps</span><span class="p">,</span><span class="w"> 
+                               </span><span class="n">icon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">resul</span><span class="p">,</span><span class="w">
+                               </span><span class="n">popup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">caps</span><span class="o">$</span><span class="n">CIUDAD</span><span class="p">,</span><span class="w">
+                               </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Capitals"</span><span class="p">)</span></code></pre></figure>
+
+<p>Add three Esri basemaps</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1">## Base maps</span><span class="w">
+</span><span class="n">mapas_base</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Esri.WorldTopoMap"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Esri.WorldImagery"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Esri.WorldGrayCanvas"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Add basemaps</span><span class="w">
+</span><span class="k">for</span><span class="p">(</span><span class="n">provider</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">mapas_base</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="n">mapa</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mapa</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+    </span><span class="n">leaflet</span><span class="o">::</span><span class="n">addProviderTiles</span><span class="p">(</span><span class="n">provider</span><span class="p">,</span><span class="w"> 
+                              </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">provider</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span></code></pre></figure>
+
+<p>Add controls and mini map. <code class="language-plaintext highlighter-rouge">OverlayGroups</code> should match the name given for each layer in the previous sections.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Add controls and mini map</span><span class="w">
+</span><span class="n">mapa</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mapa</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">leaflet</span><span class="o">::</span><span class="n">addLayersControl</span><span class="p">(</span><span class="n">overlayGroups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"States"</span><span class="p">,</span><span class="w"> </span><span class="s2">"DEM"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Capitals"</span><span class="p">),</span><span class="w">
+                            </span><span class="n">baseGroups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mapas_base</span><span class="p">,</span><span class="w">
+                            </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"topright"</span><span class="p">,</span><span class="w">
+                            </span><span class="n">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">leaflet</span><span class="o">::</span><span class="n">layersControlOptions</span><span class="p">(</span><span class="n">collapsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w">
+                                                                    </span><span class="n">hideSingleBase</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="n">leaflet</span><span class="o">::</span><span class="n">addMiniMap</span><span class="p">(</span><span class="n">tiles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mapas_base</span><span class="p">[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> 
+                      </span><span class="n">toggleDisplay</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
+                      </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bottomleft"</span><span class="p">)</span><span class="w"> </span></code></pre></figure>
+
+<p>Add more customizations: change base map, zoom to extent of layers, add globe button to reset zoom level to the 
+starting point, add opacity slider.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># More customizations</span><span class="w">
+</span><span class="n">mapa</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mapa</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="c1"># update base map</span><span class="w">
+  </span><span class="n">htmlwidgets</span><span class="o">::</span><span class="n">onRender</span><span class="p">(</span><span class="s2">"
+    function(el, x) {
+      var myMap = this;
+      myMap.on('baselayerchange',
+        function (e) {
+          myMap.minimap.changeLayer(L.tileLayer.provider(e.name));
+        })
+    }"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
+  </span><span class="c1"># add full extent button</span><span class="w">
+  </span><span class="n">leaflet</span><span class="o">::</span><span class="n">addEasyButton</span><span class="p">(</span><span class="n">leaflet</span><span class="o">::</span><span class="n">easyButton</span><span class="p">(</span><span class="w">
+    </span><span class="n">icon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"fa-globe"</span><span class="p">,</span><span class="w"> 
+    </span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Zoom to Level 1"</span><span class="p">,</span><span class="w">
+    </span><span class="n">onClick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">leaflet</span><span class="o">::</span><span class="n">JS</span><span class="p">(</span><span class="s2">"function(btn, map){ map.fitBounds([
+                                        ["</span><span class="p">,</span><span class="w"> </span><span class="m">14.55712</span><span class="p">,</span><span class="w"> </span><span class="s2">","</span><span class="p">,</span><span class="w"> </span><span class="m">-117.12579</span><span class="p">,</span><span class="w"> </span><span class="s2">"], "</span><span class="p">,</span><span class="w">
+                          </span><span class="s2">"["</span><span class="p">,</span><span class="w"> </span><span class="m">32.71876</span><span class="p">,</span><span class="w"> </span><span class="s2">","</span><span class="p">,</span><span class="w"> </span><span class="m">-86.74011</span><span class="p">,</span><span class="w"> </span><span class="s2">"]
+                                        ]); }"</span><span class="p">)))</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="c1"># opacity slider</span><span class="w">
+  </span><span class="n">leaflet</span><span class="o">::</span><span class="n">addControl</span><span class="p">(</span><span class="n">html</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"&lt;input id=\"OpacitySlide\" type=\"range\" min=\"0\" max=\"1\" step=\"0.1\" value=\"0.5\"&gt;"</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
+  </span><span class="c1"># change opacity of the layers</span><span class="w">
+  </span><span class="n">htmlwidgets</span><span class="o">::</span><span class="n">onRender</span><span class="p">(</span><span class="w">
+    </span><span class="s2">"function(el,x,data){
+                     var map = this;
+                     var evthandler = function(e){
+                        var layers = map.layerManager.getVisibleGroups();
+                        console.log('VisibleGroups: ', layers); 
+                        console.log('Target value: ', +e.target.value);
+                        layers.forEach(function(group) {
+                          var layer = map.layerManager._byGroup[group];
+                          console.log('currently processing: ', group);
+                          Object.keys(layer).forEach(function(el){
+                            if(layer[el] instanceof L.Polygon){;
+                            console.log('Change opacity of: ', group, el);
+                             layer[el].setStyle({fillOpacity:+e.target.value});
+                            }
+                          });
+                        })
+                     };
+              $('#OpacitySlide').mousedown(function () { map.dragging.disable(); });
+              $('#OpacitySlide').mouseup(function () { map.dragging.enable(); });
+              $('#OpacitySlide').on('input', evthandler)}
+          "</span><span class="p">)</span></code></pre></figure>
+
+<p>Save file as html widget.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">htmlwidgets</span><span class="o">::</span><span class="n">saveWidget</span><span class="p">(</span><span class="n">mapa</span><span class="p">,</span><span class="w"> 
+                        </span><span class="s2">"Map1.html"</span><span class="p">)</span></code></pre></figure>
+
+<p>The final result (click on the following image to access the map):</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/leaflet/Map1.html"><img src="http://localhost:4000/assets/images/leafletmap.png" alt="map" class="align-center" style="width: 80%;" /></a> Interactive leaflet map.</p>
+
+    </section>
+  </article>
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://github.com/JonathanVSV" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://stackoverflow.com/users/9022665/jonathan-v-sol%c3%b3rzano" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-stack-overflow" aria-hidden="true"></i> Stack Overflow</a></li>
+        
+      
+    
+
+    
+      <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+    
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2023 Jonathan V. Solórzano. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

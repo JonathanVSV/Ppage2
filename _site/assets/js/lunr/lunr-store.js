@@ -178,4 +178,10 @@ var store = [{
         "tags": ["post","r","BiOMASS","AGB","community attributes","plot-level calculations"],
         "url": "/blog/AGB-forest-sampling-calculations/",
         "teaser": null
+      },{
+        "title": "Leaflet in R",
+        "excerpt":"Leaflet in R This post shows how to build beautiful interactive maps in R using leaflet. library(leaflet) library(sf) library(terra) library(raster) library(RColorBrewer) library(htmlwidgets) Read data Here I am reading three different datasets, a polygon (mx_states) and a point (caps) layer, as well as a raster (DEM). # States polygons # Data...","categories": ["blog"],
+        "tags": ["post","r","maps","interactive maps","leaflet","html maps"],
+        "url": "/blog/Leaflet-in-r/",
+        "teaser": null
       }]

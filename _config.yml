@@ -55,6 +55,7 @@ plugins:
   - jemoji
   - jekyll-include-cache
   - jekyll-seo-tag
+  - jekyll-image-size
 
 author:
   name   : "Jonathan V. Solórzano"
