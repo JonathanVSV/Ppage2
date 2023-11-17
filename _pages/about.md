@@ -58,7 +58,7 @@ I believe that the use of open programming languages such as R or Python, free s
 
 I made a simple wordcloud plot of the most frequent terms in my publications to give a better idea of my research interests.
 
-![wordlcloud](/assets/images/wordcloud.png){:width="70%"}{: .align-center}
+![wordlcloud]({{ site.url }}{{ site.baseurl }}/assets/images/wordcloud.png){:width="70%"}{: .align-center}
 
 Word cloud analysis of my publications.
 {: style="text-align: center;"}
