@@ -50,11 +50,9 @@ gallery:
     title: "Mexico's highest peaks - 3D plot (missing the Nevado de Colima)."
 ---
 
-I am a biologist interested in studying tropical forests using remote sensing, mainly multispectral and radar images, as well as LiDAR point clouds. My research includes identifying forest's structure and diversity patterns, evaluating the use of remote sensing information to model these attributes and monitor land cover / land use change,  deforestation and forest degradation. 
+I am a biologist interested in studying tropical forests using remote sensing. I obtained my Bachelor's and Master's degree in Biology, and a PhD in Geography by the Universidad Nacional Autónoma de México (UNAM). My research includes evaluating the use of remote sensing information to: model structural and diversity forest attributes, and monitor deforestation and forest degradation. Thus, I have experience in acquiring in-field forest data, visually interpreting images, working with different types of remote sensing information (e.g., multipectral, SAR and LiDAR point clouds), obtaining different remote sensing metrics (e.g., spectral indices, calculating GLCM texture, percentiles), as well as working with different modelling algorithms or techniques (e.g., linear / non-linear models, machine learning and deep learning algorthms).
 
-I obtained my Bachelor's and Master's degree in Biology and Biological sciences, respectively, by the Universidad Nacional Autónoma de México (UNAM). Currently, I am doing my PhD in Geography in the UNAM. My current thesis evaluates the use of Sentinel-1 and -2 imagery with deep learning algorithms to obtain land cover / land use classifications, as well as to detect deforested and degradaded areas in tropical forests in Mexico.
-
-I believe that the use of open programming languages such as R or Python, free software such as QGIS and other freely available cloud computing tools such as Google Earth Engine, help in making analyses more transparent and reproducible. Thus, most of my work make use of these tools.
+I like to make most of my analyses in R or use other freely available tools such as QGIS and Google Earth Engine. I believe that using these tools helps in making analyses more transparent and reproducible.
 
 I made a simple wordcloud plot of the most frequent terms in my publications to give a better idea of my research interests.
 
