@@ -15,7 +15,7 @@
 # in the templates via {{ site.myvariable }}.
 title: Jonathan V. Solórzano
 subtitle: My personal site
-email:
+words_per_minute: 200
 description: Welcome to my personal site. In this site you can get to know more about my work and check some of my courses and example scripts in R and GEE.
 github_username: JonathanVSV
 minimal_mistakes_skin: "default"
@@ -61,6 +61,7 @@ author:
   name   : "Jonathan V. Solórzano"
   avatar : "/assets/images/selper_perfil.jpg"
   bio    : "Forests - Remote sensing - Data"
+  email:
   links:
     - label: "Website"
       icon: "fas fa-fw fa-link"
@@ -99,7 +100,14 @@ footer:
       icon: "fab fa-fw fa-stack-overflow"
       url: "https://stackoverflow.com/users/9022665/jonathan-v-sol%c3%b3rzano"
 
-Defaults:
+category_archive:
+  type: liquid
+  path: /categories/
+tag_archive:
+  type: liquid
+  path: /tags/
+
+defaults:
   # _posts
   - scope:
       path: ""
@@ -108,7 +116,7 @@ Defaults:
       layout: single
       author_profile: true
       read_time: true
-      comments: false
+      comments: true
       share: true
       related: true
   # _pages
@@ -128,10 +136,3 @@ Defaults:
       layout: single
       author_profile: false
       share: true
-
-category_archive:
-  type: liquid
-  path: /categories/
-tag_archive:
-  type: liquid
-  path: /tags/
