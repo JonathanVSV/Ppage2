@@ -48,6 +48,18 @@ gallery:
     image_path: /assets/images/Volcanos_all_final.png
     alt: "volcanos 3d"
     title: "Mexico's highest peaks - 3D plot (missing the Nevado de Colima)."
+  - url: /assets/images/unetdefor.jpg
+    image_path: /assets/images/unetdefor.jpg
+    alt: "unetdefor"
+    title: "Comparison among different deforestation detection methods using U-Net and SVM with Sentinel-2 (MS) and -1 images (SAR)"
+  - url: /assets/images/bfast.jpeg
+    image_path: /assets/images/bfast.jpeg
+    alt: "bfastchange"
+    title: "Example of four NDVI time series where changes were detected using BFAST"
+  - url: /assets/images/spectro.png
+    image_path: /assets/images/spectro.png
+    alt: "spectro"
+    title: "Spectrograms obtained using different thresholds (columns) for three different hours (rows) and its effect over a acoustic diversity index (final row)"
 ---
 
 I am a biologist interested in studying tropical forests using remote sensing. I obtained my Bachelor's and Master's degree in Biology, and a PhD in Geography by the Universidad Nacional Autónoma de México (UNAM). My research includes evaluating the use of remote sensing information to model structural and diversity forest attributes, and monitor deforestation and forest degradation. Thus, I have experience in acquiring in-field forest data, visually interpreting images, working with different types of remote sensing information (e.g., multipectral, SAR and LiDAR point clouds), obtaining different remote sensing metrics (e.g., spectral indices, calculating GLCM texture, percentiles), as well as working with different modelling algorithms or techniques (e.g., linear / non-linear models, machine learning and deep learning algorthms).
