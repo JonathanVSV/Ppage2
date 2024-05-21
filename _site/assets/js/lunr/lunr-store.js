@@ -1,19 +1,19 @@
 var store = [{
-        "title": "Modelos Digitales de Elevación (DEM)",
-        "excerpt":"4.DEM 4.DEM JVS 6/2/2020 Manejo de DEM DEM Primero cargar la imagen y calcular el NDVI library(raster) ## Loading required package: sp plot(dem) crs(dem) ## Coordinate Reference System: ## Deprecated Proj.4 representation: +proj=longlat +datum=WGS84 +no_defs ## WKT2 2019 representation: ## GEOGCRS[&quot;WGS 84 (with axis order normalized for visualization)&quot;, ## DATUM[&quot;World...","categories": ["blog"],
-        "tags": ["post","r","spatial","DEM","raster"],
-        "url": "/blog/DEM/",
-        "teaser": null
-      },{
-        "title": "Clasificación supervisada",
-        "excerpt":"Clasificacion Imágenes Clasificacion Imágenes Jonathan V. Solórzano 6/2/2020 1 Clasificación Supervisada Vamos a ver cómo realizar tres tipos de clasificación de imágenes utilizando los siguientes algoritmos: Máxima verosimilitud Árboles de decisión Random Forests Evaluación del modelo y precisión Estadísticas básicas del resultado 1.1 Tomar áreas de entrenamiento Para eso vamos...","categories": ["blog"],
-        "tags": ["post","r","spatial","classification","raster"],
+        "title": "Clasificación supervisada en R",
+        "excerpt":"Clasificación supervisada en R 1 Clasificación Supervisada Vamos a ver cómo realizar tres tipos de clasificación de imágenes utilizando los siguientes algoritmos: Máxima verosimilitud Árboles de decisión Random Forests Evaluación del modelo y precisión Estadísticas básicas del resultado 1.1 Tomar áreas de entrenamiento Para eso vamos a utilizar QGIS 1.2...","categories": ["blog"],
+        "tags": ["post","r","sf","raster","clasificación supervisada","random forest"],
         "url": "/blog/clasificacion-supervisada/",
         "teaser": null
       },{
-        "title": "Manejo de imágenes",
-        "excerpt":"Manejo de imágenes en R Manejo de imágenes en R Jonathan V. Solórzano 10/02/2020 1 Manejo de rasters en R 1.1 Descargar imagen Para descargarla desde mi googleDrive vamos a utilizar los siguientes comandos library(raster) ## Loading required package: sp library(curl) #Ubicación para guardar la imagen descargada location &lt;- &quot;D:/Descargas/imagen1.tif&quot;...","categories": ["blog"],
-        "tags": ["post","r","spatial","raster"],
+        "title": "Modelos digitales de elevación en R",
+        "excerpt":"Modelos digitales de elevación en R Manejo de DEM DEM Primero cargar la imagen y calcular el NDVI library(raster) ## Loading required package: sp plot(dem) crs(dem) ## Coordinate Reference System: ## Deprecated Proj.4 representation: +proj=longlat +datum=WGS84 +no_defs ## WKT2 2019 representation: ## GEOGCRS[&quot;WGS 84 (with axis order normalized for visualization)&quot;,...","categories": ["blog"],
+        "tags": ["post","r","raster","MDE","DEM","elevation"],
+        "url": "/blog/DEM/",
+        "teaser": null
+      },{
+        "title": "Manejo de imágenes en R",
+        "excerpt":"Manejo de imágenes en R 1 Manejo de rasters en R 1.1 Descargar imagen Para descargarla desde mi googleDrive vamos a utilizar los siguientes comandos library(raster) ## Loading required package: sp library(curl) #Ubicación para guardar la imagen descargada location &lt;- &quot;D:/Descargas/imagen1.tif&quot; #Copiar el link para compartir desde google drive GD_share_URL...","categories": ["blog"],
+        "tags": ["post","r","raster","MDE","DEM","elevation"],
         "url": "/blog/manejo-imagenes/",
         "teaser": null
       },{
@@ -53,16 +53,16 @@ var store = [{
         "url": "/blog/tidymodels-with-rasters/",
         "teaser": null
       },{
-        "title": "Vectores Con Sf",
-        "excerpt":"Vectores en R Vectores en R JSV 16/2/2022 Existen varios paquetes en R que permiten manejar datos espaciales, ya sea en formato de vector o raster. Algunos de ellos incluyen: sp, rgdal, rgeos, sf, stars, raster, terra. Sin embargo, en este curso nos enfocaremos en utilizar sf para el manejo...","categories": [],
-        "tags": [],
-        "url": "/vectores-con-sf/",
+        "title": "Información espacial en formato vector en R",
+        "excerpt":"Información espacial en formato vector en R Existen varios paquetes en R que permiten manejar datos espaciales, ya sea en formato de vector o raster. Algunos de ellos incluyen: sp, rgdal, rgeos, sf, stars, raster, terra. Sin embargo, en este curso nos enfocaremos en utilizar sf para el manejo de...","categories": ["blog"],
+        "tags": ["post","r","sf","vector","spatial data","spatial analysis","geometries","geometry","polygons","lines","points","polygon","line","point"],
+        "url": "/blog/vectores-con-sf/",
         "teaser": null
       },{
-        "title": "Rasters Con Stars",
-        "excerpt":"Rasters en R Rasters en R JSV 17/2/2022 Existen varios paquetes en R que permiten manejar datos espaciales, ya sea en formato de vector o raster. Algunos de ellos incluyen: sp, rgdal, rgeos, sf, stars, raster, terra. Sin embargo, en este curso nos enfocaremos en utilizar sf para el manejo...","categories": [],
-        "tags": [],
-        "url": "/rasters-con-stars/",
+        "title": "Información espacial en formato raster en R",
+        "excerpt":"Información espacial en formato ráster en R Existen varios paquetes en R que permiten manejar datos espaciales, ya sea en formato de vector o raster. Algunos de ellos incluyen: sp, rgdal, rgeos, sf, stars, raster, terra. Sin embargo, en este curso nos enfocaremos en utilizar sf para el manejo de...","categories": ["blog"],
+        "tags": ["post","r","stars","raster","spatial data","spatial analysis","GeoTIFF"],
+        "url": "/blog/rasters-con-stars/",
         "teaser": null
       },{
         "title": "Regular expressions in R",
