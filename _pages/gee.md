@@ -19,6 +19,10 @@ I gave a Google Earth Engine Workshop along with Gabriel Perilla, organized by S
 
 * [Google Earth Engine Workshop](https://www.youtube.com/watch?v=O7jLtnEbYuI&ab_channel=SchmilblickProduction)
 
+Also I gave a short course of how to detect floods using Sentinel-1 data in GEE.
+
+* [GEE floods](https://www.youtube.com/watch?v=iA5WSPLi5mA)
+
 I made some Google Earth Engine scripts that can be used to perform cloudless annual mosaics using Landsat 4, 5, 7 and 8 surface reflectance collections, or obtain the number of cloudless observations per pixel using Sentinel-2 images or both Landsat and Sentinel.
 
 * [CloudlessMosaics](https://github.com/JonathanVSV/MxMosaic_EE)
