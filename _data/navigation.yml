@@ -7,8 +7,8 @@ main:
   #  url: /code/
   - title: "Courses"
     url: /courses/
-  - title: "Mini-packages"
-    url: /mini-packages/
+  - title: "Repositories"
+    url: /repositories/
   - title: "GEE"
     url: /gee/
   - title: "Posts"
