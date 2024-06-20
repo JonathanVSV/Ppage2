@@ -90,6 +90,9 @@ author:
     - label: "Stack Overflow"
       icon: "fab fa-fw fa-stack-overflow"
       url: "https://stackoverflow.com/users/9022665/jonathan-v-sol%c3%b3rzano" 
+    - label: "GIS Stack Overflow"
+      icon: "fas fa-fw fa-compass"
+      url: "https://gis.stackexchange.com/users/156904/jonathan-v-sol%c3%b3rzano" 
 
 footer:
   links:

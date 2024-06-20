@@ -184,4 +184,10 @@ var store = [{
         "tags": ["post","r","maps","interactive maps","leaflet","html maps"],
         "url": "/blog/Leaflet-in-r/",
         "teaser": null
+      },{
+        "title": "Raster parallel processing in R",
+        "excerpt":"Raster parallel processing in R This post shows how to parallelize raster processing in R. First load the required packages library(raster) library(parallel) library(doParallel) library(foreach) Then read a raster example from the terra package r &lt;- raster(system.file(\"ex/elev.tif\", package = \"terra\")) r &lt;- stack(r, r) Initialize cluster and run process in parallel....","categories": ["blog"],
+        "tags": ["post","r","parallel","raster","doparallel","foreach"],
+        "url": "/blog/raster-parallel-processing/",
+        "teaser": null
       }]

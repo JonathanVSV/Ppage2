@@ -1,4 +1,33 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-05-26T11:52:02-06:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jonathan V. Solórzano</title><subtitle>Welcome to my personal site. In this site you can get to know more about my work and check some of my courses and example scripts in R and GEE.</subtitle><author><name>Jonathan V. Solórzano</name></author><entry><title type="html">Leaflet in R</title><link href="http://localhost:4000/blog/Leaflet-in-r/" rel="alternate" type="text/html" title="Leaflet in R" /><published>2023-11-10T11:42:00-06:00</published><updated>2023-11-10T11:42:00-06:00</updated><id>http://localhost:4000/blog/Leaflet-in-r</id><content type="html" xml:base="http://localhost:4000/blog/Leaflet-in-r/"><![CDATA[<h1 id="leaflet-in-r">Leaflet in R</h1>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-06-20T11:03:49-06:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jonathan V. Solórzano</title><subtitle>Welcome to my personal site. In this site you can get to know more about my work and check some of my courses and example scripts in R and GEE.</subtitle><author><name>Jonathan V. Solórzano</name></author><entry><title type="html">Raster parallel processing in R</title><link href="http://localhost:4000/blog/raster-parallel-processing/" rel="alternate" type="text/html" title="Raster parallel processing in R" /><published>2024-05-29T15:46:00-06:00</published><updated>2024-05-29T15:46:00-06:00</updated><id>http://localhost:4000/blog/raster-parallel-processing</id><content type="html" xml:base="http://localhost:4000/blog/raster-parallel-processing/"><![CDATA[<h1 id="raster-parallel-processing-in-r">Raster parallel processing in R</h1>
+
+<p>This post shows how to parallelize raster processing in R.</p>
+
+<p>First load the required packages</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">raster</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">parallel</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">doParallel</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">foreach</span><span class="p">)</span></code></pre></figure>
+
+<p>Then read a raster example from the terra package</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">r</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raster</span><span class="p">(</span><span class="n">system.file</span><span class="p">(</span><span class="s2">"ex/elev.tif"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"terra"</span><span class="p">))</span><span class="w">
+</span><span class="n">r</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">stack</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">)</span></code></pre></figure>
+
+<p>Initialize cluster and run process in parallel. Notice that inside the <code class="language-plaintext highlighter-rouge">foreach</code> you should indicate the packages that need to be loaded into the parallel processing.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">cls</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">makeCluster</span><span class="p">(</span><span class="m">2L</span><span class="p">)</span><span class="w">
+</span><span class="n">registerDoParallel</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w">
+</span><span class="n">clust_list_t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">foreach</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">,</span><span class="w"> 
+                        </span><span class="n">.packages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"raster"</span><span class="p">)</span><span class="w"> </span><span class="o">%dopar%</span><span class="w"> </span><span class="p">{</span><span class="w">
+                          </span><span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">1</span><span class="p">){</span><span class="w">
+                            </span><span class="n">ras</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">r</span><span class="p">[[</span><span class="n">i</span><span class="p">]]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">3</span><span class="w">
+                          </span><span class="p">}</span><span class="k">else</span><span class="p">{</span><span class="w">
+                            </span><span class="n">ras</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">r</span><span class="p">[[</span><span class="n">i</span><span class="p">]]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">5</span><span class="w">
+                          </span><span class="p">}</span><span class="w">
+                          
+                          </span><span class="nf">return</span><span class="p">(</span><span class="n">ras</span><span class="p">)</span><span class="w">
+                        </span><span class="p">}</span></code></pre></figure>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="parallel" /><category term="raster" /><category term="doparallel" /><category term="foreach" /><summary type="html"><![CDATA[Raster parallel processing in R]]></summary></entry><entry><title type="html">Leaflet in R</title><link href="http://localhost:4000/blog/Leaflet-in-r/" rel="alternate" type="text/html" title="Leaflet in R" /><published>2023-11-10T11:42:00-06:00</published><updated>2023-11-10T11:42:00-06:00</updated><id>http://localhost:4000/blog/Leaflet-in-r</id><content type="html" xml:base="http://localhost:4000/blog/Leaflet-in-r/"><![CDATA[<h1 id="leaflet-in-r">Leaflet in R</h1>
 
 <p>This post shows how to build beautiful interactive maps in R using leaflet.</p>
 
@@ -862,7 +891,69 @@ starting point, add opacity slider.</p>
   </span><span class="n">facet_wrap</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">Species</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> 
   </span><span class="n">theme_cowplot</span><span class="p">()</span></code></pre></figure>
 
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/cowplottheme.png"><img src="http://localhost:4000/assets/images/cowplottheme.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with facet wrap where several theme elements have been customized according to the cowplot theme.</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="ggplot2" /><category term="plot" /><category term="grammar of graphics" /><category term="figures" /><summary type="html"><![CDATA[Beautiful plots in R using ggplot2]]></summary></entry><entry><title type="html">Web scraping with r</title><link href="http://localhost:4000/blog/web-scraping-with-r/" rel="alternate" type="text/html" title="Web scraping with r" /><published>2023-06-09T12:19:00-06:00</published><updated>2023-06-09T12:19:00-06:00</updated><id>http://localhost:4000/blog/web-scraping-with-r</id><content type="html" xml:base="http://localhost:4000/blog/web-scraping-with-r/"><![CDATA[<h1 id="web-scraping-with-r">Web scraping with R</h1>
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/cowplottheme.png"><img src="http://localhost:4000/assets/images/cowplottheme.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with facet wrap where several theme elements have been customized according to the cowplot theme.</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="ggplot2" /><category term="plot" /><category term="grammar of graphics" /><category term="figures" /><summary type="html"><![CDATA[Beautiful plots in R using ggplot2]]></summary></entry><entry><title type="html">Open Foris tools in r</title><link href="http://localhost:4000/blog/open-foris-tools/" rel="alternate" type="text/html" title="Open Foris tools in r" /><published>2023-06-09T12:19:00-06:00</published><updated>2023-06-09T12:19:00-06:00</updated><id>http://localhost:4000/blog/open-foris-tools</id><content type="html" xml:base="http://localhost:4000/blog/open-foris-tools/"><![CDATA[<h1 id="open-foris-tools-in-r">Open Foris tools in R</h1>
+
+<p>In this post I will show you how to easily run two Open Foris tools in R to easily validate a map and obtain the area estimates corrected by the producer’s accuracies obtained in the confusion matrix. The repository of these tools can be found here: https://github.com/openforis/accuracy-assessment</p>
+
+<p>There are several ways you can run the apps; however the easiest is to run the shiny app directly from the github repo.</p>
+
+<h2 id="design">Design</h2>
+
+<p>First, we will explore the design app.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">shiny</span><span class="p">)</span><span class="w">
+</span><span class="n">options</span><span class="p">(</span><span class="n">shiny.launch.browser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="n">runGitHub</span><span class="p">(</span><span class="s2">"openforis/accuracy-assessment"</span><span class="p">,</span><span class="n">subdir</span><span class="o">=</span><span class="s2">"aa_design"</span><span class="p">)</span></code></pre></figure>
+
+<p>Once you open R and run the previous code, you should see the following screen.</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/of1.png"><img src="http://localhost:4000/assets/images/of1.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Open Foris design app</p>
+
+<h2 id="map-input">Map input</h2>
+
+<p>In this app, you will see in the left panel several submenus. The first one is the Map input, where you can load your classification. Once your image is loaded, go to the next submenu, Strata areas.</p>
+
+<h2 id="strata-areas">Strata areas</h2>
+
+<p>In this menu, the first option will read: area calculation and legend generation. Click here and wait several seconds until the menu that is under this one (Legend labeling) appears with the values of the raster. Here you can change the raster values for a description of that class. For example, Class name 1 could be water, class name 2, forest, etc. Once the descriptions have been added, click on submit legend. Once the legend is submitted the panel on the upper right side should appear with the names of the classes and its area in a table. You can download that table as a csv. Then go to the next submenu: Strata selection.</p>
+
+<h2 id="strata-selection">Strata selection</h2>
+
+<p>Here you set the expected user’s accuracy for each class. Commonly the high value is set for common classes and the low value for rare classes. Once you select the high and low expected user’s accuracy in the sliders, in the lower right panel select the confidence values for each class. Click on the empty spaces and select each class in its corresponding high or low value.</p>
+
+<h2 id="sampling-size">Sampling size</h2>
+
+<p>The next step is selecting the sample size to obtain a desired standard error of the overall accuracy of the map. Here you can select the target standard error (default value = 0.01) and the minimum sample size per strata (default value = 100). A smaller standard error will imply a higher number of points, while the minimum sample size is sometimes recommended of being around 50. If the panel on the right does not adjust its estimates once you change the values in the first panel, verify that the modify the sampling size button is turned off.</p>
+
+<h2 id="sample-allocation">Sample allocation</h2>
+
+<p>Finally, you just need to generate the sampling points by clicking in the button of the final menu. Here a vector file will be generated with the areas to be verified to get the accuracy of the map. Here you can set the size of the intepretation box (min 30 m). Once the points are generated (after several seconds) a map will appear showing the generated points and a new submenu will appear to download the points in the format you desire.</p>
+
+<h1 id="analysis">Analysis</h1>
+
+<p>The second app can be run by using the following code:</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">shiny</span><span class="p">)</span><span class="w">
+</span><span class="n">options</span><span class="p">(</span><span class="n">shiny.launch.browser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="n">runGitHub</span><span class="p">(</span><span class="s2">"openforis/accuracy-assessment"</span><span class="p">,</span><span class="n">subdir</span><span class="o">=</span><span class="s2">"aa_analysis"</span><span class="p">)</span></code></pre></figure>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/of2.png"><img src="http://localhost:4000/assets/images/of2.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Open Foris analysis app</p>
+
+<p>Once you see this window in your web browser, you can click on the first submenu: Inputs.</p>
+
+<h2 id="inputs">Inputs</h2>
+
+<p>Here you should add the csv file that contains the data for each validation points generated in the previous app. However this file has been verified an thus, it should contain one column indicating the reference data (by ground truth or visual interpretation) and the original map data (the classification). Afterward, you should add a csv file containing the area data by class (generated in the previous app).</p>
+
+<p>Once you add the two files, a new panel will appear on the right side. Here you should indicate which column has the reference data (by ground truth or visual interpretation) and which one the map class. Also, indicate the columns in the area file indicating the area and the class.</p>
+
+<h2 id="check">Check</h2>
+
+<p>Here you can check the spatial distribution of your verification data. Here you just need to indicate the columns containing the x and y coordinates data.</p>
+
+<h2 id="results">Results</h2>
+
+<p>Here you can see the confusion matrix from your data. Also, in the lower part you can set the desired confidence interval for the area estimates (by default 95 %). Finally. the corrected area estimates should appear in the right panel. In the last test I made with this app, this last part had a bug; thus, I suggest cloning the repo and running it locally as a shiny app. In this last approach, you need to open the app_analysis_bckup_20161024 file inside the Rscript folder and run eveything from start to end. Finally, this way the app should work without any error showing that the names in the two files (1) reference and map classes and 2) areas) do not match.</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="Open Foris" /><category term="map" /><category term="accuracy assessment" /><category term="area estimates" /><category term="map verification" /><category term="map validation" /><category term="overall accuracy" /><summary type="html"><![CDATA[Open Foris tools in R]]></summary></entry><entry><title type="html">Web scraping with r</title><link href="http://localhost:4000/blog/web-scraping-with-r/" rel="alternate" type="text/html" title="Web scraping with r" /><published>2023-06-09T12:19:00-06:00</published><updated>2023-06-09T12:19:00-06:00</updated><id>http://localhost:4000/blog/web-scraping-with-r</id><content type="html" xml:base="http://localhost:4000/blog/web-scraping-with-r/"><![CDATA[<h1 id="web-scraping-with-r">Web scraping with R</h1>
 
 <p>This post will show you how to get data from a webpage (also known as web scraping) with R and the rvest package. This analysis was performed to complement the data obtained from the spotify API. Since I could not obtain all the data I was interested in from the latter API, I decided to web scrape the bandcamp site.</p>
 
@@ -988,69 +1079,7 @@ starting point, add opacity slider.</p>
 
 <p>A snapshot of the result:</p>
 
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/rvesttable.png"><img src="http://localhost:4000/assets/images/rvesttable.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Example of the data obtained after web scraping the bandcamp site.</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="rvest" /><category term="web scraping" /><category term="website data extraction" /><summary type="html"><![CDATA[Web scraping with R]]></summary></entry><entry><title type="html">Open Foris tools in r</title><link href="http://localhost:4000/blog/open-foris-tools/" rel="alternate" type="text/html" title="Open Foris tools in r" /><published>2023-06-09T12:19:00-06:00</published><updated>2023-06-09T12:19:00-06:00</updated><id>http://localhost:4000/blog/open-foris-tools</id><content type="html" xml:base="http://localhost:4000/blog/open-foris-tools/"><![CDATA[<h1 id="open-foris-tools-in-r">Open Foris tools in R</h1>
-
-<p>In this post I will show you how to easily run two Open Foris tools in R to easily validate a map and obtain the area estimates corrected by the producer’s accuracies obtained in the confusion matrix. The repository of these tools can be found here: https://github.com/openforis/accuracy-assessment</p>
-
-<p>There are several ways you can run the apps; however the easiest is to run the shiny app directly from the github repo.</p>
-
-<h2 id="design">Design</h2>
-
-<p>First, we will explore the design app.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">shiny</span><span class="p">)</span><span class="w">
-</span><span class="n">options</span><span class="p">(</span><span class="n">shiny.launch.browser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span><span class="n">runGitHub</span><span class="p">(</span><span class="s2">"openforis/accuracy-assessment"</span><span class="p">,</span><span class="n">subdir</span><span class="o">=</span><span class="s2">"aa_design"</span><span class="p">)</span></code></pre></figure>
-
-<p>Once you open R and run the previous code, you should see the following screen.</p>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/of1.png"><img src="http://localhost:4000/assets/images/of1.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Open Foris design app</p>
-
-<h2 id="map-input">Map input</h2>
-
-<p>In this app, you will see in the left panel several submenus. The first one is the Map input, where you can load your classification. Once your image is loaded, go to the next submenu, Strata areas.</p>
-
-<h2 id="strata-areas">Strata areas</h2>
-
-<p>In this menu, the first option will read: area calculation and legend generation. Click here and wait several seconds until the menu that is under this one (Legend labeling) appears with the values of the raster. Here you can change the raster values for a description of that class. For example, Class name 1 could be water, class name 2, forest, etc. Once the descriptions have been added, click on submit legend. Once the legend is submitted the panel on the upper right side should appear with the names of the classes and its area in a table. You can download that table as a csv. Then go to the next submenu: Strata selection.</p>
-
-<h2 id="strata-selection">Strata selection</h2>
-
-<p>Here you set the expected user’s accuracy for each class. Commonly the high value is set for common classes and the low value for rare classes. Once you select the high and low expected user’s accuracy in the sliders, in the lower right panel select the confidence values for each class. Click on the empty spaces and select each class in its corresponding high or low value.</p>
-
-<h2 id="sampling-size">Sampling size</h2>
-
-<p>The next step is selecting the sample size to obtain a desired standard error of the overall accuracy of the map. Here you can select the target standard error (default value = 0.01) and the minimum sample size per strata (default value = 100). A smaller standard error will imply a higher number of points, while the minimum sample size is sometimes recommended of being around 50. If the panel on the right does not adjust its estimates once you change the values in the first panel, verify that the modify the sampling size button is turned off.</p>
-
-<h2 id="sample-allocation">Sample allocation</h2>
-
-<p>Finally, you just need to generate the sampling points by clicking in the button of the final menu. Here a vector file will be generated with the areas to be verified to get the accuracy of the map. Here you can set the size of the intepretation box (min 30 m). Once the points are generated (after several seconds) a map will appear showing the generated points and a new submenu will appear to download the points in the format you desire.</p>
-
-<h1 id="analysis">Analysis</h1>
-
-<p>The second app can be run by using the following code:</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">shiny</span><span class="p">)</span><span class="w">
-</span><span class="n">options</span><span class="p">(</span><span class="n">shiny.launch.browser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span><span class="n">runGitHub</span><span class="p">(</span><span class="s2">"openforis/accuracy-assessment"</span><span class="p">,</span><span class="n">subdir</span><span class="o">=</span><span class="s2">"aa_analysis"</span><span class="p">)</span></code></pre></figure>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/of2.png"><img src="http://localhost:4000/assets/images/of2.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Open Foris analysis app</p>
-
-<p>Once you see this window in your web browser, you can click on the first submenu: Inputs.</p>
-
-<h2 id="inputs">Inputs</h2>
-
-<p>Here you should add the csv file that contains the data for each validation points generated in the previous app. However this file has been verified an thus, it should contain one column indicating the reference data (by ground truth or visual interpretation) and the original map data (the classification). Afterward, you should add a csv file containing the area data by class (generated in the previous app).</p>
-
-<p>Once you add the two files, a new panel will appear on the right side. Here you should indicate which column has the reference data (by ground truth or visual interpretation) and which one the map class. Also, indicate the columns in the area file indicating the area and the class.</p>
-
-<h2 id="check">Check</h2>
-
-<p>Here you can check the spatial distribution of your verification data. Here you just need to indicate the columns containing the x and y coordinates data.</p>
-
-<h2 id="results">Results</h2>
-
-<p>Here you can see the confusion matrix from your data. Also, in the lower part you can set the desired confidence interval for the area estimates (by default 95 %). Finally. the corrected area estimates should appear in the right panel. In the last test I made with this app, this last part had a bug; thus, I suggest cloning the repo and running it locally as a shiny app. In this last approach, you need to open the app_analysis_bckup_20161024 file inside the Rscript folder and run eveything from start to end. Finally, this way the app should work without any error showing that the names in the two files (1) reference and map classes and 2) areas) do not match.</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="Open Foris" /><category term="map" /><category term="accuracy assessment" /><category term="area estimates" /><category term="map verification" /><category term="map validation" /><category term="overall accuracy" /><summary type="html"><![CDATA[Open Foris tools in R]]></summary></entry><entry><title type="html">Shiny App with spatial data</title><link href="http://localhost:4000/blog/shiny-app-spatial/" rel="alternate" type="text/html" title="Shiny App with spatial data" /><published>2023-05-31T10:19:00-06:00</published><updated>2023-05-31T10:19:00-06:00</updated><id>http://localhost:4000/blog/shiny-app-spatial</id><content type="html" xml:base="http://localhost:4000/blog/shiny-app-spatial/"><![CDATA[<h1 id="shiny-app-with-spatial-data">Shiny App with spatial data</h1>
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/rvesttable.png"><img src="http://localhost:4000/assets/images/rvesttable.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Example of the data obtained after web scraping the bandcamp site.</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="rvest" /><category term="web scraping" /><category term="website data extraction" /><summary type="html"><![CDATA[Web scraping with R]]></summary></entry><entry><title type="html">Shiny App with spatial data</title><link href="http://localhost:4000/blog/shiny-app-spatial/" rel="alternate" type="text/html" title="Shiny App with spatial data" /><published>2023-05-31T10:19:00-06:00</published><updated>2023-05-31T10:19:00-06:00</updated><id>http://localhost:4000/blog/shiny-app-spatial</id><content type="html" xml:base="http://localhost:4000/blog/shiny-app-spatial/"><![CDATA[<h1 id="shiny-app-with-spatial-data">Shiny App with spatial data</h1>
 
 <p>This post will show you how to build a shiny app to visualize spatial data (mainly in raster and vector format). Remember that you can also build other types of shiny apps, but I decided to focus this post on spatial data.</p>
 
@@ -1294,226 +1323,4 @@ Additionally, you need to create a palette to show the DEM we loaded and set cus
 
 <p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/genreSimple.png"><img src="http://localhost:4000/assets/images/genreSimple.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Circular bar plot of the genres.</p>
 
-<p>It is pretty obvious I like metal! 🤘</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="spotify" /><category term="music" /><category term="API" /><summary type="html"><![CDATA[Spotify API in R]]></summary></entry><entry><title type="html">Volcanos 3d maps</title><link href="http://localhost:4000/blog/Volcanos-rayshader/" rel="alternate" type="text/html" title="Volcanos 3d maps" /><published>2023-03-09T16:15:00-06:00</published><updated>2023-03-09T16:15:00-06:00</updated><id>http://localhost:4000/blog/Volcanos-rayshader</id><content type="html" xml:base="http://localhost:4000/blog/Volcanos-rayshader/"><![CDATA[<h1 id="volcanos-3d-maps">Volcanos 3d maps</h1>
-
-<p>I have continued playing with <code class="language-plaintext highlighter-rouge">rayshader</code>, <code class="language-plaintext highlighter-rouge">rayvista</code> and <code class="language-plaintext highlighter-rouge">magick</code> packages to make beautiful 3d maps. This post shows the code used to make a 3d map with some of the highest peaks in Mexico, which all have a volcanic origin. Additionally, the area shown in the map is part of the Trans-Mexican Volcanic Belt. The code used to obtain this map is shown in the first section. The second section of the post contains the code used to make the zoom-ins to each volcano, while the third section contains the code used to merge all the images.</p>
-
-<p>First load the required packages.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">rayvista</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">rayshader</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">terra</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">magrittr</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">magick</span><span class="p">)</span></code></pre></figure>
-
-<p>Load the roi polygon to make the large map and also a geopackage file that contains points with the locations of each volcano, with its name and altitude. Although initially I wanted to label also Sierra Negra peak, it was overlapping with the Pico de Orizaba so I removed it. Then, the coordinates are extracted from that same file, added as columns and then added a color column to indicate the color of the labels (white: for names that overlapped with the rgb composite and black those that did not). Finally, calculate the area to add it in the end as a label. The data used in this example can be downloaded from: https://github.com/JonathanVSV/Ppage2/tree/master/assets/data</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Zscale for 3d map</span><span class="w">
-</span><span class="n">zscale</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">60</span><span class="w">
-</span><span class="c1"># Background color for all maps</span><span class="w">
-</span><span class="n">bg_col</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"gray60"</span><span class="w">
-
-</span><span class="c1"># ROI</span><span class="w">
-</span><span class="n">picos_poly</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"Data/Picos.gpkg"</span><span class="p">)</span><span class="w">
-</span><span class="c1"># Points of each peak with its name and altitude</span><span class="w">
-</span><span class="n">picos_names</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"Data/picos_names.gpkg"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Removed Sierra Negra because was overlapping with Pico de Orizaba</span><span class="w">
-  </span><span class="n">filter</span><span class="p">(</span><span class="n">Name</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s2">"Sierra Negra"</span><span class="p">)</span><span class="w">
-</span><span class="c1"># Get its coordinates</span><span class="w">
-</span><span class="n">coords</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">picos_names</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">st_coordinates</span><span class="p">()</span><span class="w">
-</span><span class="c1"># Add the coordinates as another column and add a color column</span><span class="w">
-</span><span class="n">picos_names</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">picos_names</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">bind_cols</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"white"</span><span class="p">,</span><span class="w"> </span><span class="s2">"white"</span><span class="p">,</span><span class="w"> </span><span class="s2">"white"</span><span class="p">,</span><span class="w">
-                              </span><span class="s2">"white"</span><span class="p">,</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w"> </span><span class="s2">"white"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Arrange by altitude for the individual volcanos plots</span><span class="w">
-  </span><span class="n">arrange</span><span class="p">(</span><span class="n">desc</span><span class="p">(</span><span class="n">Alt</span><span class="p">))</span><span class="w">
-
- </span><span class="c1"># Calculate area in sq. km </span><span class="w">
-</span><span class="n">areasqkm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">25000</span><span class="w">
-
-</span><span class="c1"># Aprox area without zoom</span><span class="w">
-</span><span class="c1"># picos_poly |&gt;</span><span class="w">
-  </span><span class="c1"># st_transform(32614) |&gt;</span><span class="w">
-  </span><span class="c1"># st_area() |&gt;</span><span class="w">
-  </span><span class="c1"># as.numeric() |&gt;</span><span class="w">
-  </span><span class="c1"># multiply_by(1/1000000)</span></code></pre></figure>
-
-<p>Then, obtain the RGB data with the DEM.</p>
-
-<h2 id="large-map">Large map</h2>
-
-<p>Obtain rgb composite and DEM data.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">picos</span><span class="o">&lt;-</span><span class="w"> </span><span class="n">plot_3d_vista</span><span class="p">(</span><span class="n">req_area</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">picos_poly</span><span class="p">,</span><span class="w">
-                          </span><span class="n">overlay_detail</span><span class="o">=</span><span class="m">10</span><span class="p">,</span><span class="w"> 
-                          </span><span class="n">overlay_alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.7</span><span class="p">,</span><span class="w"> 
-                          </span><span class="n">elevation_detail</span><span class="o">=</span><span class="m">9</span><span class="p">,</span><span class="w"> 
-                          </span><span class="n">show_vista</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">)</span></code></pre></figure>
-
-<p>Then, create the 3d representation and add the labels and save a snapshot of the rendered image.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Use dem matrix data</span><span class="w">
-</span><span class="n">picos</span><span class="o">$</span><span class="n">dem_matrix</span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Add texture</span><span class="w">
-  </span><span class="n">add_overlay</span><span class="p">(</span><span class="n">texture_shade</span><span class="p">(</span><span class="n">picos</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w">
-                            </span><span class="n">detail</span><span class="o">=</span><span class="m">0.9</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Add snowy peaks effect</span><span class="w">
-  </span><span class="n">add_overlay</span><span class="p">(</span><span class="n">generate_altitude_overlay</span><span class="p">(</span><span class="n">height_shade</span><span class="p">(</span><span class="n">picos</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w"> 
-                                                     </span><span class="n">texture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"white"</span><span class="p">,</span><span class="w">
-                                                     </span><span class="n">range</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">5000</span><span class="p">,</span><span class="m">5700</span><span class="p">)),</span><span class="w">
-                                        </span><span class="n">picos</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w"> 
-                                        </span><span class="n">start_transition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4500</span><span class="p">,</span><span class="w"> 
-                                        </span><span class="n">end_transition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5000</span><span class="p">,</span><span class="w"> 
-                                        </span><span class="n">lower</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">),</span><span class="w">
-              </span><span class="n">alphalayer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">  </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Add Shadow</span><span class="w">
-  </span><span class="n">add_shadow</span><span class="p">(</span><span class="n">ray_shade</span><span class="p">(</span><span class="n">picos</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w"> </span><span class="n">zscale</span><span class="o">=</span><span class="n">zscale</span><span class="p">),</span><span class="w"> </span><span class="m">0.7</span><span class="p">)</span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Add RGB composite</span><span class="w">
-  </span><span class="n">add_overlay</span><span class="p">(</span><span class="n">picos</span><span class="o">$</span><span class="n">texture</span><span class="p">,</span><span class="n">rescale_original</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Plot 3d</span><span class="w">
-  </span><span class="n">plot_3d</span><span class="p">(</span><span class="n">picos</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w"> 
-          </span><span class="n">zscale</span><span class="o">=</span><span class="n">zscale</span><span class="p">,</span><span class="w">
-          </span><span class="n">windowsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1200</span><span class="p">,</span><span class="w"> 
-          </span><span class="n">zoom</span><span class="o">=</span><span class="m">0.17</span><span class="p">,</span><span class="w"> 
-          </span><span class="n">phi</span><span class="o">=</span><span class="m">7</span><span class="p">,</span><span class="w"> 
-          </span><span class="n">theta</span><span class="o">=</span><span class="m">280</span><span class="p">,</span><span class="w">
-          </span><span class="n">background</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bg_col</span><span class="p">)</span><span class="w">
-
-</span><span class="c1"># Add labels</span><span class="w">
-</span><span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">picos_names</span><span class="p">)){</span><span class="w">
-  </span><span class="c1"># color &lt;- "black"</span><span class="w">
-  </span><span class="n">render_label</span><span class="p">(</span><span class="n">picos</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w">
-               </span><span class="n">long</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">picos_names</span><span class="o">$</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w">
-               </span><span class="n">lat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">picos_names</span><span class="o">$</span><span class="n">Y</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w">
-               </span><span class="n">zscale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">zscale</span><span class="m">+60</span><span class="p">,</span><span class="w">
-               </span><span class="n">extent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">attr</span><span class="p">(</span><span class="n">picos</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w"> </span><span class="s2">"extent"</span><span class="p">),</span><span class="w">
-               </span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="n">picos_names</span><span class="o">$</span><span class="n">Name</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span><span class="w">
-               </span><span class="n">linecolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">picos_names</span><span class="o">$</span><span class="n">color</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w">
-               </span><span class="n">textcolor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">picos_names</span><span class="o">$</span><span class="n">color</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="w">
-</span><span class="p">}</span><span class="w">
-
-</span><span class="c1"># Save as png</span><span class="w">
-</span><span class="n">render_snapshot</span><span class="p">(</span><span class="n">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Plots/Volcanos_snap.png"</span><span class="p">,</span><span class="w">
-                </span><span class="n">software_render</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">,</span><span class="w">
-                </span><span class="n">background</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bg_col</span><span class="p">)</span></code></pre></figure>
-
-<h2 id="individual-volcanoes">Individual volcanoes</h2>
-
-<p>This section contains the code used to make the zoom-ins to each volcano. It contains basically the same code as the previous sections but obtains the DEM and RGB composite using the location of each volcano. Finally, to make everything more easy, an lapply is used to make the exact same process for each volcano and save the rendered image as a png.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">lapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">picos_names</span><span class="p">),</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">){</span><span class="w">
-  </span><span class="c1"># Get RGB and DEM for each volcano</span><span class="w">
-  </span><span class="n">volcano</span><span class="o">&lt;-</span><span class="w"> </span><span class="n">plot_3d_vista</span><span class="p">(</span><span class="w">
-    </span><span class="n">lat</span><span class="o">=</span><span class="n">picos_names</span><span class="o">$</span><span class="n">Y</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w">
-    </span><span class="n">long</span><span class="o">=</span><span class="n">picos_names</span><span class="o">$</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w">
-    </span><span class="n">radius</span><span class="o">=</span><span class="m">10000</span><span class="p">,</span><span class="w">
-    </span><span class="n">overlay_detail</span><span class="o">=</span><span class="m">12</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">overlay_alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.7</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">elevation_detail</span><span class="o">=</span><span class="m">12</span><span class="p">,</span><span class="w"> 
-    </span><span class="n">show_vista</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">)</span><span class="w">
-  
-  </span><span class="c1"># Make similar visualization to the large map</span><span class="w">
-  </span><span class="n">volcano</span><span class="o">$</span><span class="n">dem_matrix</span><span class="o">|&gt;</span><span class="w">
-    </span><span class="n">add_overlay</span><span class="p">(</span><span class="n">texture_shade</span><span class="p">(</span><span class="n">volcano</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w">
-                              </span><span class="n">detail</span><span class="o">=</span><span class="m">0.9</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-    </span><span class="c1"># Add RGB composite</span><span class="w">
-    </span><span class="n">add_overlay</span><span class="p">(</span><span class="n">volcano</span><span class="o">$</span><span class="n">texture</span><span class="p">,</span><span class="w">
-                </span><span class="n">rescale_original</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
-                </span><span class="n">alphalayer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.7</span><span class="p">)</span><span class="o">|&gt;</span><span class="w">
-    </span><span class="n">add_overlay</span><span class="p">(</span><span class="n">generate_altitude_overlay</span><span class="p">(</span><span class="n">height_shade</span><span class="p">(</span><span class="n">volcano</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w">
-                                                       </span><span class="n">texture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"white"</span><span class="p">,</span><span class="w">
-                                                       </span><span class="n">range</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">5000</span><span class="p">,</span><span class="m">5700</span><span class="p">)),</span><span class="w">
-                                          </span><span class="n">volcano</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w">
-                                          </span><span class="n">start_transition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4500</span><span class="p">,</span><span class="w">
-                                          </span><span class="n">end_transition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5000</span><span class="p">,</span><span class="w">
-                                          </span><span class="n">lower</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">),</span><span class="w">
-                </span><span class="n">alphalayer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.7</span><span class="p">)</span><span class="w">  </span><span class="o">|&gt;</span><span class="w">
-    </span><span class="n">plot_3d</span><span class="p">(</span><span class="n">volcano</span><span class="o">$</span><span class="n">dem_matrix</span><span class="p">,</span><span class="w"> 
-            </span><span class="n">zscale</span><span class="o">=</span><span class="m">10</span><span class="p">,</span><span class="w">
-            </span><span class="n">windowsize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1200</span><span class="p">,</span><span class="w"> 
-            </span><span class="n">zoom</span><span class="o">=</span><span class="m">0.6</span><span class="p">,</span><span class="w"> 
-            </span><span class="n">phi</span><span class="o">=</span><span class="m">0</span><span class="p">,</span><span class="w"> 
-            </span><span class="n">theta</span><span class="o">=</span><span class="m">90</span><span class="p">,</span><span class="w">
-            </span><span class="n">baseshape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"rectangle"</span><span class="p">,</span><span class="w">
-            </span><span class="n">background</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bg_col</span><span class="p">)</span><span class="w">
-  
-  </span><span class="c1"># Save as png          </span><span class="w">
-  </span><span class="n">render_snapshot</span><span class="p">(</span><span class="n">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="s2">"Plots/"</span><span class="p">,</span><span class="n">picos_names</span><span class="o">$</span><span class="n">Name</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="s2">"_snap.png"</span><span class="p">),</span><span class="w">
-                  </span><span class="n">software_render</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">,</span><span class="w">
-                  </span><span class="n">title_position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"north"</span><span class="p">,</span><span class="w">
-                  </span><span class="n">title_font</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"sans"</span><span class="p">,</span><span class="w">
-                  </span><span class="n">title_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span><span class="p">,</span><span class="w">
-                  </span><span class="n">title_text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="n">picos_names</span><span class="o">$</span><span class="n">Name</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w"> 
-                                      </span><span class="s2">"\n"</span><span class="p">,</span><span class="w"> 
-                                      </span><span class="n">picos_names</span><span class="o">$</span><span class="n">Alt</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w">
-                                      </span><span class="s2">" m amsl"</span><span class="p">),</span><span class="w">
-                  </span><span class="n">title_offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">100</span><span class="p">),</span><span class="w">
-                  </span><span class="n">gravity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"north"</span><span class="p">,</span><span class="w">
-                  </span><span class="n">background</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bg_col</span><span class="p">)</span><span class="w">
-</span><span class="p">})</span></code></pre></figure>
-
-<h2 id="image-composition-and-final-adjustments">Image composition and final adjustments</h2>
-
-<p>Finally, this part makes use of the <code class="language-plaintext highlighter-rouge">magick</code> package to stitch together all the images and add some labels</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Read the large map image and make some adjustments</span><span class="w">
-</span><span class="n">imall</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">image_read</span><span class="p">(</span><span class="s2">"Plots/Volcanos_snap.png"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Make it bigger</span><span class="w">
-  </span><span class="n">image_resize</span><span class="p">(</span><span class="s2">"1975"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Add title</span><span class="w">
-  </span><span class="n">image_annotate</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Mexico's Highest Peaks"</span><span class="p">,</span><span class="w"> 
-                 </span><span class="n">weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">700</span><span class="p">,</span><span class="w">
-                 </span><span class="n">font</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"sans"</span><span class="p">,</span><span class="w"> 
-                 </span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"+100+20"</span><span class="p">,</span><span class="w">
-                 </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w"> 
-                 </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">80</span><span class="p">,</span><span class="w"> 
-                 </span><span class="n">gravity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"north"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Add a label of aprox. area shown               </span><span class="w">
-  </span><span class="n">image_annotate</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="s2">"Aprox. area shown: "</span><span class="p">,</span><span class="w"> </span><span class="n">scales</span><span class="o">::</span><span class="n">comma</span><span class="p">(</span><span class="n">areasqkm</span><span class="p">),</span><span class="w"> </span><span class="s2">" km\U00B2"</span><span class="p">),</span><span class="w"> 
-                 </span><span class="n">weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">400</span><span class="p">,</span><span class="w">
-                 </span><span class="n">font</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"sans"</span><span class="p">,</span><span class="w"> 
-                 </span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"+0+10"</span><span class="p">,</span><span class="w">
-                 </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">,</span><span class="w"> 
-                 </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">32</span><span class="p">,</span><span class="w"> 
-                 </span><span class="n">gravity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"south"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Eliminate empty spaces               </span><span class="w">
-  </span><span class="n">image_trim</span><span class="p">()</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> 
-  </span><span class="c1"># Add border</span><span class="w">
-  </span><span class="n">image_border</span><span class="p">(</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bg_col</span><span class="p">,</span><span class="w">
-               </span><span class="n">geometry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"50x50"</span><span class="p">)</span><span class="w"> 
-
-</span><span class="c1"># Read individual volcanoes images into a list</span><span class="w">
-</span><span class="n">imsingle</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lapply</span><span class="p">(</span><span class="n">picos_names</span><span class="o">$</span><span class="n">Name</span><span class="p">,</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span><span class="w">
-  </span><span class="n">image_read</span><span class="p">(</span><span class="n">paste0</span><span class="p">(</span><span class="s2">"Plots/"</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="s2">"_snap.png"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-    </span><span class="c1"># Eliminate empty spaces</span><span class="w">
-    </span><span class="n">image_trim</span><span class="p">()</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-    </span><span class="c1"># Add new border</span><span class="w">
-    </span><span class="n">image_border</span><span class="p">(</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bg_col</span><span class="p">,</span><span class="w">
-                 </span><span class="n">geometry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"20x20"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-    </span><span class="c1"># Resize image</span><span class="w">
-    </span><span class="n">image_resize</span><span class="p">(</span><span class="s2">"400"</span><span class="p">)</span><span class="w">
-</span><span class="p">})</span><span class="w">
-
-</span><span class="c1"># Stack all single volcanos vertically</span><span class="w">
-</span><span class="n">stacked_im</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">image_append</span><span class="p">(</span><span class="n">Reduce</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">imsingle</span><span class="p">),</span><span class="w"> </span><span class="n">stack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span><span class="w">
-
-</span><span class="c1"># Stitch horizontally the map and the stacked volcanoes images</span><span class="w">
-</span><span class="n">image_append</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="n">imall</span><span class="p">,</span><span class="w"> </span><span class="n">stacked_im</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-</span><span class="c1"># Add color saturation and contrast</span><span class="w">
-  </span><span class="n">image_modulate</span><span class="p">(</span><span class="n">brightness</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">150</span><span class="p">,</span><span class="w"> 
-                 </span><span class="n">saturation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">130</span><span class="p">,</span><span class="w"> 
-                 </span><span class="n">hue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Increase contrast</span><span class="w">
-  </span><span class="n">image_contrast</span><span class="p">(</span><span class="n">sharpen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Write image</span><span class="w">
-  </span><span class="n">image_write</span><span class="p">(</span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Plots/Volcanos_all_final.png"</span><span class="p">,</span><span class="w"> 
-              </span><span class="n">format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"png"</span><span class="p">)</span></code></pre></figure>
-
-<p>The result:</p>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/Volcanos_all_final.png"><img src="http://localhost:4000/assets/images/Volcanos_all_final.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Mexico’s highest peaks.</p>
-
-<p>In the final map, the tallest peaks can be appreciated with its labels, as well as a zoom-in to all of them individually (right-side panel). I like to think of the resulting image as a simple infography.</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="rayshader" /><category term="rayvista" /><category term="magick" /><category term="terra" /><category term="3d maps" /><category term="RGB shaded relief" /><category term="DEM" /><category term="Relief" /><summary type="html"><![CDATA[Volcanos 3d maps]]></summary></entry></feed>
+<p>It is pretty obvious I like metal! 🤘</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="spotify" /><category term="music" /><category term="API" /><summary type="html"><![CDATA[Spotify API in R]]></summary></entry></feed>
