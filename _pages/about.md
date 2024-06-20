@@ -73,8 +73,6 @@ I made a simple wordcloud plot of the most frequent terms in my publications to 
 Word cloud analysis of my publications.
 {: style="text-align: center;"}
 
-Also, if you want to know more about myself and my professional trajectory, here is a link to an interview SELPER (Sociedad Latinoamericana de Especialistas en Percepción Remota y Sistemas de Información Espacial) made me in 2023: [Café Virtual SELPER #18](https://www.youtube.com/watch?v=vEOYDUWqHDE)
-
 # Figure gallery
 
 Additionally, here are some figures of the work I have done:
