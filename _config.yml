@@ -63,9 +63,9 @@ author:
   bio    : "Forests - Remote sensing - Data"
   email:
   links:
-    - label: "Website"
-      icon: "fas fa-fw fa-link"
-      url: "https://jonathanvsv.github.io/Ppage2/"
+    # - label: "Website"
+    #  icon: "fas fa-fw fa-link"
+    #  url: "https://jonathanvsv.github.io/Ppage2/"
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/JonathanVSV"
