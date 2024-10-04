@@ -1,4 +1,89 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-07-09T16:55:18-06:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jonathan V. Solórzano</title><subtitle>Welcome to my personal site. In this site you can get to know more about my work and check some of my courses and example scripts in R and GEE.</subtitle><author><name>Jonathan V. Solórzano</name></author><entry><title type="html">Raster parallel processing in R</title><link href="http://localhost:4000/blog/raster-parallel-processing/" rel="alternate" type="text/html" title="Raster parallel processing in R" /><published>2024-05-29T15:46:00-06:00</published><updated>2024-05-29T15:46:00-06:00</updated><id>http://localhost:4000/blog/raster-parallel-processing</id><content type="html" xml:base="http://localhost:4000/blog/raster-parallel-processing/"><![CDATA[<h1 id="raster-parallel-processing-in-r">Raster parallel processing in R</h1>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-10-04T16:00:25-06:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jonathan V. Solórzano</title><subtitle>Welcome to my personal site. In this site you can get to know more about my work and check some of my courses and example scripts in R and GEE.</subtitle><author><name>Jonathan V. Solórzano</name></author><entry><title type="html">STAC in R</title><link href="http://localhost:4000/blog/stac/" rel="alternate" type="text/html" title="STAC in R" /><published>2024-09-02T15:35:00-06:00</published><updated>2024-09-02T15:35:00-06:00</updated><id>http://localhost:4000/blog/stac</id><content type="html" xml:base="http://localhost:4000/blog/stac/"><![CDATA[<p>This blog entry will show how to use STAC using R. This example was based on the original <a href="https://stacspec.org/en/tutorials/1-download-data-using-r/">STAC tutorial</a>.</p>
+
+<p>First check data providers in the following link <a href="https://stacspec.org/en/about/datasets/">Datasets</a>.</p>
+
+<p>Then load necessary packages.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">rstac</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">stars</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">purrr</span><span class="p">)</span></code></pre></figure>
+
+<p>In this example we will use Sentinel-2 Collection 1 Level 2A from AWS. Other popular providers are the Microsoft Planetary Computer on https://planetarycomputer.microsoft.com/api/stac/v1. Remember to set the url up to “v1”, i.e., not including the collectino <em>per se</em>.</p>
+
+<p>Define data provider.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">stac_source</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rstac</span><span class="o">::</span><span class="n">stac</span><span class="p">(</span><span class="w">
+  </span><span class="s2">"https://earth-search.aws.element84.com/v1"</span><span class="w">
+</span><span class="p">)</span></code></pre></figure>
+
+<p>Then, let’s see which collections are available in the endpoint.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">col_quer</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">stac_source</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">rstac</span><span class="o">::</span><span class="n">collections</span><span class="p">()</span></code></pre></figure>
+
+<p>Before running <code class="language-plaintext highlighter-rouge">get_request</code> the request is only represented as a future query. Let’s do the request.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">available_collections</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rstac</span><span class="o">::</span><span class="n">get_request</span><span class="p">(</span><span class="n">col_quer</span><span class="p">)</span><span class="w">
+</span><span class="n">available_collections</span></code></pre></figure>
+
+<p>Create a roi or read it from a gpkg file. Need to run at the en <code class="language-plaintext highlighter-rouge">st_bbox</code> to be used in the query. Here I created an example roi.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">roi</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_as_sf</span><span class="p">(</span><span class="n">tibble</span><span class="o">::</span><span class="n">tibble</span><span class="p">(</span><span class="n">lat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">-101.33706520389003</span><span class="p">,</span><span class="m">-101.33706520389003</span><span class="p">,</span><span class="m">-100.79873512576503</span><span class="p">,</span><span class="w"> </span><span class="m">-100.79873512576503</span><span class="p">,</span><span class="w"> </span><span class="m">-101.33706520389003</span><span class="p">),</span><span class="w">
+                        </span><span class="n">lon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">19.589466998816956</span><span class="p">,</span><span class="w"> </span><span class="m">20.0674578405529</span><span class="p">,</span><span class="w"> </span><span class="m">20.0674578405529</span><span class="p">,</span><span class="m">19.589466998816956</span><span class="p">,</span><span class="w"> </span><span class="m">19.589466998816956</span><span class="p">)),</span><span class="w">
+         </span><span class="n">coords</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"lat"</span><span class="p">,</span><span class="w"> </span><span class="s2">"lon"</span><span class="p">),</span><span class="w">
+         </span><span class="n">crs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4326</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">st_cast</span><span class="p">(</span><span class="s2">"MULTIPOINT"</span><span class="p">,</span><span class="w"> </span><span class="n">group_or_split</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">st_union</span><span class="p">()</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">st_cast</span><span class="p">(</span><span class="s2">"POLYGON"</span><span class="p">)</span><span class="w"> 
+
+</span><span class="n">roibbox</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">roi</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">st_bbox</span><span class="p">()</span></code></pre></figure>
+
+<p>From the available collections copy and paste the one you are interested in, set the datetime, roi and limit of images.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">executed_stac_query</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rstac</span><span class="o">::</span><span class="n">stac_search</span><span class="p">(</span><span class="w">
+  </span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stac_source</span><span class="p">,</span><span class="w">
+  </span><span class="n">collections</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"sentinel-2-c1-l2a"</span><span class="p">,</span><span class="w">
+  </span><span class="n">bbox</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">roi</span><span class="p">,</span><span class="w">
+  </span><span class="n">datetime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"2021-01-01T00:00:00Z/2021-07-31T23:59:59Z"</span><span class="w">
+</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+</span><span class="n">rstac</span><span class="o">::</span><span class="n">get_request</span><span class="p">()</span></code></pre></figure>
+
+<p>See objects included in query. Check names of bands of interest so they can be used in the download step.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">signed_stac_query</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rstac</span><span class="o">::</span><span class="n">items_sign</span><span class="p">(</span><span class="w">
+  </span><span class="n">executed_stac_query</span><span class="p">,</span><span class="w">
+  </span><span class="n">rstac</span><span class="o">::</span><span class="n">sign_planetary_computer</span><span class="p">()</span><span class="w">
+</span><span class="p">)</span><span class="w">
+</span><span class="n">signed_stac_query</span></code></pre></figure>
+
+<p>Download images</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">folder</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"myfolder"</span><span class="w">
+
+</span><span class="n">rstac</span><span class="o">::</span><span class="n">assets_download</span><span class="p">(</span><span class="n">signed_stac_query</span><span class="p">,</span><span class="w"> 
+                       </span><span class="nf">c</span><span class="p">(</span><span class="s2">"nir"</span><span class="p">,</span><span class="w"> </span><span class="s2">"red"</span><span class="p">),</span><span class="w"> 
+                       </span><span class="n">output_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">folder</span><span class="p">)</span></code></pre></figure>
+
+<p>Let’s check the files. We’ll need a loop to stack the two bands for a single date and then create a spatiotemporal object, setting the date as the time dimension. This checking can be done using <code class="language-plaintext highlighter-rouge">terra</code> or <code class="language-plaintext highlighter-rouge">stars</code> packages. Here we used <code class="language-plaintext highlighter-rouge">stars</code>.</p>
+
+<p>Finally, let’s plot the first band in the two available dates.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">files</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">list.files</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span><span class="w"> </span><span class="s2">"B08|B04"</span><span class="p">,</span><span class="w"> </span><span class="n">recursive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w"> </span><span class="n">full.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Read only first two images (two dates)</span><span class="w">
+</span><span class="n">imgs</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">map</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">3</span><span class="p">),</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">){</span><span class="w">
+  </span><span class="n">read_stars</span><span class="p">(</span><span class="n">files</span><span class="p">[</span><span class="nf">c</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="m">+1</span><span class="p">))],</span><span class="w"> </span><span class="n">proxy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="p">})</span><span class="w">
+
+</span><span class="c1"># Stack along the time dimension</span><span class="w">
+</span><span class="n">imgs2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">do.call</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">imgs</span><span class="p">,</span><span class="w"> </span><span class="n">along</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"time"</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># See result</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">imgs2</span><span class="p">[</span><span class="m">1</span><span class="p">,,,</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">])</span></code></pre></figure>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/stacstars.png"><img src="http://localhost:4000/assets/images/stacstars.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Sentinel-2 images showing the first band in two dates.</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="rasters" /><category term="Big Data" /><category term="Spatio-Temporal Asset Catalogs" /><category term="Cloud Optimized GeoTiff" /><category term="stac" /><category term="cog" /><summary type="html"><![CDATA[This blog entry will show how to use STAC using R. This example was based on the original STAC tutorial.]]></summary></entry><entry><title type="html">Raster parallel processing in R</title><link href="http://localhost:4000/blog/raster-parallel-processing/" rel="alternate" type="text/html" title="Raster parallel processing in R" /><published>2024-05-29T15:46:00-06:00</published><updated>2024-05-29T15:46:00-06:00</updated><id>http://localhost:4000/blog/raster-parallel-processing</id><content type="html" xml:base="http://localhost:4000/blog/raster-parallel-processing/"><![CDATA[<h1 id="raster-parallel-processing-in-r">Raster parallel processing in R</h1>
 
 <p>This post shows how to parallelize raster processing in R.</p>
 
@@ -1206,121 +1291,4 @@ Additionally, you need to create a palette to show the DEM we loaded and set cus
 
 <p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/App.png"><img src="http://localhost:4000/assets/images/App.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Shiny app to visualize and explore spatial data.</p>
 
-<p>The real results hosted in shinyapps.io: https://jonathanvsv.shinyapps.io/cuilalaapp/</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="shiny" /><category term="app" /><category term="spatial" /><category term="visualization" /><category term="webapp" /><summary type="html"><![CDATA[Shiny App with spatial data]]></summary></entry><entry><title type="html">Spotify API in R</title><link href="http://localhost:4000/blog/spotify-in-r/" rel="alternate" type="text/html" title="Spotify API in R" /><published>2023-04-04T05:02:00-06:00</published><updated>2023-04-04T05:02:00-06:00</updated><id>http://localhost:4000/blog/spotify-in-r</id><content type="html" xml:base="http://localhost:4000/blog/spotify-in-r/"><![CDATA[<h1 id="spotify-api-in-r">Spotify API in R</h1>
-
-<p>This post will show you how to connect to the Spotify API using R and the <code class="language-plaintext highlighter-rouge">spotifyR</code> package. This API enables you to extract data for particular artists or songs from the Spotify database.</p>
-
-<p>The first step is registering in the Spotify Developer App: https://developer.spotify.com/. Once you are registered, you should create a new app. In that new window you only need to give the app a name, and app description and set some redirect URIs. All the other entries you can leave them empty. For example:</p>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/spotifyDash.png"><img src="http://localhost:4000/assets/images/spotifyDash.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Example of fields entered in the spotify dashboard.</p>
-
-<p>Then you, just need to open R, load the libraries we are going to use.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">spotifyr</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">tidyr</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">readr</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">purrr</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">stringr</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">forcats</span><span class="p">)</span></code></pre></figure>
-
-<p>and then copy the client id and client secret into R and get the access_token.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">Sys.setenv</span><span class="p">(</span><span class="n">SPOTIFY_CLIENT_ID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"My-client-id"</span><span class="p">)</span><span class="w">
-</span><span class="n">Sys.setenv</span><span class="p">(</span><span class="n">SPOTIFY_CLIENT_SECRET</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"My-client-secret"</span><span class="p">)</span><span class="w">
-
-</span><span class="n">access_token</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">get_spotify_access_token</span><span class="p">()</span></code></pre></figure>
-
-<p>Then you need to read the artist and album database or any other data frame. In this case, I am going to use a small example with some albums I like.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tibble</span><span class="p">(</span><span class="n">artist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Warbringer"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Satyricon"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Meshuggah"</span><span class="p">),</span><span class="w">
-            </span><span class="n">album</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Woe to the Vanquished"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Rebel Extravanganza"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Obzen"</span><span class="p">))</span></code></pre></figure>
-
-<p>Then we are going to use <code class="language-plaintext highlighter-rouge">mutate</code> to extract the genre associated with each artist. Since, not all artists have an associated genre (or can be found in spotify), it is advisable to use <code class="language-plaintext highlighter-rouge">possibly</code> to avoid errors if no genre was find in the Spotify database. Then use this function and finally, do some data wrangling to obtain each genre associated with an artist in a single row.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">safer_process_file</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">possibly</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
-  </span><span class="n">resul</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">search_spotify</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"artist"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-    </span><span class="n">slice</span><span class="p">(</span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-    </span><span class="n">select</span><span class="p">(</span><span class="n">genres</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-    </span><span class="n">unnest</span><span class="p">(</span><span class="n">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">genres</span><span class="p">))</span><span class="w">
-  </span><span class="n">ifelse</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">resul</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="n">resul</span><span class="p">)</span><span class="w">
-</span><span class="p">},</span><span class="w">
-</span><span class="n">otherwise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="s2">"Error in file"</span><span class="p">))</span><span class="w">
-
-</span><span class="n">resul</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">df</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># slice(1:9) |&gt;</span><span class="w">
-  </span><span class="n">mutate</span><span class="p">(</span><span class="n">genre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">map</span><span class="p">(</span><span class="n">df</span><span class="o">$</span><span class="n">artist</span><span class="p">,</span><span class="w"> </span><span class="n">safer_process_file</span><span class="p">))</span><span class="w">
-
-</span><span class="n">resul_exp</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">resul</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># slice(377) |&gt;</span><span class="w">
-  </span><span class="n">unnest</span><span class="p">(</span><span class="n">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">genre</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">unnest</span><span class="p">(</span><span class="n">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">genre</span><span class="p">,</span><span class="w">
-         </span><span class="n">keep_empty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">T</span><span class="p">)</span></code></pre></figure>
-
-<p>Finally, you might want to summarise this information into a plot of the most common genres in your df. So we are going to use a circular plot to show this.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Make counts by genre and arrange by n</span><span class="w">
-</span><span class="n">plotter</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">resul_exp</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">group_by</span><span class="p">(</span><span class="n">genre</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">count</span><span class="p">()</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">arrange</span><span class="p">(</span><span class="n">desc</span><span class="p">(</span><span class="n">n</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">ungroup</span><span class="p">()</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">mutate</span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">row_number</span><span class="p">())</span><span class="w">
-
-</span><span class="c1"># Based on: https://r-graph-gallery.com/296-add-labels-to-circular-barplot.html</span><span class="w">
-</span><span class="c1"># Get the name and the y position of each label</span><span class="w">
-</span><span class="n">label_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">genre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">plotter</span><span class="o">$</span><span class="n">genre</span><span class="p">,</span><span class="w">
-                         </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">plotter</span><span class="o">$</span><span class="n">id</span><span class="p">,</span><span class="w">
-                         </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">plotter</span><span class="o">$</span><span class="n">n</span><span class="p">)</span><span class="w">
-
-</span><span class="c1"># calculate the ANGLE of the labels</span><span class="w">
-</span><span class="n">number_of_bar</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">nrow</span><span class="p">(</span><span class="n">label_data</span><span class="p">)</span><span class="w">
-</span><span class="n">angle</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="m">90</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="m">360</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">label_data</span><span class="o">$</span><span class="n">id</span><span class="m">-0.5</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="n">number_of_bar</span><span class="w">     </span><span class="c1"># I substract 0.5 because the letter must have the angle of the center of the bars. Not extreme right(1) or extreme left (0)</span><span class="w">
-
-</span><span class="c1"># calculate the alignment of labels: right or left</span><span class="w">
-</span><span class="c1"># Left part of the plot labels will have an angle &lt; -90</span><span class="w">
-</span><span class="n">label_data</span><span class="o">$</span><span class="n">hjust</span><span class="o">&lt;-</span><span class="n">ifelse</span><span class="p">(</span><span class="n">angle</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">-90</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w">
-
-</span><span class="c1"># flip angle BY to make them readable</span><span class="w">
-</span><span class="n">label_data</span><span class="o">$</span><span class="n">angle</span><span class="o">&lt;-</span><span class="n">ifelse</span><span class="p">(</span><span class="n">angle</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="m">-90</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="m">+180</span><span class="p">,</span><span class="w"> </span><span class="n">angle</span><span class="p">)</span><span class="w">
-
-</span><span class="c1"># Start the plot</span><span class="w">
-</span><span class="n">plotter</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">as.factor</span><span class="p">(</span><span class="n">id</span><span class="p">),</span><span class="w"> </span><span class="n">y</span><span class="o">=</span><span class="n">n</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">       
-  </span><span class="c1"># This add the bars with a purple color</span><span class="w">
-  </span><span class="n">geom_bar</span><span class="p">(</span><span class="n">stat</span><span class="o">=</span><span class="s2">"identity"</span><span class="p">,</span><span class="w"> </span><span class="n">fill</span><span class="o">=</span><span class="n">alpha</span><span class="p">(</span><span class="s2">"#8b1c61"</span><span class="p">,</span><span class="w"> </span><span class="m">0.7</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="c1"># First parameter: size of inner circle, second one, margins on the outer circle</span><span class="w">
-  </span><span class="n">ylim</span><span class="p">(</span><span class="m">-50</span><span class="p">,</span><span class="m">100</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="c1"># Minimal theme</span><span class="w">
-  </span><span class="n">theme_minimal</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="c1"># Transform normal bar plot to circular</span><span class="w">
-  </span><span class="n">coord_polar</span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="c1"># Add the labels, using the label_data dataframe that we have created before</span><span class="w">
-  </span><span class="n">geom_text</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">label_data</span><span class="p">,</span><span class="w">
-            </span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">id</span><span class="p">,</span><span class="w">
-                </span><span class="n">y</span><span class="o">=</span><span class="n">value</span><span class="m">+0.5</span><span class="p">,</span><span class="w"> </span><span class="n">label</span><span class="o">=</span><span class="n">genre</span><span class="p">,</span><span class="w"> </span><span class="n">hjust</span><span class="o">=</span><span class="n">hjust</span><span class="p">),</span><span class="w">
-            </span><span class="n">color</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span><span class="w">
-            </span><span class="n">fontface</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">,</span><span class="w">
-            </span><span class="n">alpha</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w">
-            </span><span class="n">size</span><span class="o">=</span><span class="m">2</span><span class="p">,</span><span class="w">
-            </span><span class="n">angle</span><span class="o">=</span><span class="w"> </span><span class="n">label_data</span><span class="o">$</span><span class="n">angle</span><span class="p">,</span><span class="w">
-            </span><span class="n">inherit.aes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">theme</span><span class="p">(</span><span class="n">plot.margin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">margin</span><span class="p">(</span><span class="m">-3</span><span class="p">,</span><span class="w"> </span><span class="m">-10</span><span class="p">,</span><span class="w"> </span><span class="m">-3</span><span class="p">,</span><span class="w"> </span><span class="m">-10</span><span class="p">,</span><span class="w"> </span><span class="s2">"cm"</span><span class="p">),</span><span class="w">
-        </span><span class="n">axis.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_blank</span><span class="p">(),</span><span class="w">
-        </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_blank</span><span class="p">(),</span><span class="w">
-        </span><span class="n">panel.grid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_blank</span><span class="p">()</span><span class="c1">#,</span><span class="w">
-  </span><span class="p">)</span><span class="w">
-
-</span><span class="n">ggsave</span><span class="p">(</span><span class="s2">"genreSimple.png"</span><span class="p">,</span><span class="w">
-       </span><span class="n">device</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"pdf"</span><span class="p">,</span><span class="w">
-       </span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">,</span><span class="w">
-       </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">,</span><span class="w">
-       </span><span class="n">units</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"cm"</span><span class="p">,</span><span class="w">
-       </span><span class="n">dpi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">300</span><span class="p">)</span></code></pre></figure>
-
-<p>The result:</p>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/genreSimple.png"><img src="http://localhost:4000/assets/images/genreSimple.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Circular bar plot of the genres.</p>
-
-<p>It is pretty obvious I like metal! 🤘</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="spotify" /><category term="music" /><category term="API" /><summary type="html"><![CDATA[Spotify API in R]]></summary></entry></feed>
+<p>The real results hosted in shinyapps.io: https://jonathanvsv.shinyapps.io/cuilalaapp/</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="shiny" /><category term="app" /><category term="spatial" /><category term="visualization" /><category term="webapp" /><summary type="html"><![CDATA[Shiny App with spatial data]]></summary></entry></feed>

@@ -190,4 +190,10 @@ var store = [{
         "tags": ["post","r","parallel","raster","doparallel","foreach"],
         "url": "/blog/raster-parallel-processing/",
         "teaser": null
+      },{
+        "title": "STAC in R",
+        "excerpt":"This blog entry will show how to use STAC using R. This example was based on the original STAC tutorial. First check data providers in the following link Datasets. Then load necessary packages. library(sf) library(rstac) library(stars) library(purrr) In this example we will use Sentinel-2 Collection 1 Level 2A from AWS....","categories": ["blog"],
+        "tags": ["post","r","rasters","Big Data","Spatio-Temporal Asset Catalogs","Cloud Optimized GeoTiff","stac","cog"],
+        "url": "/blog/stac/",
+        "teaser": null
       }]
