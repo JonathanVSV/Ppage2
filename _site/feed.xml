@@ -1,4 +1,48 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-10-04T16:00:25-06:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jonathan V. Solórzano</title><subtitle>Welcome to my personal site. In this site you can get to know more about my work and check some of my courses and example scripts in R and GEE.</subtitle><author><name>Jonathan V. Solórzano</name></author><entry><title type="html">STAC in R</title><link href="http://localhost:4000/blog/stac/" rel="alternate" type="text/html" title="STAC in R" /><published>2024-09-02T15:35:00-06:00</published><updated>2024-09-02T15:35:00-06:00</updated><id>http://localhost:4000/blog/stac</id><content type="html" xml:base="http://localhost:4000/blog/stac/"><![CDATA[<p>This blog entry will show how to use STAC using R. This example was based on the original <a href="https://stacspec.org/en/tutorials/1-download-data-using-r/">STAC tutorial</a>.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-12-12T13:27:28-06:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jonathan V. Solórzano</title><subtitle>Welcome to my personal site. In this site you can get to know more about my work and check some of my courses and example scripts in R and GEE.</subtitle><author><name>Jonathan V. Solórzano</name></author><entry><title type="html">Extract tables from pdf in R</title><link href="http://localhost:4000/blog/extract-pdf-tables/" rel="alternate" type="text/html" title="Extract tables from pdf in R" /><published>2024-12-12T07:19:00-06:00</published><updated>2024-12-12T07:19:00-06:00</updated><id>http://localhost:4000/blog/extract-pdf-tables</id><content type="html" xml:base="http://localhost:4000/blog/extract-pdf-tables/"><![CDATA[<p>This blog entry will show how to extract tables from a pdf, using tabulizer.
+Load necessary packages.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">tabulizer</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)</span></code></pre></figure>
+
+<p>Read the pdf of interest, indicating the pages in which the table is located.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">table1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">extract_tables</span><span class="p">(</span><span class="s2">"IUCN_mesoamerica_restoration.pdf"</span><span class="p">,</span><span class="w">
+                            </span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"data.frame"</span><span class="p">,</span><span class="w">
+                            </span><span class="n">pages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">388</span><span class="o">:</span><span class="m">417</span><span class="p">),</span><span class="w"> 
+                            </span><span class="n">area</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">
+                            </span><span class="n">guess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="w">
+                            
+</span><span class="p">)</span></code></pre></figure>
+
+<p>Then join tables located in different pages as the same table. Substitute empty cells by NA and locate extra rows based on the NA located in the first column (Familia). Then join extra rows with the previous one.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Unir listas como filas de un mismo dataframe</span><span class="w">
+</span><span class="n">exp_table</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dplyr</span><span class="o">::</span><span class="n">bind_rows</span><span class="p">(</span><span class="n">table1</span><span class="p">)</span><span class="w">
+</span><span class="c1"># Sustituir espacios en blanco por NA</span><span class="w">
+</span><span class="n">exp_table</span><span class="p">[</span><span class="n">exp_table</span><span class="o">==</span><span class="s2">""</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="kc">NA</span><span class="w">
+</span><span class="c1"># Ver dónde hay NA en la columna de Familias para identificar filas extra</span><span class="w">
+</span><span class="n">inds</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">which</span><span class="p">(</span><span class="nf">is.na</span><span class="p">(</span><span class="n">exp_table</span><span class="o">$</span><span class="n">Familia</span><span class="p">))</span><span class="w">
+
+</span><span class="c1"># PAra esas filas extra pegar el texto con la fila anterior</span><span class="w">
+</span><span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">inds</span><span class="p">){</span><span class="w">
+  </span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nf">is.na</span><span class="p">(</span><span class="n">exp_table</span><span class="o">$</span><span class="n">Hábitat</span><span class="p">[</span><span class="n">i</span><span class="p">])){</span><span class="w">
+    </span><span class="n">exp_table</span><span class="o">$</span><span class="n">Hábitat</span><span class="p">[(</span><span class="n">i</span><span class="m">-1</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="n">exp_table</span><span class="o">$</span><span class="n">Hábitat</span><span class="p">[(</span><span class="n">i</span><span class="m">-1</span><span class="p">)],</span><span class="w"> </span><span class="n">exp_table</span><span class="o">$</span><span class="n">Hábitat</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w"> </span><span class="n">collapse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">" "</span><span class="p">)</span><span class="w">  
+  </span><span class="p">}</span><span class="w">
+  </span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nf">is.na</span><span class="p">(</span><span class="n">exp_table</span><span class="o">$</span><span class="n">Distribución</span><span class="p">[</span><span class="n">i</span><span class="p">])){</span><span class="w">
+    </span><span class="n">exp_table</span><span class="o">$</span><span class="n">Distribución</span><span class="p">[(</span><span class="n">i</span><span class="m">-1</span><span class="p">)]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="n">exp_table</span><span class="o">$</span><span class="n">Distribución</span><span class="p">[(</span><span class="n">i</span><span class="m">-1</span><span class="p">)],</span><span class="w"> </span><span class="n">exp_table</span><span class="o">$</span><span class="n">Distribución</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w"> </span><span class="n">collapse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">" "</span><span class="p">)</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span></code></pre></figure>
+
+<p>Finally, export the result to a csv</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Exportar</span><span class="w">
+</span><span class="n">exp_table</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Quitar columnas con NA en la columna familia</span><span class="w">
+  </span><span class="n">filter</span><span class="p">(</span><span class="o">!</span><span class="nf">is.na</span><span class="p">(</span><span class="n">Familia</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="c1"># Escribir</span><span class="w">
+  </span><span class="n">write.csv</span><span class="p">(</span><span class="s2">"IUCN_ApendiceA1.csv"</span><span class="p">,</span><span class="w">
+            </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w">
+            </span><span class="n">fileEncoding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"UTF-8"</span><span class="p">)</span></code></pre></figure>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="tabulizer" /><category term="pdf" /><category term="extract tables" /><summary type="html"><![CDATA[This blog entry will show how to extract tables from a pdf, using tabulizer. Load necessary packages.]]></summary></entry><entry><title type="html">STAC in R</title><link href="http://localhost:4000/blog/stac/" rel="alternate" type="text/html" title="STAC in R" /><published>2024-09-02T15:35:00-06:00</published><updated>2024-09-02T15:35:00-06:00</updated><id>http://localhost:4000/blog/stac</id><content type="html" xml:base="http://localhost:4000/blog/stac/"><![CDATA[<p>This blog entry will show how to use STAC using R. This example was based on the original <a href="https://stacspec.org/en/tutorials/1-download-data-using-r/">STAC tutorial</a>.</p>
 
 <p>First check data providers in the following link <a href="https://stacspec.org/en/about/datasets/">Datasets</a>.</p>
 
@@ -1164,131 +1208,4 @@ starting point, add opacity slider.</p>
 
 <p>A snapshot of the result:</p>
 
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/rvesttable.png"><img src="http://localhost:4000/assets/images/rvesttable.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Example of the data obtained after web scraping the bandcamp site.</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="rvest" /><category term="web scraping" /><category term="website data extraction" /><summary type="html"><![CDATA[Web scraping with R]]></summary></entry><entry><title type="html">Shiny App with spatial data</title><link href="http://localhost:4000/blog/shiny-app-spatial/" rel="alternate" type="text/html" title="Shiny App with spatial data" /><published>2023-05-31T10:19:00-06:00</published><updated>2023-05-31T10:19:00-06:00</updated><id>http://localhost:4000/blog/shiny-app-spatial</id><content type="html" xml:base="http://localhost:4000/blog/shiny-app-spatial/"><![CDATA[<h1 id="shiny-app-with-spatial-data">Shiny App with spatial data</h1>
-
-<p>This post will show you how to build a shiny app to visualize spatial data (mainly in raster and vector format). Remember that you can also build other types of shiny apps, but I decided to focus this post on spatial data.</p>
-
-<p>So the first thing is going to open RStudio, click on New Project -&gt; New Project -&gt; Shiny application and create new shiny app folder.</p>
-
-<p>The first thing is to load the necessary packages</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">shiny</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">raster</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">leaflet</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">RColorBrewer</span><span class="p">)</span></code></pre></figure>
-
-<p>Then you are going to load the raster and vector data.
-Additionally, you need to create a palette to show the DEM we loaded and set customized icons to show the vector data. Finally, you will create the legend entries for each of the customized icons.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Load the raster and vector data</span><span class="w">
-</span><span class="n">sitios</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"Data/SitiosPtsAll.gpkg"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">st_transform</span><span class="p">(</span><span class="m">4326</span><span class="p">)</span><span class="w">
-</span><span class="n">barrancas</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">st_read</span><span class="p">(</span><span class="s2">"Data/BarrancasAll.gpkg"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">st_transform</span><span class="p">(</span><span class="m">4326</span><span class="p">)</span><span class="w">
-</span><span class="n">DEM</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raster</span><span class="p">(</span><span class="s2">"Data/DEM.tif"</span><span class="p">)</span><span class="w">
-
-</span><span class="c1"># Palette to show DEM</span><span class="w">
-</span><span class="n">mypal</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">palette</span><span class="p">(</span><span class="n">gray</span><span class="p">(</span><span class="n">seq</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="n">length.out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span><span class="p">)))</span><span class="w">
-
-</span><span class="n">myIcons</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">icons</span><span class="p">(</span><span class="w">
-  </span><span class="n">iconUrl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">case_when</span><span class="p">(</span><span class="n">sitios</span><span class="o">$</span><span class="n">Geositio</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Localidad"</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"www/house.png"</span><span class="p">,</span><span class="w">
-                      </span><span class="n">sitios</span><span class="o">$</span><span class="n">Geositio</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Templo"</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"www/iglesia.png"</span><span class="p">,</span><span class="w">
-                      </span><span class="n">sitios</span><span class="o">$</span><span class="n">Geositio</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Arbol"</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"www/tree.png"</span><span class="p">,</span><span class="w">
-                      </span><span class="n">sitios</span><span class="o">$</span><span class="n">Geositio</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Cerro"</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"www/peak.png"</span><span class="p">,</span><span class="w">
-                      </span><span class="n">sitios</span><span class="o">$</span><span class="n">Geositio</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Paraje"</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"www/walker.png"</span><span class="p">,</span><span class="w">
-                      </span><span class="n">sitios</span><span class="o">$</span><span class="n">Geositio</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Ranchería"</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"www/hostel.png"</span><span class="p">,</span><span class="w">
-                      </span><span class="n">sitios</span><span class="o">$</span><span class="n">Geositio</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">"Crucero"</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"www/crossroad.png"</span><span class="p">,</span><span class="w">
-                      </span><span class="kc">TRUE</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="s2">"www/circle.png"</span><span class="p">),</span><span class="w">
-  </span><span class="n">iconWidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">,</span><span class="w"> 
-  </span><span class="n">iconHeight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">15</span><span class="p">,</span><span class="w">
-  </span><span class="n">iconAnchorX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7</span><span class="p">,</span><span class="w">
-  </span><span class="n">iconAnchorY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7</span><span class="p">,</span><span class="w">
-  </span><span class="n">className</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Sitios"</span><span class="w">
-</span><span class="p">)</span><span class="w">
-
-</span><span class="n">html_legend</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s1">'&lt;img src="house.png" height="15" width="15"&gt;Localidad&lt;br&gt;
-                &lt;img src="iglesia.png" height="15" width="15"&gt;Templo&lt;br&gt;
-                &lt;img src="tree.png" height="15" width="15"&gt;Árbol&lt;br&gt;
-                &lt;img src="peak.png" height="15" width="15"&gt;Cerro&lt;br&gt;
-                &lt;img src="walker.png" height="15" width="15"&gt;Paraje&lt;br&gt;
-                &lt;img src="hostel.png" height="15" width="15"&gt;Ranchería&lt;br&gt;
-                &lt;img src="crossroad.png" height="15" width="15"&gt;Crucero&lt;br&gt;
-                &lt;img src="circle.png" height="15" width="15"&gt;Otro&lt;br&gt;'</span></code></pre></figure>
-
-<p>Then, you need to set up the users interface. In this case, since we are interested in navigating spatial data, we are using a vertical layout.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Define the UI for the app</span><span class="w">
-</span><span class="n">ui</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">fluidPage</span><span class="p">(</span><span class="w">
-  </span><span class="n">titlePanel</span><span class="p">(</span><span class="s2">"Cuilala App"</span><span class="p">),</span><span class="w">
-  </span><span class="n">verticalLayout</span><span class="p">(</span><span class="w">
-    </span><span class="n">titlePanel</span><span class="p">(</span><span class="s2">"Cuilala información espacial"</span><span class="p">),</span><span class="w">
-  </span><span class="p">)</span><span class="w">
-</span><span class="p">)</span></code></pre></figure>
-
-<p>Then create below that same script the server side script. Most of this part is setting up the leaflet visualization, adding a basemap (ESRI world imagery), adding the markers (point data), DEM (raster data) and other features (lines data), adding control layers buttons, as well as the legend for our customized icons and a scale bar. Finally, you need to create an observe event to watch for clicks over the markers, to show up their details when clicked.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Define the server for the app</span><span class="w">
-</span><span class="n">server</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
-  </span><span class="c1"># Render the map</span><span class="w">
-  </span><span class="n">output</span><span class="o">$</span><span class="n">map</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">renderLeaflet</span><span class="p">({</span><span class="w">
-    </span><span class="c1"># Create the leaflet map</span><span class="w">
-    </span><span class="n">leaflet</span><span class="p">(</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sitios</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
-      </span><span class="n">addProviderTiles</span><span class="p">(</span><span class="s1">'Esri.WorldImagery'</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w"> 
-      </span><span class="c1"># Add markers for vector data</span><span class="w">
-      </span><span class="n">addMarkers</span><span class="p">(</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sitios</span><span class="p">,</span><span class="w">
-                 </span><span class="n">popup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">Nombre</span><span class="p">,</span><span class="w">
-                 </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Sitios"</span><span class="p">,</span><span class="w">
-                 </span><span class="n">icon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">myIcons</span><span class="p">,</span><span class="w">
-               </span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
-      </span><span class="c1"># Add the raster layer</span><span class="w">
-      </span><span class="n">addRasterImage</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DEM</span><span class="p">,</span><span class="w">
-                     </span><span class="n">colors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mypal</span><span class="p">,</span><span class="w">
-                     </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"ngb"</span><span class="p">,</span><span class="w">
-                     </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"MDE"</span><span class="p">,</span><span class="w">
-                     </span><span class="n">opacity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">70</span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
-      </span><span class="c1"># Add polylines layer</span><span class="w">
-      </span><span class="n">addPolylines</span><span class="p">(</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">barrancas</span><span class="p">,</span><span class="w">
-        </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"royalblue"</span><span class="p">,</span><span class="w">
-        </span><span class="n">group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Barrancas"</span><span class="p">,</span><span class="w">
-        </span><span class="n">popup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">Nombre</span><span class="w">
-      </span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
-      </span><span class="c1"># Add Layers control (turn on and off)</span><span class="w">
-      </span><span class="n">addLayersControl</span><span class="p">(</span><span class="w">
-        </span><span class="n">baseGroups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"ESRI Imagery"</span><span class="p">),</span><span class="w">
-        </span><span class="n">overlayGroups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Sitios"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Barrancas"</span><span class="p">,</span><span class="w"> </span><span class="s2">"MDE"</span><span class="p">),</span><span class="w">
-        </span><span class="n">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">layersControlOptions</span><span class="p">(</span><span class="n">collapsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span><span class="w">
-      </span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
-      </span><span class="c1"># Add legend for custom icons</span><span class="w">
-      </span><span class="n">addControl</span><span class="p">(</span><span class="w">
-        </span><span class="n">html</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">html_legend</span><span class="p">,</span><span class="w">
-        </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bottomleft"</span><span class="w">
-      </span><span class="p">)</span><span class="w"> </span><span class="o">%&gt;%</span><span class="w">
-      </span><span class="c1"># Add scale bar</span><span class="w">
-      </span><span class="n">addScaleBar</span><span class="p">(</span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bottomright"</span><span class="p">,</span><span class="w">
-                  </span><span class="n">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">scaleBarOptions</span><span class="p">(</span><span class="w">
-                    </span><span class="n">maxWidth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">100</span><span class="p">,</span><span class="w">
-                    </span><span class="n">metric</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span><span class="w">
-                    </span><span class="n">imperial</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w">
-                    </span><span class="n">updateWhenIdle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="w">
-                  </span><span class="p">))</span><span class="w">
-  </span><span class="p">})</span><span class="w"> 
-  
-  </span><span class="c1"># Observe event for clicking over a marker and showing details</span><span class="w">
-  </span><span class="n">observeEvent</span><span class="p">(</span><span class="n">input</span><span class="o">$</span><span class="n">mapmarker_click</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> 
-    </span><span class="n">p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">input</span><span class="o">$</span><span class="n">map_marker_click</span><span class="w"> 
-    </span><span class="n">print</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="w">
-  </span><span class="p">})</span><span class="w">
-</span><span class="p">}</span></code></pre></figure>
-
-<p>Finally, run the app.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># Run the app</span><span class="w">
-</span><span class="n">shinyApp</span><span class="p">(</span><span class="n">ui</span><span class="p">,</span><span class="w"> </span><span class="n">server</span><span class="p">)</span></code></pre></figure>
-
-<p>A snapshot of the result:</p>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/App.png"><img src="http://localhost:4000/assets/images/App.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Shiny app to visualize and explore spatial data.</p>
-
-<p>The real results hosted in shinyapps.io: https://jonathanvsv.shinyapps.io/cuilalaapp/</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="shiny" /><category term="app" /><category term="spatial" /><category term="visualization" /><category term="webapp" /><summary type="html"><![CDATA[Shiny App with spatial data]]></summary></entry></feed>
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/rvesttable.png"><img src="http://localhost:4000/assets/images/rvesttable.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Example of the data obtained after web scraping the bandcamp site.</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="rvest" /><category term="web scraping" /><category term="website data extraction" /><summary type="html"><![CDATA[Web scraping with R]]></summary></entry></feed>

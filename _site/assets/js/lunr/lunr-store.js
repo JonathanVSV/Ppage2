@@ -196,4 +196,10 @@ var store = [{
         "tags": ["post","r","rasters","Big Data","Spatio-Temporal Asset Catalogs","Cloud Optimized GeoTiff","stac","cog"],
         "url": "/blog/stac/",
         "teaser": null
+      },{
+        "title": "Extract tables from pdf in R",
+        "excerpt":"This blog entry will show how to extract tables from a pdf, using tabulizer. Load necessary packages. library(tabulizer) library(tidyverse) Read the pdf of interest, indicating the pages in which the table is located. table1 &lt;- extract_tables(\"IUCN_mesoamerica_restoration.pdf\", output = \"data.frame\", pages = c(388:417), area = NULL, guess = TRUE ) Then...","categories": ["blog"],
+        "tags": ["post","r","tabulizer","pdf","extract tables"],
+        "url": "/blog/extract-pdf-tables/",
+        "teaser": null
       }]
