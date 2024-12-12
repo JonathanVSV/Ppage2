@@ -10,7 +10,7 @@ This page shows an overview of the public repositories in my Github:
 
 * Repo to calculate some basic forest's structural and diversity attributes: [VegCommunity](https://github.com/JonathanVSV/VegCommunity).
 
-* Repo to cFit linear models using the forest attributes as dependent variables and image texture as independent ones: [RSModels](https://github.com/JonathanVSV/RSModels).
+* Repo to fit linear models using the forest attributes as dependent variables and image texture as independent ones: [RSModels](https://github.com/JonathanVSV/RSModels).
 
 * Repo to extract additional parameters from the BFAST model, i.e., a method to detect disturbances from images time series (e.g., amplitude, magnitude, R2, NA percentage, stable historical period): [bfast_params_extr](https://github.com/JonathanVSV/bfast_params_extr).
 
