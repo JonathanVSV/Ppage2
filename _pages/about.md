@@ -62,9 +62,9 @@ gallery:
     title: "Spectrograms obtained using different thresholds (columns) for three different hours (rows) and its effect over a acoustic diversity index (final row)"
 ---
 
-I am a biologist/geographer interested in studying tropical forests and its changes using remote sensing, from a discrete perspective (land use/land cover) to a continuous one (modeling forest attributes, such as AGB). 
+I am a biologist/geographer interested in studying tropical forests and its changes using remote sensing, from a discrete perspective (land use/land cover) to a continuous one (modeling forest attributes, such as aboveground biomass [AGB]). 
 
-I obtained my Bachelor's and Master's degree in Biology, and a PhD in Geography by the Universidad Nacional Autónoma de México (UNAM). My research includes evaluating the use of remote sensing information to model structural and diversity forest attributes, and monitor deforestation and forest degradation. Thus, I have experience in acquiring in-field forest data, visually interpreting images, working with different types of remote sensing information (e.g., multipectral, SAR and LiDAR point clouds), obtaining different remote sensing metrics (e.g., spectral indices, calculating GLCM texture, percentiles), as well as working with different modelling algorithms or techniques (e.g., linear / non-linear models, machine learning and deep learning algorthms).
+I obtained my Bachelor's and Master's degree in Biology, and a PhD in Geography by the Universidad Nacional Autónoma de México (UNAM). My research includes evaluating the use of remote sensing information to model structural and diversity forest attributes, and monitor deforestation and forest degradation. I have experience in acquiring in-field forest data, visually interpreting images, working with different types of remote sensing information (e.g., multispectral, SAR and LiDAR point clouds), obtaining different remote sensing metrics (e.g., spectral indices, calculating GLCM and FOTO texture, percentiles), as well as working with different modeling algorithms or techniques (e.g., linear / non-linear models, machine learning and deep learning algorthms).
 
 I like to make most of my analyses in R or use other freely available tools such as QGIS and Google Earth Engine. I believe that using these tools helps in making analyses more transparent and reproducible.
 
@@ -79,4 +79,4 @@ Word cloud analysis of my publications.
 
 Additionally, here are some figures of the work I have done:
 
-{% include gallery caption="Figure gallery." %}
+{% include gallery %}

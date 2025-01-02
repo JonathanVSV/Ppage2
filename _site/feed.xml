@@ -1,4 +1,153 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2024-12-12T13:31:03-06:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jonathan V. Solórzano</title><subtitle>Welcome to my personal site. In this site you can get to know more about my work and check some of my courses and example scripts in R and GEE.</subtitle><author><name>Jonathan V. Solórzano</name></author><entry><title type="html">Extract tables from pdf in R</title><link href="http://localhost:4000/blog/extract-pdf-tables/" rel="alternate" type="text/html" title="Extract tables from pdf in R" /><published>2024-12-12T07:19:00-06:00</published><updated>2024-12-12T07:19:00-06:00</updated><id>http://localhost:4000/blog/extract-pdf-tables</id><content type="html" xml:base="http://localhost:4000/blog/extract-pdf-tables/"><![CDATA[<p>This blog entry will show how to extract tables from a pdf, using tabulizer.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-01-02T13:50:58-06:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jonathan V. Solórzano</title><subtitle>Welcome to my personal site. In this site you can get to know more about my work and check some of my courses and example scripts in R and GEE.</subtitle><author><name>Jonathan V. Solórzano</name></author><entry><title type="html">Create certificates in R</title><link href="http://localhost:4000/blog/Create-certificates-in-R/" rel="alternate" type="text/html" title="Create certificates in R" /><published>2024-12-13T05:17:00-06:00</published><updated>2024-12-13T05:17:00-06:00</updated><id>http://localhost:4000/blog/Create-certificates-in-R</id><content type="html" xml:base="http://localhost:4000/blog/Create-certificates-in-R/"><![CDATA[<h1 id="create-participation-certificates-in-r">Create participation certificates in R</h1>
+
+<p>This post will show you how to create certificates automatically using R. First, install and load the <code class="language-plaintext highlighter-rouge">labeleR</code> package. I will use <code class="language-plaintext highlighter-rouge">tibble</code> to create the the table containing the names.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">labeleR</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">tibble</span><span class="p">)</span></code></pre></figure>
+
+<p>Create or read the table containing the names</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tibble</span><span class="p">(</span><span class="n">Names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"John Smith"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Alejandra Pérez"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Hans Zimmer"</span><span class="p">))</span></code></pre></figure>
+
+<h1 id="attendees">Attendees</h1>
+
+<p>Create attendees cerficates. Here you can indicate the language of the certificate (Spanish or English), the column name containing the names in df, the name of the Congress, date, hour, signer and logos. If you want to customize the certificate, you can use an Rmd template.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">create_attendance_certificate</span><span class="p">(</span><span class="w">
+  </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df</span><span class="p">,</span><span class="w">
+  </span><span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"labeleR_output"</span><span class="p">,</span><span class="w">
+  </span><span class="n">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"attendance_certificates"</span><span class="p">,</span><span class="w">
+  </span><span class="n">language</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Spanish"</span><span class="w"> </span><span class="p">,</span><span class="w">
+  </span><span class="n">name.column</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Names"</span><span class="p">,</span><span class="w">
+  </span><span class="c1"># type = "Congress",</span><span class="w">
+  </span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Congreso Nacional de Geografía "</span><span class="p">,</span><span class="w">
+  </span><span class="n">date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"23/06/2024"</span><span class="p">,</span><span class="w">
+  </span><span class="n">hours</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"24"</span><span class="p">,</span><span class="w">
+  </span><span class="c1"># freetext = "taught by Professor S. Snape",</span><span class="w">
+  </span><span class="n">signer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Elmer Homero"</span><span class="p">,</span><span class="w">
+  </span><span class="n">signer.role</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Organizados"</span><span class="p">,</span><span class="w">
+  </span><span class="n">rpic</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Rlogo.png"</span><span class="p">,</span><span class="w">
+  </span><span class="n">lpic</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Rlogo.png"</span><span class="p">,</span><span class="w">
+  </span><span class="c1"># keep.files = TRUE, </span><span class="w">
+  </span><span class="n">signature.pic</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"signEx.png"</span><span class="p">,</span><span class="w">
+  </span><span class="n">template</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"miFormato.Rmd"</span><span class="w">
+</span><span class="p">)</span></code></pre></figure>
+
+<p>I wanted to customize the template, so the easiest way is to first run the certificates with <code class="language-plaintext highlighter-rouge">keep.files = TRUE</code>. This will add the template Rmarkdown file to the output folder. You can copy paste this file and modify it at your will (knowing a little laTex). The following template enables adding a background image for the template. Notice that you could modify the spaces and area between the text.</p>
+
+<p>Here is the code for the template in latex (since output is pdf).</p>
+
+<figure class="highlight"><pre><code class="language-latex" data-lang="latex">---
+title: ''
+geometry: "left=2cm,right=2cm,top=1cm,bottom=1cm"
+output:
+  pdf<span class="p">_</span>document: default
+header-includes: <span class="k">\usepackage</span><span class="p">{</span>tikz<span class="p">}</span>
+classoption: landscape
+params:
+  name.column.i: ""
+  type: ""
+  title: ""
+  date: ""
+  hours: ""
+  freetext: ""
+  signer: ""
+  signer.role: ""
+---
+
+<span class="nt">\begin{center}</span>
+<span class="k">\pagenumbering</span><span class="p">{</span>gobble<span class="p">}</span>
+
+<span class="nt">\begin{tikzpicture}</span>[remember picture,overlay]
+<span class="c">% draw image</span>
+<span class="k">\node</span><span class="na">[inner sep=0]</span> at (current page.center)
+<span class="p">{</span><span class="k">\includegraphics</span><span class="na">[width=\paperwidth,height=\paperheight]</span><span class="p">{</span>D:/Drive/Jonathan<span class="p">_</span>trabaggio/Doctorado/R/Sandbox/background.jpg<span class="p">}}</span>;
+<span class="nt">\end{tikzpicture}</span>
+
+<span class="c">% logos %</span>
+<span class="k">\includegraphics</span><span class="na">[height=3cm]</span><span class="p">{</span>lpic.png<span class="p">}</span> 
+<span class="k">\hfill</span>
+<span class="k">\includegraphics</span><span class="na">[height=3cm]</span><span class="p">{</span>rpic.png<span class="p">}</span>
+<span class="k">\linebreak</span>
+<span class="k">\vfill</span>
+
+<span class="p">{</span><span class="k">\fontsize</span><span class="p">{</span>40pt<span class="p">}{</span>40pt<span class="p">}</span><span class="k">\selectfont\bf</span> Certificado de asistencia<span class="p">}</span> 
+<span class="k">\vfill</span>
+
+<span class="p">{</span><span class="k">\fontsize</span><span class="p">{</span>40pt<span class="p">}{</span>40pt<span class="p">}</span><span class="k">\selectfont</span> `r params<span class="p">$</span><span class="nb">name.column.i` </span><span class="p">}</span><span class="nb"> </span><span class="nv">\\</span><span class="nb">
+</span><span class="nv">\vfill</span><span class="nb">
+
+</span><span class="nv">\Large</span><span class="nb">
+
+ha asistido al `r params</span><span class="p">$</span>type` <span class="p">{</span><span class="k">\bf</span> `r params<span class="p">$</span><span class="nb">title`</span><span class="p">}</span><span class="nb"> </span><span class="nv">\\</span><span class="nb">
+</span><span class="nv">\vfill</span><span class="nb">
+
+`r params</span><span class="p">$</span>freetext` <span class="k">\\</span>
+<span class="k">\vfill</span>
+
+con fecha `r params<span class="p">$</span><span class="nb">date` </span><span class="nv">\\</span><span class="nb">
+</span><span class="nv">\vfill</span><span class="nb">
+
+y una duración de `r params</span><span class="p">$</span>hours` hora(s). <span class="k">\\</span>
+<span class="k">\vfill</span>
+
+<span class="c">% firma %</span>
+Firmado por: <span class="k">\\</span>
+<span class="k">\vfill</span>
+<span class="k">\includegraphics</span><span class="na">[height=2cm]</span><span class="p">{</span>spic.png<span class="p">}</span><span class="k">\\</span>
+`r params<span class="p">$</span><span class="nb">signer` </span><span class="nv">\\</span><span class="nb">
+`r params</span><span class="p">$</span>signer.role` <span class="k">\\</span>
+
+<span class="nt">\end{center}</span>
+<span class="k">\pagebreak</span></code></pre></figure>
+
+<p>Once the past code is run with the corresponding template. This is the result</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/certificate.png"><img src="http://localhost:4000/assets/images/certificate.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Certificate.</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="certificates" /><category term="labeleR" /><category term="labels" /><category term="participation" /><category term="attendance" /><summary type="html"><![CDATA[Create participation certificates in R]]></summary></entry><entry><title type="html">Google Drive in R</title><link href="http://localhost:4000/blog/Google-drive-in-r/" rel="alternate" type="text/html" title="Google Drive in R" /><published>2024-12-13T04:10:00-06:00</published><updated>2024-12-13T04:10:00-06:00</updated><id>http://localhost:4000/blog/Google-drive-in-r</id><content type="html" xml:base="http://localhost:4000/blog/Google-drive-in-r/"><![CDATA[<h1 id="io-data-in-google-drive-in-r">I/O data in Google Drive in R</h1>
+
+<p>This post shows how to connect to your Google Drive API. A very good tutorial can be found here: <a href="https://claudiozandonella.github.io/trackdown/articles/oauth-client-configuration.html">trackdown tutorial</a>.</p>
+
+<p>Here are the main steps</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">googledriveR</span><span class="p">)</span></code></pre></figure>
+
+<h2 id="create-project-in-google-cloud">Create project in Google Cloud</h2>
+
+<p>Go to <a href="https://console.cloud.google.com/">Google Cloud Console</a> and accept terms of use. Then, create a new project, specify name an accept. The tab opnening the projects is right next to Google Cloud logo.</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/GCproject.png"><img src="http://localhost:4000/assets/images/GCproject.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot.</p>
+
+<p>Once created, open the project (using the same tab as previous step) and click on the three lines left of the Google Cloud logo, go to APIs &amp; Services and Enabled APIs &amp; services.</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/GCapi.png"><img src="http://localhost:4000/assets/images/GCapi.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot.</p>
+
+<p>Next, go to enable apis and services.</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/GCenable.png"><img src="http://localhost:4000/assets/images/GCenable.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot.</p>
+
+<p>Then search for google drive api and click on it. An enable button will appear, click on it to enable. Do the same for Google Docs API.</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/GCGDapi.png"><img src="http://localhost:4000/assets/images/GCGDapi.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot.</p>
+
+<p>Once both APIS are enabled go back to the APIs &amp; Services menu and click on OAuth consent screen. Then click on external option and create.</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/GCconsent.png"><img src="http://localhost:4000/assets/images/GCconsent.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot.</p>
+
+<p>Then, you need to create an app name and associate an email with the app, as well as a developer contact. Next click on add or remove scopes. Activate “…/auth/userinfo.email”  “openid”, “…/auth/drive” and “…/auth/docs”. Finally, update, save changes and accept.</p>
+
+<p>Back in the OAuth consent screen publish app and confirm.</p>
+
+<p>The next step is go to the credentials menu and create a nuew OAuth 2.0 Client IDs. Go to create credentials, OAUth client ID, select application type = Desktop app and set the desired name. Next, the credential will be shown. Click on download json and save file in your local disk.</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/GCcredentials.png"><img src="http://localhost:4000/assets/images/GCcredentials.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot.</p>
+
+<p>Next, open RStudio locally, install “usethis” package and use <code class="language-plaintext highlighter-rouge">usethis::edit_r_environ()</code> to modify the environment, which will be run everytime R starts. In this file save the following: <code class="language-plaintext highlighter-rouge">GOOGLEDRIVE_PATH = {location}</code>, setting the location of your json secret instead of {location}.</p>
+
+<p>After this step, save, restart R, and install “googledrive”. And add the following to your script. First time you run the auth configure step, a window will popup asking for permission. Give permissions and you are ready to use Google Drive from R.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">googledrive</span><span class="p">)</span><span class="w">
+
+</span><span class="n">drive_auth_configure</span><span class="p">(</span><span class="n">gargle</span><span class="o">::</span><span class="n">gargle_oauth_client_from_json</span><span class="p">(</span><span class="n">Sys.getenv</span><span class="p">(</span><span class="s2">"GOOGLEDRIVE_PATH"</span><span class="p">)))</span></code></pre></figure>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="google drive" /><category term="cloud storage" /><summary type="html"><![CDATA[I/O data in Google Drive in R]]></summary></entry><entry><title type="html">Extract tables from pdf in R</title><link href="http://localhost:4000/blog/extract-pdf-tables/" rel="alternate" type="text/html" title="Extract tables from pdf in R" /><published>2024-12-12T07:19:00-06:00</published><updated>2024-12-12T07:19:00-06:00</updated><id>http://localhost:4000/blog/extract-pdf-tables</id><content type="html" xml:base="http://localhost:4000/blog/extract-pdf-tables/"><![CDATA[<p>This blog entry will show how to extract tables from a pdf, using tabulizer.
 Load necessary packages.</p>
 
 <figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">tabulizer</span><span class="p">)</span><span class="w">
@@ -1020,192 +1169,4 @@ starting point, add opacity slider.</p>
   </span><span class="n">facet_wrap</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">Species</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> 
   </span><span class="n">theme_cowplot</span><span class="p">()</span></code></pre></figure>
 
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/cowplottheme.png"><img src="http://localhost:4000/assets/images/cowplottheme.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with facet wrap where several theme elements have been customized according to the cowplot theme.</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="ggplot2" /><category term="plot" /><category term="grammar of graphics" /><category term="figures" /><summary type="html"><![CDATA[Beautiful plots in R using ggplot2]]></summary></entry><entry><title type="html">Open Foris tools in r</title><link href="http://localhost:4000/blog/open-foris-tools/" rel="alternate" type="text/html" title="Open Foris tools in r" /><published>2023-06-09T12:19:00-06:00</published><updated>2023-06-09T12:19:00-06:00</updated><id>http://localhost:4000/blog/open-foris-tools</id><content type="html" xml:base="http://localhost:4000/blog/open-foris-tools/"><![CDATA[<h1 id="open-foris-tools-in-r">Open Foris tools in R</h1>
-
-<p>In this post I will show you how to easily run two Open Foris tools in R to easily validate a map and obtain the area estimates corrected by the producer’s accuracies obtained in the confusion matrix. The repository of these tools can be found here: https://github.com/openforis/accuracy-assessment</p>
-
-<p>There are several ways you can run the apps; however the easiest is to run the shiny app directly from the github repo.</p>
-
-<h2 id="design">Design</h2>
-
-<p>First, we will explore the design app.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">shiny</span><span class="p">)</span><span class="w">
-</span><span class="n">options</span><span class="p">(</span><span class="n">shiny.launch.browser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span><span class="n">runGitHub</span><span class="p">(</span><span class="s2">"openforis/accuracy-assessment"</span><span class="p">,</span><span class="n">subdir</span><span class="o">=</span><span class="s2">"aa_design"</span><span class="p">)</span></code></pre></figure>
-
-<p>Once you open R and run the previous code, you should see the following screen.</p>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/of1.png"><img src="http://localhost:4000/assets/images/of1.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Open Foris design app</p>
-
-<h2 id="map-input">Map input</h2>
-
-<p>In this app, you will see in the left panel several submenus. The first one is the Map input, where you can load your classification. Once your image is loaded, go to the next submenu, Strata areas.</p>
-
-<h2 id="strata-areas">Strata areas</h2>
-
-<p>In this menu, the first option will read: area calculation and legend generation. Click here and wait several seconds until the menu that is under this one (Legend labeling) appears with the values of the raster. Here you can change the raster values for a description of that class. For example, Class name 1 could be water, class name 2, forest, etc. Once the descriptions have been added, click on submit legend. Once the legend is submitted the panel on the upper right side should appear with the names of the classes and its area in a table. You can download that table as a csv. Then go to the next submenu: Strata selection.</p>
-
-<h2 id="strata-selection">Strata selection</h2>
-
-<p>Here you set the expected user’s accuracy for each class. Commonly the high value is set for common classes and the low value for rare classes. Once you select the high and low expected user’s accuracy in the sliders, in the lower right panel select the confidence values for each class. Click on the empty spaces and select each class in its corresponding high or low value.</p>
-
-<h2 id="sampling-size">Sampling size</h2>
-
-<p>The next step is selecting the sample size to obtain a desired standard error of the overall accuracy of the map. Here you can select the target standard error (default value = 0.01) and the minimum sample size per strata (default value = 100). A smaller standard error will imply a higher number of points, while the minimum sample size is sometimes recommended of being around 50. If the panel on the right does not adjust its estimates once you change the values in the first panel, verify that the modify the sampling size button is turned off.</p>
-
-<h2 id="sample-allocation">Sample allocation</h2>
-
-<p>Finally, you just need to generate the sampling points by clicking in the button of the final menu. Here a vector file will be generated with the areas to be verified to get the accuracy of the map. Here you can set the size of the intepretation box (min 30 m). Once the points are generated (after several seconds) a map will appear showing the generated points and a new submenu will appear to download the points in the format you desire.</p>
-
-<h1 id="analysis">Analysis</h1>
-
-<p>The second app can be run by using the following code:</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">shiny</span><span class="p">)</span><span class="w">
-</span><span class="n">options</span><span class="p">(</span><span class="n">shiny.launch.browser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
-</span><span class="n">runGitHub</span><span class="p">(</span><span class="s2">"openforis/accuracy-assessment"</span><span class="p">,</span><span class="n">subdir</span><span class="o">=</span><span class="s2">"aa_analysis"</span><span class="p">)</span></code></pre></figure>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/of2.png"><img src="http://localhost:4000/assets/images/of2.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Open Foris analysis app</p>
-
-<p>Once you see this window in your web browser, you can click on the first submenu: Inputs.</p>
-
-<h2 id="inputs">Inputs</h2>
-
-<p>Here you should add the csv file that contains the data for each validation points generated in the previous app. However this file has been verified an thus, it should contain one column indicating the reference data (by ground truth or visual interpretation) and the original map data (the classification). Afterward, you should add a csv file containing the area data by class (generated in the previous app).</p>
-
-<p>Once you add the two files, a new panel will appear on the right side. Here you should indicate which column has the reference data (by ground truth or visual interpretation) and which one the map class. Also, indicate the columns in the area file indicating the area and the class.</p>
-
-<h2 id="check">Check</h2>
-
-<p>Here you can check the spatial distribution of your verification data. Here you just need to indicate the columns containing the x and y coordinates data.</p>
-
-<h2 id="results">Results</h2>
-
-<p>Here you can see the confusion matrix from your data. Also, in the lower part you can set the desired confidence interval for the area estimates (by default 95 %). Finally. the corrected area estimates should appear in the right panel. In the last test I made with this app, this last part had a bug; thus, I suggest cloning the repo and running it locally as a shiny app. In this last approach, you need to open the app_analysis_bckup_20161024 file inside the Rscript folder and run eveything from start to end. Finally, this way the app should work without any error showing that the names in the two files (1) reference and map classes and 2) areas) do not match.</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="Open Foris" /><category term="map" /><category term="accuracy assessment" /><category term="area estimates" /><category term="map verification" /><category term="map validation" /><category term="overall accuracy" /><summary type="html"><![CDATA[Open Foris tools in R]]></summary></entry><entry><title type="html">Web scraping with r</title><link href="http://localhost:4000/blog/web-scraping-with-r/" rel="alternate" type="text/html" title="Web scraping with r" /><published>2023-06-09T12:19:00-06:00</published><updated>2023-06-09T12:19:00-06:00</updated><id>http://localhost:4000/blog/web-scraping-with-r</id><content type="html" xml:base="http://localhost:4000/blog/web-scraping-with-r/"><![CDATA[<h1 id="web-scraping-with-r">Web scraping with R</h1>
-
-<p>This post will show you how to get data from a webpage (also known as web scraping) with R and the rvest package. This analysis was performed to complement the data obtained from the spotify API. Since I could not obtain all the data I was interested in from the latter API, I decided to web scrape the bandcamp site.</p>
-
-<p>The first thing is to load the necessary packages: rvest for the webscraping and purrr for making loops.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">rvest</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">purrr</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">stringr</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">tibble</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">tidyr</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span></code></pre></figure>
-
-<p>Then, indicate the website of interest. In this case, bandcamp.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">site_url</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"https://bandcamp.com/"</span></code></pre></figure>
-
-<p>Here is the dataframe I am going to use to consult the data from bandcamp.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">nogenre</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">structure</span><span class="p">(</span><span class="nf">list</span><span class="p">(</span><span class="n">artist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Discipline"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Back from the Futer"</span><span class="p">,</span><span class="w"> 
-</span><span class="s2">"La Plante Sauvage"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Quella Vecchia Locanda"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Daal"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Bobby Prince"</span><span class="p">,</span><span class="w"> 
-</span><span class="s2">"Greco Bastian"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Wayfarer"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Flub"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Schizofrnatik"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Endolith"</span><span class="p">,</span><span class="w"> 
-</span><span class="s2">"Energetic Mind"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Thanatopsis"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Mary Halvorson Octet"</span><span class="p">,</span><span class="w"> </span><span class="s2">"4 ciénegas"</span><span class="w">
-</span><span class="p">),</span><span class="w"> </span><span class="n">album</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Unfolded Like Staircase"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Aavikko"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Alain Goraguer"</span><span class="p">,</span><span class="w"> 
-</span><span class="s2">"Quella Vecchia Locanda"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Decalgue of Darkness"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Doom 2 OST"</span><span class="p">,</span><span class="w"> 
-</span><span class="s2">"Greco Bastian"</span><span class="p">,</span><span class="w"> </span><span class="s2">"A Romance with Violence"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Flub"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Funk From Hell"</span><span class="p">,</span><span class="w"> 
-</span><span class="s2">"Voyager"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Bonniesongs"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Requiem"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Away With You"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Cuatro ciénegas"</span><span class="w">
-</span><span class="p">),</span><span class="w"> </span><span class="n">genre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> 
-</span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> 
-</span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> </span><span class="kc">NA_character_</span><span class="p">,</span><span class="w"> 
-</span><span class="kc">NA_character_</span><span class="p">),</span><span class="w"> </span><span class="n">url</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="s2">"https://www.youtube.com/watch?v=OyHqGSO67wo"</span><span class="p">,</span><span class="w"> 
-</span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">,</span><span class="w"> </span><span class="kc">NA</span><span class="p">)),</span><span class="w"> </span><span class="n">row.names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">37L</span><span class="p">,</span><span class="w"> </span><span class="m">13L</span><span class="p">,</span><span class="w"> 
-</span><span class="m">77L</span><span class="p">,</span><span class="w"> </span><span class="m">113L</span><span class="p">,</span><span class="w"> </span><span class="m">32L</span><span class="p">,</span><span class="w"> </span><span class="m">19L</span><span class="p">,</span><span class="w"> </span><span class="m">60L</span><span class="p">,</span><span class="w"> </span><span class="m">151L</span><span class="p">,</span><span class="w"> </span><span class="m">54L</span><span class="p">,</span><span class="w"> </span><span class="m">121L</span><span class="p">,</span><span class="w"> </span><span class="m">49L</span><span class="p">,</span><span class="w"> </span><span class="m">50L</span><span class="p">,</span><span class="w"> </span><span class="m">137L</span><span class="p">,</span><span class="w"> </span><span class="m">95L</span><span class="p">,</span><span class="w"> 
-</span><span class="m">2L</span><span class="p">),</span><span class="w"> </span><span class="n">class</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"data.frame"</span><span class="p">)</span></code></pre></figure>
-
-<p>The next step is creating a function that will be used to make the search in bandcamp. Some additional tweaks had to be made so that the function worked. Most of this part was defined by playing with the bandcamp’s search bar and annotating how the url of the search was processed. Then, you need to inspect the web page to see the names of the sections you are interested in extracting. Finally, I just made some data wragnling to clean the data and export it more homogeneously.</p>
-
-<p>The main functions for webscraping with rvest are <code class="language-plaintext highlighter-rouge">read_html</code>, <code class="language-plaintext highlighter-rouge">html_node</code> and <code class="language-plaintext highlighter-rouge">html_text</code>. The first one enables reading the html code of the indicated url. The second one enables extracting one node or section of this web page and finally, the third one converts the extracted object into text.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">rvest_func</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span><span class="w">
-  </span><span class="n">band_orig</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">x</span><span class="w">
-  </span><span class="c1"># These substitutions were based on trial and error on the bandcamp website.</span><span class="w">
-  </span><span class="c1"># Substitute spaces by + sign to work with the syntax used to search for terms with more than one word.</span><span class="w">
-  </span><span class="n">band</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="s2">"\\s"</span><span class="p">,</span><span class="w"> </span><span class="s2">"+"</span><span class="p">,</span><span class="w"> </span><span class="n">band_orig</span><span class="p">)</span><span class="w">
-  </span><span class="c1"># Transform ñ into the translation made in the search bar</span><span class="w">
-  </span><span class="n">band</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">gsub</span><span class="p">(</span><span class="s2">"ñ"</span><span class="p">,</span><span class="w"> </span><span class="s2">"%C3%B1"</span><span class="p">,</span><span class="w"> </span><span class="n">band</span><span class="p">)</span><span class="w">
-  </span><span class="c1"># Set the url to search for a particular band</span><span class="w">
-  </span><span class="n">url_sub2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="s1">'search?q='</span><span class="p">,</span><span class="n">band</span><span class="p">,</span><span class="s1">'&amp;item_type'</span><span class="p">)</span><span class="w">
-  
-  </span><span class="c1"># build the url to be scraped by combining the site url with the band url</span><span class="w">
-  </span><span class="n">df1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="n">site_url</span><span class="p">,</span><span class="w"> </span><span class="n">url_sub2</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> 
-    </span><span class="c1"># scrape the html</span><span class="w">
-    </span><span class="n">read_html</span><span class="p">()</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> 
-    </span><span class="c1"># Inspect the web page to see which sections are available and select the name of the one of interest</span><span class="w">
-    </span><span class="n">html_node</span><span class="p">(</span><span class="s1">'.result-info'</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-    </span><span class="c1"># Get the entries of interes</span><span class="w">
-    </span><span class="n">html_node</span><span class="p">(</span><span class="s1">'.tags.data-search'</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-    </span><span class="c1"># Retrieve the data as text</span><span class="w">
-    </span><span class="n">html_text</span><span class="p">()</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-    </span><span class="c1"># Replace new lines for nothing</span><span class="w">
-    </span><span class="n">str_replace_all</span><span class="p">(</span><span class="s2">"\n"</span><span class="p">,</span><span class="w"> </span><span class="s2">""</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-    </span><span class="c1"># Remove the tag "tags:"</span><span class="w">
-    </span><span class="n">str_replace_all</span><span class="p">(</span><span class="s2">"tags: "</span><span class="p">,</span><span class="w"> </span><span class="s2">""</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-    </span><span class="c1"># Substitute multiple spaces for a single one</span><span class="w">
-    </span><span class="n">str_replace_all</span><span class="p">(</span><span class="s2">"\\s+"</span><span class="p">,</span><span class="w"> </span><span class="s2">" "</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-    </span><span class="c1"># Remove spaces between commas, ^ or at the end of the string</span><span class="w">
-    </span><span class="n">str_replace_all</span><span class="p">(</span><span class="s2">"(?&lt;=\\,)\\s+|^\\s+|\\s+$"</span><span class="p">,</span><span class="w"> </span><span class="s2">""</span><span class="p">)</span><span class="w">
-  
-  </span><span class="c1"># Separate each genre into its own column</span><span class="w">
-  </span><span class="n">df1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">separate_wider_delim</span><span class="p">(</span><span class="n">tibble</span><span class="p">(</span><span class="n">genre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df1</span><span class="p">),</span><span class="w"> 
-                              </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">genre</span><span class="p">,</span><span class="w"> 
-                              </span><span class="n">delim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">","</span><span class="p">,</span><span class="w">
-                              </span><span class="n">names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">paste0</span><span class="p">(</span><span class="s2">"genre"</span><span class="p">,</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">20</span><span class="p">),</span><span class="w">
-                              </span><span class="n">too_few</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"align_start"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-    </span><span class="c1"># Transform data into long format</span><span class="w">
-    </span><span class="n">pivot_longer</span><span class="p">(</span><span class="n">everything</span><span class="p">(),</span><span class="w">
-                 </span><span class="n">names_to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"name"</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-    </span><span class="c1"># Drop NA entries </span><span class="w">
-    </span><span class="n">drop_na</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-    </span><span class="c1"># Select the value column</span><span class="w">
-    </span><span class="n">select</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-    </span><span class="c1"># Rename</span><span class="w">
-    </span><span class="n">rename</span><span class="p">(</span><span class="s2">"genre"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"value"</span><span class="p">)</span><span class="w">
-  
-  </span><span class="c1"># Return a tibble with the band name and genres extracted from bandcamp</span><span class="w">
-  </span><span class="n">resul</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tibble</span><span class="p">(</span><span class="n">artist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">rep</span><span class="p">(</span><span class="n">band_orig</span><span class="p">,</span><span class="w"> </span><span class="n">nrow</span><span class="p">(</span><span class="n">df1</span><span class="p">)),</span><span class="w">
-                  </span><span class="n">genre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">df1</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">pull</span><span class="p">(</span><span class="n">genre</span><span class="p">))</span><span class="w">
-  </span><span class="nf">return</span><span class="p">(</span><span class="n">resul</span><span class="p">)</span><span class="w">
-  </span><span class="p">}</span></code></pre></figure>
-
-<p>Use map to apply the functino to each artist. Use possibly as a TryCatch; thus, if no genre was found for certain artist it will return the message “Error in file”.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">resul_exp_nogenre</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">map</span><span class="p">(</span><span class="n">nogenre</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-                             </span><span class="n">pull</span><span class="p">(</span><span class="n">artist</span><span class="p">),</span><span class="w"> 
-                         </span><span class="n">possibly</span><span class="p">(</span><span class="n">rvest_func</span><span class="p">,</span><span class="w"> 
-                                  </span><span class="n">otherwise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Error in file"</span><span class="p">))</span></code></pre></figure>
-
-<p>Then add the genres as a new column to the previous dataframe and add a counter (llist) that indicates how many genres were associated with each artist.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">prenogenre</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">nogenre</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Add the list with extracted genres to the original df</span><span class="w">
-  </span><span class="n">mutate</span><span class="p">(</span><span class="n">lista</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">resul_exp_nogenre</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Set a value that indicates if no genres were found for certain artits.</span><span class="w">
-  </span><span class="c1"># Put 0 if that is the case (using the possibly) or the number of genres found</span><span class="w">
-  </span><span class="n">mutate</span><span class="p">(</span><span class="n">llist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">map</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">resul_exp_nogenre</span><span class="p">),</span><span class="w"> </span><span class="n">possibly</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">){</span><span class="w">
-    </span><span class="n">nrow</span><span class="p">(</span><span class="n">resul_exp_nogenre</span><span class="p">[[</span><span class="n">i</span><span class="p">]])</span><span class="w">
-  </span><span class="p">},</span><span class="w"> </span><span class="n">otherwise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">)))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># unnest, extract elements from list.</span><span class="w">
-  </span><span class="n">unnest</span><span class="p">(</span><span class="n">llist</span><span class="p">)</span><span class="w"> </span></code></pre></figure>
-
-<p>Then eliminate entries without a genre, and unnest the genres list. Obtain the final data frame.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">nogenreFill</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">prenogenre</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Eliminate artist for which no genre was found</span><span class="w">
-  </span><span class="n">filter</span><span class="p">(</span><span class="n">llist</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Unnest  lista column</span><span class="w">
-  </span><span class="n">unnest</span><span class="p">(</span><span class="n">lista</span><span class="p">,</span><span class="w">
-         </span><span class="n">names_repair</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"universal"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Rename column names</span><span class="w">
-  </span><span class="n">rename</span><span class="p">(</span><span class="s2">"artist"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"artist...1"</span><span class="p">,</span><span class="w">
-         </span><span class="s2">"genre"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"genre...6"</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="c1"># Select columns of interest.</span><span class="w">
-  </span><span class="n">select</span><span class="p">(</span><span class="n">artist</span><span class="p">,</span><span class="w"> </span><span class="n">album</span><span class="p">,</span><span class="w"> </span><span class="n">genre</span><span class="p">,</span><span class="w"> </span><span class="n">url</span><span class="p">)</span></code></pre></figure>
-
-<p>A snapshot of the result:</p>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/rvesttable.png"><img src="http://localhost:4000/assets/images/rvesttable.png" alt="styled-image" class="align-center" style="width: 90%;" /></a> Example of the data obtained after web scraping the bandcamp site.</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="rvest" /><category term="web scraping" /><category term="website data extraction" /><summary type="html"><![CDATA[Web scraping with R]]></summary></entry></feed>
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/cowplottheme.png"><img src="http://localhost:4000/assets/images/cowplottheme.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with facet wrap where several theme elements have been customized according to the cowplot theme.</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="ggplot2" /><category term="plot" /><category term="grammar of graphics" /><category term="figures" /><summary type="html"><![CDATA[Beautiful plots in R using ggplot2]]></summary></entry></feed>

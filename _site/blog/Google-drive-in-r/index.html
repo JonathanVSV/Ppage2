@@ -9,8 +9,8 @@
   <head>
     <meta charset="utf-8">
 
-<!-- begin _includes/seo.html --><title>Raster parallel processing in R - Jonathan V. Solórzano</title>
-<meta name="description" content="Raster parallel processing in R">
+<!-- begin _includes/seo.html --><title>Google Drive in R - Jonathan V. Solórzano</title>
+<meta name="description" content="I/O data in Google Drive in R">
 
 
   <meta name="author" content="Jonathan V. Solórzano">
@@ -22,26 +22,26 @@
 <meta property="og:type" content="article">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="Jonathan V. Solórzano">
-<meta property="og:title" content="Raster parallel processing in R">
-<meta property="og:url" content="http://localhost:4000/blog/raster-parallel-processing/">
+<meta property="og:title" content="Google Drive in R">
+<meta property="og:url" content="http://localhost:4000/blog/Google-drive-in-r/">
 
 
-  <meta property="og:description" content="Raster parallel processing in R">
-
-
-
-
-
-
-
-  <meta property="article:published_time" content="2024-05-29T15:46:00-06:00">
+  <meta property="og:description" content="I/O data in Google Drive in R">
 
 
 
 
 
 
-<link rel="canonical" href="http://localhost:4000/blog/raster-parallel-processing/">
+
+  <meta property="article:published_time" content="2024-12-13T04:10:00-06:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/blog/Google-drive-in-r/">
 
 
 
@@ -149,42 +149,57 @@
 
 <div id="main" role="main">
   <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
-    <meta itemprop="headline" content="Raster parallel processing in R">
-    <meta itemprop="description" content="Raster parallel processing in R">
-    <meta itemprop="datePublished" content="2024-05-29T15:46:00-06:00">
+    <meta itemprop="headline" content="Google Drive in R">
+    <meta itemprop="description" content="I/O data in Google Drive in R">
+    <meta itemprop="datePublished" content="2024-12-13T04:10:00-06:00">
     
 
     <section class="page__content" itemprop="text">
-      <h1 id="raster-parallel-processing-in-r">Raster parallel processing in R</h1>
+      <h1 id="io-data-in-google-drive-in-r">I/O data in Google Drive in R</h1>
 
-<p>This post shows how to parallelize raster processing in R.</p>
+<p>This post shows how to connect to your Google Drive API. A very good tutorial can be found here: <a href="https://claudiozandonella.github.io/trackdown/articles/oauth-client-configuration.html">trackdown tutorial</a>.</p>
 
-<p>First load the required packages</p>
+<p>Here are the main steps</p>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">raster</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">parallel</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">doParallel</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">foreach</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">googledriveR</span><span class="p">)</span></code></pre></figure>
 
-<p>Then read a raster example from the terra package</p>
+<h2 id="create-project-in-google-cloud">Create project in Google Cloud</h2>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">r</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raster</span><span class="p">(</span><span class="n">system.file</span><span class="p">(</span><span class="s2">"ex/elev.tif"</span><span class="p">,</span><span class="w"> </span><span class="n">package</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"terra"</span><span class="p">))</span><span class="w">
-</span><span class="n">r</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">stack</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">)</span></code></pre></figure>
+<p>Go to <a href="https://console.cloud.google.com/">Google Cloud Console</a> and accept terms of use. Then, create a new project, specify name an accept. The tab opnening the projects is right next to Google Cloud logo.</p>
 
-<p>Initialize cluster and run process in parallel. Notice that inside the <code class="language-plaintext highlighter-rouge">foreach</code> you should indicate the packages that need to be loaded into the parallel processing.</p>
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/GCproject.png"><img src="http://localhost:4000/assets/images/GCproject.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot.</p>
 
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">cls</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">makeCluster</span><span class="p">(</span><span class="m">2L</span><span class="p">)</span><span class="w">
-</span><span class="n">registerDoParallel</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span><span class="w">
-</span><span class="n">clust_list_t</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">foreach</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">,</span><span class="w"> 
-                        </span><span class="n">.packages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"raster"</span><span class="p">)</span><span class="w"> </span><span class="o">%dopar%</span><span class="w"> </span><span class="p">{</span><span class="w">
-                          </span><span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">1</span><span class="p">){</span><span class="w">
-                            </span><span class="n">ras</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">r</span><span class="p">[[</span><span class="n">i</span><span class="p">]]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">3</span><span class="w">
-                          </span><span class="p">}</span><span class="k">else</span><span class="p">{</span><span class="w">
-                            </span><span class="n">ras</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">r</span><span class="p">[[</span><span class="n">i</span><span class="p">]]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">5</span><span class="w">
-                          </span><span class="p">}</span><span class="w">
-                          
-                          </span><span class="nf">return</span><span class="p">(</span><span class="n">ras</span><span class="p">)</span><span class="w">
-                        </span><span class="p">}</span></code></pre></figure>
+<p>Once created, open the project (using the same tab as previous step) and click on the three lines left of the Google Cloud logo, go to APIs &amp; Services and Enabled APIs &amp; services.</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/GCapi.png"><img src="http://localhost:4000/assets/images/GCapi.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot.</p>
+
+<p>Next, go to enable apis and services.</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/GCenable.png"><img src="http://localhost:4000/assets/images/GCenable.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot.</p>
+
+<p>Then search for google drive api and click on it. An enable button will appear, click on it to enable. Do the same for Google Docs API.</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/GCGDapi.png"><img src="http://localhost:4000/assets/images/GCGDapi.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot.</p>
+
+<p>Once both APIS are enabled go back to the APIs &amp; Services menu and click on OAuth consent screen. Then click on external option and create.</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/GCconsent.png"><img src="http://localhost:4000/assets/images/GCconsent.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot.</p>
+
+<p>Then, you need to create an app name and associate an email with the app, as well as a developer contact. Next click on add or remove scopes. Activate “…/auth/userinfo.email”  “openid”, “…/auth/drive” and “…/auth/docs”. Finally, update, save changes and accept.</p>
+
+<p>Back in the OAuth consent screen publish app and confirm.</p>
+
+<p>The next step is go to the credentials menu and create a nuew OAuth 2.0 Client IDs. Go to create credentials, OAUth client ID, select application type = Desktop app and set the desired name. Next, the credential will be shown. Click on download json and save file in your local disk.</p>
+
+<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/GCcredentials.png"><img src="http://localhost:4000/assets/images/GCcredentials.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot.</p>
+
+<p>Next, open RStudio locally, install “usethis” package and use <code class="language-plaintext highlighter-rouge">usethis::edit_r_environ()</code> to modify the environment, which will be run everytime R starts. In this file save the following: <code class="language-plaintext highlighter-rouge">GOOGLEDRIVE_PATH = {location}</code>, setting the location of your json secret instead of {location}.</p>
+
+<p>After this step, save, restart R, and install “googledrive”. And add the following to your script. First time you run the auth configure step, a window will popup asking for permission. Give permissions and you are ready to use Google Drive from R.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">googledrive</span><span class="p">)</span><span class="w">
+
+</span><span class="n">drive_auth_configure</span><span class="p">(</span><span class="n">gargle</span><span class="o">::</span><span class="n">gargle_oauth_client_from_json</span><span class="p">(</span><span class="n">Sys.getenv</span><span class="p">(</span><span class="s2">"GOOGLEDRIVE_PATH"</span><span class="p">)))</span></code></pre></figure>
 
     </section>
   </article>

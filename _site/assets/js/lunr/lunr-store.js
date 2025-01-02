@@ -202,4 +202,16 @@ var store = [{
         "tags": ["post","r","tabulizer","pdf","extract tables"],
         "url": "/blog/extract-pdf-tables/",
         "teaser": null
+      },{
+        "title": "Google Drive in R",
+        "excerpt":"I/O data in Google Drive in R This post shows how to connect to your Google Drive API. A very good tutorial can be found here: trackdown tutorial. Here are the main steps library(googledriveR) Create project in Google Cloud Go to Google Cloud Console and accept terms of use. Then,...","categories": ["blog"],
+        "tags": ["post","r","google drive","cloud storage"],
+        "url": "/blog/Google-drive-in-r/",
+        "teaser": null
+      },{
+        "title": "Create certificates in R",
+        "excerpt":"Create participation certificates in R This post will show you how to create certificates automatically using R. First, install and load the labeleR package. I will use tibble to create the the table containing the names. library(labeleR) library(tibble) Create or read the table containing the names df &lt;- tibble(Names =...","categories": ["blog"],
+        "tags": ["post","r","certificates","labeleR","labels","participation","attendance"],
+        "url": "/blog/Create-certificates-in-R/",
+        "teaser": null
       }]
