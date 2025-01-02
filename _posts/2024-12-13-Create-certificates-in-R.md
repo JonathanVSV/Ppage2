@@ -1,5 +1,5 @@
 ---
-title: "Create-certificates-in-R"
+title: "Create certificates in R"
 date: 2024-12-13T11:17:00-00:00
 categories:
   - blog
