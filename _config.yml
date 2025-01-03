@@ -18,6 +18,7 @@ subtitle: My personal site
 words_per_minute: 200
 description: Welcome to my personal site. In this site you can get to know more about my work and check some of my courses and example scripts in R and GEE.
 github_username: JonathanVSV
+github: [metadata]
 minimal_mistakes_skin: "default"
 search: true
 
