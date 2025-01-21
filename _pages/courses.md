@@ -15,8 +15,8 @@ Professor at Escuela Nacional de Estudios Superiores Morelia, Universidad Nacion
 
 Professor assistant at Escuela Nacional de Estudios Superiores Morelia and Facultad de Ciencias, Universidad Nacional Autónoma de México:
 
-- Spatial analysis and modeling
-- Spatial analysis tools 
+- Spatial analysis and modeling.
+- Spatial analysis tools. 
 - Geographic Information Systems and Cartography.
 - Geographic Information Systems II.
 - Applies Statistics.
@@ -26,7 +26,7 @@ Also, I made some basic courses to learn R and to use it to perform image proces
 
 * [QGIS](https://github.com/JonathanVSV/CursoQGIS)
 
-* [Introducción a R: datos de biodiversidad](https://github.com/JonathanVSV/CursoR)
+* Introducción a R. Datos de biodiversidad: [Repositorio del curso](https://github.com/JonathanVSV/CursoR) y [videos del curso](https://www.youtube.com/watch?v=XtCs6u-pcFw&list=PLiP4keNeUXykgBY0u67mC4mBKgcjr9Q_D).
 
 * [Curso básico de R]({{ site.url }}{{ site.baseurl }}/assets/courses/BasicoR.html)
 
