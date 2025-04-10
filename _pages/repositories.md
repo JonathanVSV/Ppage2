@@ -6,7 +6,9 @@ header:
   overlay_image: /assets/images/ceiba4.JPG
 ---
 
-This page shows an overview of the public repositories in my Github:
+This page shows an overview of the public repositories in my Github/Gitlab:
+
+* Repo with several scripts to perform different analyses for updating some of the Mexico's Natural Capital indicators (Capital Natural de México). This repo contains much of the work I did in CONABIO (Comisión Nacional para el Conocimiento y Uso de la Biodiversidad) [BiodiversidadES](https://gitlab.com/OscarGOGO/BiodiversidadES).
 
 * Repo to calculate some basic forest's structural and diversity attributes: [VegCommunity](https://github.com/JonathanVSV/VegCommunity).
 

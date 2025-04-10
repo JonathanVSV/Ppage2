@@ -214,4 +214,10 @@ var store = [{
         "tags": ["post","r","certificates","labeleR","labels","participation","attendance"],
         "url": "/blog/Create-certificates-in-R/",
         "teaser": null
+      },{
+        "title": "Map accuracy in R",
+        "excerpt":"Map accuracy in R This post will show you how to validate a classification map using the Olofsson et al., 2014 best practices protocol and the mapaccuracy package. library(mapaccuracy) library(tidyverse) Data This data simulates the map accuracy results obtained from a stratified random sampling. This validation procedure is a modification...","categories": ["blog"],
+        "tags": ["post","r","map accuracy","unbiased area estimates","map validation","Olofsson","stratified random sampling"],
+        "url": "/blog/Map-accuracy-in-R/",
+        "teaser": null
       }]

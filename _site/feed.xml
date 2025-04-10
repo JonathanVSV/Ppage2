@@ -1,4 +1,152 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-01-20T21:17:46-06:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jonathan V. Solórzano</title><subtitle>Welcome to my personal site. In this site you can get to know more about my work and check some of my courses and example scripts in R and GEE.</subtitle><author><name>Jonathan V. Solórzano</name></author><entry><title type="html">Create certificates in R</title><link href="http://localhost:4000/blog/Create-certificates-in-R/" rel="alternate" type="text/html" title="Create certificates in R" /><published>2024-12-13T05:17:00-06:00</published><updated>2024-12-13T05:17:00-06:00</updated><id>http://localhost:4000/blog/Create-certificates-in-R</id><content type="html" xml:base="http://localhost:4000/blog/Create-certificates-in-R/"><![CDATA[<h1 id="create-participation-certificates-in-r">Create participation certificates in R</h1>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-04-09T21:00:30-06:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Jonathan V. Solórzano</title><subtitle>Welcome to my personal site. In this site you can get to know more about my work and check some of my courses and example scripts in R and GEE.</subtitle><author><name>Jonathan V. Solórzano</name></author><entry><title type="html">Map accuracy in R</title><link href="http://localhost:4000/blog/Map-accuracy-in-R/" rel="alternate" type="text/html" title="Map accuracy in R" /><published>2025-03-17T10:34:00-06:00</published><updated>2025-03-17T10:34:00-06:00</updated><id>http://localhost:4000/blog/Map-accuracy-in-R</id><content type="html" xml:base="http://localhost:4000/blog/Map-accuracy-in-R/"><![CDATA[<h1 id="map-accuracy-in-r">Map accuracy in R</h1>
+
+<p>This post will show you how to validate a classification map using the Olofsson et al., 2014 best practices protocol and the <code class="language-plaintext highlighter-rouge">mapaccuracy</code> package.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">mapaccuracy</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)</span></code></pre></figure>
+
+<h2 id="data">Data</h2>
+
+<p>This data simulates the map accuracy results obtained from a stratified random sampling. This validation procedure is a modification of the Olofsson et al., 2014 recommendations, in which a buffer stratum is used to try to contain omission errors in the rarest classes (i.e., deforestation), following recommendations by Olofsson et al., 2020 and Arévalo et al., 2021.</p>
+
+<p>The two datasets you will need to obtain the validation main results are: area estimates (obtained from cell counting in the classification) and results obtained from the stratified random sampling indicating the map (i.e., classified) and reference (i.e., visual interpretation of field data) classes.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">areas2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tibble</span><span class="p">(</span><span class="n">Clase</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"Forest loss"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Perm Forest"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Perm Non-forest"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Buff Perm Forest"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Buff Perm Non-forest"</span><span class="p">),</span><span class="w">
+                 </span><span class="n">ha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="m">1950</span><span class="p">,</span><span class="w"> </span><span class="m">8000</span><span class="p">,</span><span class="w"> </span><span class="m">50</span><span class="p">,</span><span class="w"> </span><span class="m">25</span><span class="p">))</span><span class="w">
+
+</span><span class="n">df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tibble</span><span class="p">(</span><span class="n">Map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="nf">rep</span><span class="p">(</span><span class="s2">"Forest loss"</span><span class="p">,</span><span class="w"> </span><span class="m">50</span><span class="p">),</span><span class="w">
+                      </span><span class="nf">rep</span><span class="p">(</span><span class="s2">"Perm Forest"</span><span class="p">,</span><span class="w"> </span><span class="m">360</span><span class="p">),</span><span class="w">
+                      </span><span class="nf">rep</span><span class="p">(</span><span class="s2">"Perm Non-forest"</span><span class="p">,</span><span class="w"> </span><span class="m">90</span><span class="p">),</span><span class="w">
+                      </span><span class="nf">rep</span><span class="p">(</span><span class="s2">"Buff Perm Forest"</span><span class="p">,</span><span class="w"> </span><span class="m">50</span><span class="p">),</span><span class="w">
+                      </span><span class="nf">rep</span><span class="p">(</span><span class="s2">"Buff Perm Non-forest"</span><span class="p">,</span><span class="w"> </span><span class="m">25</span><span class="p">)),</span><span class="w">
+             </span><span class="n">Reference</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="nf">rep</span><span class="p">(</span><span class="s2">"Forest loss"</span><span class="p">,</span><span class="w"> </span><span class="m">43</span><span class="p">),</span><span class="w">
+                            </span><span class="nf">rep</span><span class="p">(</span><span class="s2">"Perm Non-forest"</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w">
+                            </span><span class="nf">rep</span><span class="p">(</span><span class="s2">"Perm Forest"</span><span class="p">,</span><span class="w"> </span><span class="m">5</span><span class="p">),</span><span class="w">
+                            </span><span class="nf">rep</span><span class="p">(</span><span class="s2">"Perm Non-forest"</span><span class="p">,</span><span class="w"> </span><span class="m">10</span><span class="p">),</span><span class="w">
+                            </span><span class="nf">rep</span><span class="p">(</span><span class="s2">"Perm Forest"</span><span class="p">,</span><span class="w"> </span><span class="m">350</span><span class="p">),</span><span class="w">
+                            </span><span class="nf">rep</span><span class="p">(</span><span class="s2">"Perm Non-forest"</span><span class="p">,</span><span class="w"> </span><span class="m">81</span><span class="p">),</span><span class="w">
+                            </span><span class="nf">rep</span><span class="p">(</span><span class="s2">"Perm Forest"</span><span class="p">,</span><span class="w"> </span><span class="m">9</span><span class="p">),</span><span class="w">
+                            </span><span class="nf">rep</span><span class="p">(</span><span class="s2">"Buff Perm Forest"</span><span class="p">,</span><span class="w"> </span><span class="m">48</span><span class="p">),</span><span class="w">
+                            </span><span class="nf">rep</span><span class="p">(</span><span class="s2">"Forest loss"</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">),</span><span class="w">
+                            </span><span class="nf">rep</span><span class="p">(</span><span class="s2">"Buff Perm Non-forest"</span><span class="p">,</span><span class="w"> </span><span class="m">25</span><span class="p">)))</span></code></pre></figure>
+
+<h2 id="process">Process</h2>
+
+<p>Convert area estimates to a vector with names and calculate the total area.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">areas</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">areas2</span><span class="o">$</span><span class="n">ha</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">areas</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">areas2</span><span class="o">$</span><span class="n">Clase</span><span class="w">
+
+</span><span class="n">totalarea</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">areas2</span><span class="o">$</span><span class="n">ha</span><span class="p">)</span></code></pre></figure>
+
+<p>Then, let’s calculate the map accuracy estimates using Olofsson et al., 2014 equations.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">resul</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">olofsson</span><span class="p">(</span><span class="n">df</span><span class="o">$</span><span class="n">Reference</span><span class="p">,</span><span class="w"> </span><span class="n">df</span><span class="o">$</span><span class="n">Map</span><span class="p">,</span><span class="w"> </span><span class="n">Nh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">areas</span><span class="p">)</span></code></pre></figure>
+
+<p>Here, the results object contains estimates such as: Overall accuracy, User’s accuracy, Producer’s accuracy, unbiased area estimates (as proportion), Standard error of the accuracies (overall, user’s and producer’s) and area estimates, and the matrix expressed in area weights.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">resul</span><span class="w">
+</span><span class="c1"># $OA</span><span class="w">
+</span><span class="c1"># [1] 0.9145696</span><span class="w">
+</span><span class="c1"># </span><span class="w">
+</span><span class="c1"># $UA</span><span class="w">
+</span><span class="c1"># Forest loss         Perm Forest      Perm Non-forest    Buff Perm Forest </span><span class="w">
+</span><span class="c1"># 0.8600000           0.9722222           0.9000000           0.9600000 </span><span class="w">
+</span><span class="c1"># Buff Perm Non-forest </span><span class="w">
+</span><span class="c1"># 1.0000000 </span><span class="w">
+</span><span class="c1"># </span><span class="w">
+</span><span class="c1"># $PA</span><span class="w">
+</span><span class="c1"># Forest loss         Perm Forest      Perm Non-forest    Buff Perm Forest </span><span class="w">
+</span><span class="c1"># 0.6825397           0.7031153           0.9925057           1.0000000 </span><span class="w">
+</span><span class="c1"># Buff Perm Non-forest </span><span class="w">
+</span><span class="c1"># 1.0000000 </span><span class="w">
+</span><span class="c1"># </span><span class="w">
+</span><span class="c1"># $area</span><span class="w">
+</span><span class="c1"># Forest loss         Perm Forest      Perm Non-forest    Buff Perm Forest </span><span class="w">
+</span><span class="c1"># 0.0006281157        0.2688268528        0.7232668661        0.0047856431 </span><span class="w">
+</span><span class="c1"># Buff Perm Non-forest </span><span class="w">
+</span><span class="c1"># 0.0024925224 </span><span class="w">
+</span><span class="c1"># </span><span class="w">
+</span><span class="c1"># $SEoa</span><span class="w">
+</span><span class="c1"># [1] 0.02542024</span><span class="w">
+</span><span class="c1"># </span><span class="w">
+</span><span class="c1"># $SEua</span><span class="w">
+</span><span class="c1"># Forest loss         Perm Forest      Perm Non-forest    Buff Perm Forest </span><span class="w">
+</span><span class="c1"># 0.049569576         0.008673299         0.031799936         0.027994168 </span><span class="w">
+</span><span class="c1"># Buff Perm Non-forest </span><span class="w">
+</span><span class="c1"># 0.000000000 </span><span class="w">
+</span><span class="c1"># </span><span class="w">
+</span><span class="c1"># $SEpa</span><span class="w">
+</span><span class="c1"># Forest loss         Perm Forest      Perm Non-forest    Buff Perm Forest </span><span class="w">
+</span><span class="c1"># 0.152157323         0.066365204         0.002328898         0.000000000 </span><span class="w">
+</span><span class="c1"># Buff Perm Non-forest </span><span class="w">
+</span><span class="c1"># 0.000000000 </span><span class="w">
+</span><span class="c1"># </span><span class="w">
+</span><span class="c1"># $SEa</span><span class="w">
+</span><span class="c1"># Forest loss         Perm Forest      Perm Non-forest    Buff Perm Forest </span><span class="w">
+</span><span class="c1"># 0.0001417231        0.0254198567        0.0254198515        0.0001395522 </span><span class="w">
+</span><span class="c1"># Buff Perm Non-forest </span><span class="w">
+</span><span class="c1"># 0.0000000000 </span><span class="w">
+</span><span class="c1"># </span><span class="w">
+</span><span class="c1"># $matrix</span><span class="w">
+</span><span class="c1"># Forest loss  Perm Forest Perm Non-forest Buff Perm Forest</span><span class="w">
+</span><span class="c1"># Forest loss        0.0004287139 4.985045e-05   1.994018e-05               NA</span><span class="w">
+</span><span class="c1"># Perm Forest                     NA 1.890163e-01   5.400465e-03               NA</span><span class="w">
+</span><span class="c1"># Perm Non-forest                  NA 7.976072e-02   7.178465e-01               NA</span><span class="w">
+</span><span class="c1"># Buff Perm Forest      0.0001994018           NA             NA      0.004785643</span><span class="w">
+</span><span class="c1"># Buff Perm Non-forest             NA           NA             NA               NA</span><span class="w">
+</span><span class="c1"># sum                   0.0006281157 2.688269e-01   7.232669e-01      0.004785643</span><span class="w">
+</span><span class="c1"># Buff Perm Non-forest          sum</span><span class="w">
+</span><span class="c1"># Forest loss                       NA 0.0004985045</span><span class="w">
+</span><span class="c1"># Perm Forest                          NA 0.1944167498</span><span class="w">
+</span><span class="c1"># Perm Non-forest                       NA 0.7976071785</span><span class="w">
+</span><span class="c1"># Buff Perm Forest                     NA 0.0049850449</span><span class="w">
+</span><span class="c1"># Buff Perm Non-forest         0.002492522 0.0024925224</span><span class="w">
+</span><span class="c1"># sum                         0.002492522 1.0000000000</span></code></pre></figure>
+
+<p>Afterward, you need to sum some area estimates and errors to merge the buffer classes with the total classes (e.g., Buff Perm Forest with Perm Forest). And calculate the lower and upeer limits of the unbiased area estimates, assuming a normal distribution. The classes you need to sum will vary depending on the sampling design used to validate the map.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">exp_df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tibble</span><span class="p">(</span><span class="n">clase</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="n">resul</span><span class="o">$</span><span class="n">area</span><span class="p">),</span><span class="w">
+                 </span><span class="n">area</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">resul</span><span class="o">$</span><span class="n">area</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">totalarea</span><span class="p">,</span><span class="w">
+                 </span><span class="n">SEa</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">resul</span><span class="o">$</span><span class="n">SEa</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">totalarea</span><span class="p">)</span><span class="w">
+
+</span><span class="c1"># Sum errors</span><span class="w">
+</span><span class="n">exp_df</span><span class="o">$</span><span class="n">areaSum</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="n">exp_df</span><span class="o">$</span><span class="n">SEaSum</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0</span><span class="w">
+
+</span><span class="c1"># Perm Forest</span><span class="w">
+</span><span class="n">exp_df</span><span class="o">$</span><span class="n">areaSum</span><span class="p">[</span><span class="m">2</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">exp_df</span><span class="o">$</span><span class="n">area</span><span class="p">[</span><span class="m">2</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">exp_df</span><span class="o">$</span><span class="n">area</span><span class="p">[</span><span class="m">5</span><span class="p">]</span><span class="w">
+</span><span class="n">exp_df</span><span class="o">$</span><span class="n">SEaSum</span><span class="p">[</span><span class="m">2</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">exp_df</span><span class="o">$</span><span class="n">SEa</span><span class="p">[</span><span class="m">2</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">exp_df</span><span class="o">$</span><span class="n">SEa</span><span class="p">[</span><span class="m">5</span><span class="p">]</span><span class="w">
+
+</span><span class="c1"># Perm Non-forest</span><span class="w">
+</span><span class="n">exp_df</span><span class="o">$</span><span class="n">areaSum</span><span class="p">[</span><span class="m">3</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">exp_df</span><span class="o">$</span><span class="n">area</span><span class="p">[</span><span class="m">3</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">exp_df</span><span class="o">$</span><span class="n">area</span><span class="p">[</span><span class="m">4</span><span class="p">]</span><span class="w">
+</span><span class="n">exp_df</span><span class="o">$</span><span class="n">SEaSum</span><span class="p">[</span><span class="m">3</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">exp_df</span><span class="o">$</span><span class="n">SEa</span><span class="p">[</span><span class="m">3</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">exp_df</span><span class="o">$</span><span class="n">SEa</span><span class="p">[</span><span class="m">4</span><span class="p">]</span><span class="w">
+
+</span><span class="c1"># Forest loss</span><span class="w">
+</span><span class="n">exp_df</span><span class="o">$</span><span class="n">areaSum</span><span class="p">[</span><span class="m">1</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">exp_df</span><span class="o">$</span><span class="n">area</span><span class="p">[</span><span class="m">1</span><span class="p">]</span><span class="w">
+</span><span class="n">exp_df</span><span class="o">$</span><span class="n">SEaSum</span><span class="p">[</span><span class="m">1</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">exp_df</span><span class="o">$</span><span class="n">SEa</span><span class="p">[</span><span class="m">1</span><span class="p">]</span><span class="w">
+
+</span><span class="n">exp_df</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">slice_head</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">3</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
+  </span><span class="n">mutate</span><span class="p">(</span><span class="n">LIC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">areaSum</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="m">1.96</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">SEaSum</span><span class="p">,</span><span class="w">
+         </span><span class="n">UIC</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">areaSum</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1.96</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">SEaSum</span><span class="p">)</span><span class="w"> </span></code></pre></figure>
+
+<p>And you get your unbiased area estimates with a confidence interval.</p>
+
+<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="c1"># A tibble: 3 × 7</span><span class="w">
+</span><span class="c1"># clase             area    SEa areaSum SEaSum     LIC     UIC</span><span class="w">
+</span><span class="c1"># &lt;chr&gt;             &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;</span><span class="w">
+</span><span class="c1"># 1 Forest loss     6.3    1.42     6.3   1.42    3.51    9.09</span><span class="w">
+</span><span class="c1"># 2 Perm Forest     2696.  255.    2721.  255.   2222.   3221.  </span><span class="w">
+</span><span class="c1"># 3 Perm Non-forest 7254.  255.    7302.  256.   6800.   7805.  </span></code></pre></figure>
+
+<h2 id="references">References</h2>
+
+<p>Arévalo, P., Olofsson, P., &amp; Woodcock, C. E. (2020). Continuous monitoring of land change activities and post-disturbance dynamics from Landsat time series: A test methodology for REDD+ reporting. Remote Sensing of Environment, 238, 111051. https://doi.org/10.1016/j.rse.2019.01.013</p>
+
+<p>Olofsson, P., Foody, G. M., Herold, M., Stehman, S. V., Woodcock, C. E., &amp; Wulder, M. A. (2014). Good practices for estimating area and assessing accuracy of land change. Remote Sensing of Environment, 148, 42–57. https://doi.org/10.1016/j.rse.2014.02.015</p>
+
+<p>Olofsson, P., Arévalo, P., Espejo, A. B., Green, C., Lindquist, E., McRoberts, R. E., &amp; Sanz, M. J. (2020). Mitigating the effects of omission errors on area and area change estimates. Remote Sensing of Environment, 236. https://doi.org/10.1016/j.rse.2019.111492</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="map accuracy" /><category term="unbiased area estimates" /><category term="map validation" /><category term="Olofsson" /><category term="stratified random sampling" /><summary type="html"><![CDATA[Map accuracy in R]]></summary></entry><entry><title type="html">Create certificates in R</title><link href="http://localhost:4000/blog/Create-certificates-in-R/" rel="alternate" type="text/html" title="Create certificates in R" /><published>2024-12-13T05:17:00-06:00</published><updated>2024-12-13T05:17:00-06:00</updated><id>http://localhost:4000/blog/Create-certificates-in-R</id><content type="html" xml:base="http://localhost:4000/blog/Create-certificates-in-R/"><![CDATA[<h1 id="create-participation-certificates-in-r">Create participation certificates in R</h1>
 
 <p>This post will show you how to create certificates automatically using R. First, install and load the <code class="language-plaintext highlighter-rouge">labeleR</code> package. I will use <code class="language-plaintext highlighter-rouge">tibble</code> to create the the table containing the names.</p>
 
@@ -949,224 +1097,4 @@ starting point, add opacity slider.</p>
                         </span><span class="n">.stdmetrics_z</span><span class="p">,</span><span class="w">
                         </span><span class="n">ptos</span><span class="p">)</span></code></pre></figure>
 
-<p>Finally, you will obtain a data frame with the plot’s ID and its corresponding z- metrics.</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="LiDAR" /><category term="point cloud" /><category term="raster" /><category term="lidR" /><summary type="html"><![CDATA[Working with LiDAR data in R]]></summary></entry><entry><title type="html">Beautiful-plots(ggplot2)-in-r</title><link href="http://localhost:4000/blog/beautiful-plots(ggplot2)-in-r/" rel="alternate" type="text/html" title="Beautiful-plots(ggplot2)-in-r" /><published>2023-06-22T06:35:00-06:00</published><updated>2023-06-22T06:35:00-06:00</updated><id>http://localhost:4000/blog/beautiful-plots(ggplot2)-in-r</id><content type="html" xml:base="http://localhost:4000/blog/beautiful-plots(ggplot2)-in-r/"><![CDATA[<h1 id="beautiful-plots-in-r-using-ggplot2">Beautiful plots in R using ggplot2</h1>
-
-<p>The purpose of this post is to show how to use the basic syntax of ggplot2, do some of the most common types of plots, as well as some customizations and facets. For this post we are going to use the iris dataset, as well as the skimr and cowplot packages. The first step consists of loading the desired packages, as well as the data and skimming over it. The first section will show some basic plots, while the next ones will show how to customize certain elements of the plots, like color, fill, facets and theme.</p>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">skimr</span><span class="p">)</span><span class="w">
-</span><span class="n">library</span><span class="p">(</span><span class="n">cowplot</span><span class="p">)</span><span class="w">
-
-</span><span class="n">data</span><span class="p">(</span><span class="n">iris</span><span class="p">)</span><span class="w">
-</span><span class="n">skim</span><span class="p">(</span><span class="n">iris</span><span class="p">)</span></code></pre></figure>
-
-<p>Then we can start building our different plots.</p>
-
-<h1 id="basic-plots">Basic plots</h1>
-
-<h2 id="scatterplot">Scatterplot</h2>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">geom_point</span><span class="p">()</span></code></pre></figure>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/scatter.png"><img src="http://localhost:4000/assets/images/scatter.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot.</p>
-
-<h2 id="line-plot">Line plot</h2>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">geom_line</span><span class="p">()</span></code></pre></figure>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/line.png"><img src="http://localhost:4000/assets/images/line.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Line plot</p>
-
-<h2 id="bar-plot">Bar plot</h2>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">geom_bar</span><span class="p">()</span></code></pre></figure>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/bar.png"><img src="http://localhost:4000/assets/images/bar.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Bar plot.</p>
-
-<h2 id="column-plot">Column plot</h2>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">group_by</span><span class="p">(</span><span class="n">Species</span><span class="p">)</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">summarise</span><span class="p">(</span><span class="n">meanSL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mean</span><span class="p">(</span><span class="n">Sepal.Length</span><span class="p">))</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">,</span><span class="w">
-             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">meanSL</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">geom_col</span><span class="p">()</span></code></pre></figure>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/col.png"><img src="http://localhost:4000/assets/images/col.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Column plot.</p>
-
-<h2 id="box-plot">Box plot</h2>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">,</span><span class="w">
-             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">geom_boxplot</span><span class="p">()</span></code></pre></figure>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/box.png"><img src="http://localhost:4000/assets/images/box.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Boxplot.</p>
-
-<h2 id="histogram-plot">Histogram plot</h2>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-</span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">geom_histogram</span><span class="p">()</span></code></pre></figure>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/hist.png"><img src="http://localhost:4000/assets/images/hist.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Histogram plot.</p>
-
-<h1 id="adding-colors">Adding colors</h1>
-
-<h2 id="color">Color</h2>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> 
-             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">,</span><span class="w">
-             </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">geom_point</span><span class="p">()</span></code></pre></figure>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/color.png"><img src="http://localhost:4000/assets/images/color.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with colors by factor.</p>
-
-<h2 id="fill">Fill</h2>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">,</span><span class="w">
-             </span><span class="n">fill</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">geom_bar</span><span class="p">()</span></code></pre></figure>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/fill.png"><img src="http://localhost:4000/assets/images/fill.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Barplot with fill by factor.</p>
-
-<h2 id="customized-colors">Customized colors</h2>
-
-<h3 id="manual-colors">Manual colors</h3>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> 
-             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">,</span><span class="w">
-             </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">geom_point</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">scale_colour_manual</span><span class="p">(</span><span class="n">values</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"forestgreen"</span><span class="p">,</span><span class="w"> </span><span class="s2">"royalblue"</span><span class="p">,</span><span class="w"> </span><span class="s2">"firebrick2"</span><span class="p">))</span></code></pre></figure>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/manualcol.png"><img src="http://localhost:4000/assets/images/manualcol.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with manual colors by factor.</p>
-
-<h3 id="rcolorbrewer">Rcolorbrewer</h3>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> 
-             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">,</span><span class="w">
-             </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">geom_point</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">scale_colour_brewer</span><span class="p">(</span><span class="n">palette</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"RdYlBu"</span><span class="p">)</span></code></pre></figure>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/colorbrewer.png"><img src="http://localhost:4000/assets/images/colorbrewer.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplots with colors set by RColorbrewer.</p>
-
-<h1 id="axes">Axes</h1>
-
-<h2 id="axes-1">Axes</h2>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> 
-             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">,</span><span class="w">
-             </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">geom_point</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">scale_y_continuous</span><span class="p">(</span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">4.5</span><span class="p">,</span><span class="w"> </span><span class="m">0.25</span><span class="p">),</span><span class="w">
-                     </span><span class="n">limits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="m">4.5</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">scale_x_continuous</span><span class="p">(</span><span class="n">breaks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="p">(</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="m">8</span><span class="p">,</span><span class="w"> </span><span class="m">0.5</span><span class="p">),</span><span class="w">
-                     </span><span class="n">limits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">4</span><span class="p">,</span><span class="w"> </span><span class="m">8</span><span class="p">))</span></code></pre></figure>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/axes.png"><img src="http://localhost:4000/assets/images/axes.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with customized axes.</p>
-
-<h2 id="axes-labels">Axes labels</h2>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> 
-             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">,</span><span class="w">
-             </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">geom_point</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">labs</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Sepal length (cm)"</span><span class="p">,</span><span class="w"> 
-       </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Sepal width (cm)"</span><span class="p">)</span></code></pre></figure>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/axeslab.png"><img src="http://localhost:4000/assets/images/axeslab.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with customized axes labels.</p>
-
-<h1 id="facets">Facets</h1>
-
-<h2 id="facet-grid">Facet grid</h2>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> 
-             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">,</span><span class="w">
-             </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">geom_point</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">facet_grid</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">Species</span><span class="p">)</span></code></pre></figure>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/facetgrid.png"><img src="http://localhost:4000/assets/images/facetgrid.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with facets set as a grid.</p>
-
-<h2 id="facet-wrap">Facet wrap</h2>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> 
-             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">,</span><span class="w">
-             </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">geom_point</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">facet_grid</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">Species</span><span class="p">)</span></code></pre></figure>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/facetwrap.png"><img src="http://localhost:4000/assets/images/facetwrap.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with facets set as a wrap (multiple factors will be accumulated by each panel).</p>
-
-<h1 id="theme">Theme</h1>
-
-<h2 id="personalized-theme">Personalized theme</h2>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">my_theme</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">theme_bw</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> 
-  </span><span class="n">theme</span><span class="p">(</span><span class="n">plot.title</span><span class="o">=</span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">18</span><span class="p">,</span><span class="n">hjust</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">),</span><span class="w">
-        </span><span class="n">text</span><span class="o">=</span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">24</span><span class="p">,</span><span class="n">colour</span><span class="o">=</span><span class="s2">"black"</span><span class="p">),</span><span class="w">
-        </span><span class="n">axis.text.x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">18</span><span class="p">,</span><span class="w">
-                                   </span><span class="n">colour</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span><span class="w">
-                                   </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">90</span><span class="p">,</span><span class="w"> 
-                                   </span><span class="n">hjust</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w">
-                                   </span><span class="n">vjust</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">),</span><span class="w">
-        </span><span class="n">axis.text.y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">18</span><span class="p">,</span><span class="w">
-                                   </span><span class="n">colour</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span><span class="w">
-                                   </span><span class="n">angle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> 
-                                   </span><span class="n">vjust</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.5</span><span class="p">,</span><span class="w">
-                                   </span><span class="n">hjust</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">),</span><span class="w">
-        </span><span class="n">axis.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">18</span><span class="p">,</span><span class="w">
-                                  </span><span class="n">colour</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span><span class="w">
-                                  </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bold"</span><span class="p">),</span><span class="w"> 
-        </span><span class="n">axis.line</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_line</span><span class="p">(</span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">),</span><span class="w">
-        </span><span class="n">legend.title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">18</span><span class="p">),</span><span class="w">
-        </span><span class="n">legend.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">18</span><span class="p">),</span><span class="w">
-        </span><span class="n">axis.line.x</span><span class="w"> </span><span class="o">=</span><span class="n">element_line</span><span class="p">(</span><span class="n">colour</span><span class="o">=</span><span class="s2">"black"</span><span class="p">),</span><span class="w">
-        </span><span class="n">axis.line.y</span><span class="w"> </span><span class="o">=</span><span class="n">element_line</span><span class="p">(</span><span class="n">colour</span><span class="o">=</span><span class="s2">"black"</span><span class="p">),</span><span class="w">
-        </span><span class="n">panel.grid.major</span><span class="o">=</span><span class="n">element_blank</span><span class="p">(),</span><span class="w">
-        </span><span class="n">panel.grid.minor</span><span class="o">=</span><span class="n">element_blank</span><span class="p">(),</span><span class="w">
-        </span><span class="n">panel.border</span><span class="o">=</span><span class="n">element_blank</span><span class="p">(),</span><span class="w">
-        </span><span class="n">panel.background</span><span class="o">=</span><span class="n">element_blank</span><span class="p">(),</span><span class="w">
-        </span><span class="n">strip.background</span><span class="w"> </span><span class="o">=</span><span class="n">element_rect</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s2">"gray90"</span><span class="p">,</span><span class="w">
-                                       </span><span class="n">colour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"black"</span><span class="p">),</span><span class="w">
-        </span><span class="n">strip.text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">element_text</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="m">18</span><span class="p">,</span><span class="w">
-                                  </span><span class="n">colour</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span><span class="w">
-                                  </span><span class="n">face</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"bold"</span><span class="p">),</span><span class="w">
-        </span><span class="n">plot.margin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">unit</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">0.01</span><span class="p">,</span><span class="m">0.01</span><span class="p">,</span><span class="m">0.01</span><span class="p">,</span><span class="m">0.01</span><span class="p">),</span><span class="w"> </span><span class="s2">"cm"</span><span class="p">))</span><span class="w">
-
-</span><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> 
-             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">,</span><span class="w">
-             </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">geom_point</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">facet_wrap</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">Species</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> 
-  </span><span class="n">my_theme</span></code></pre></figure>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/mytheme.png"><img src="http://localhost:4000/assets/images/mytheme.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with facet wrap where several theme elements have been customized according to personal criteria.</p>
-
-<h2 id="cowplot-theme">Cowplot theme</h2>
-
-<figure class="highlight"><pre><code class="language-r" data-lang="r"><span class="n">iris</span><span class="w"> </span><span class="o">|&gt;</span><span class="w">
-  </span><span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Length</span><span class="p">,</span><span class="w"> 
-             </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Sepal.Width</span><span class="p">,</span><span class="w">
-             </span><span class="n">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Species</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">geom_point</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
-  </span><span class="n">facet_wrap</span><span class="p">(</span><span class="o">~</span><span class="w"> </span><span class="n">Species</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> 
-  </span><span class="n">theme_cowplot</span><span class="p">()</span></code></pre></figure>
-
-<p style="text-align: center; font-size:0.75em;"><a href="http://localhost:4000/assets/images/cowplottheme.png"><img src="http://localhost:4000/assets/images/cowplottheme.png" alt="styled-image" class="align-center" style="width: 60%;" /></a> Scatterplot with facet wrap where several theme elements have been customized according to the cowplot theme.</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="ggplot2" /><category term="plot" /><category term="grammar of graphics" /><category term="figures" /><summary type="html"><![CDATA[Beautiful plots in R using ggplot2]]></summary></entry></feed>
+<p>Finally, you will obtain a data frame with the plot’s ID and its corresponding z- metrics.</p>]]></content><author><name>Jonathan V. Solórzano</name></author><category term="blog" /><category term="post" /><category term="r" /><category term="LiDAR" /><category term="point cloud" /><category term="raster" /><category term="lidR" /><summary type="html"><![CDATA[Working with LiDAR data in R]]></summary></entry></feed>
