@@ -22,7 +22,7 @@ Professor assistant at Escuela Nacional de Estudios Superiores Morelia and Facul
 - Applies Statistics.
 - Biostatistics.
 
-Also, I made some basic courses to learn R and to use it to perform image processing and analysis. All the courses are in Spanish.
+Also, I gave some basic courses to learn R and to use it to perform image processing and analysis. All the courses are in Spanish.
 
 * [QGIS](https://github.com/JonathanVSV/CursoQGIS)
 

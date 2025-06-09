@@ -10,9 +10,9 @@ This page shows an overview of the public repositories in my Github/Gitlab:
 
 * Repos to use the U-Net algorithm (i.e., deep learning algorithm) to make a land use/land cover classification [U-netR](https://github.com/JonathanVSV/U-netR) or a 3D version used to detect deforestation [UnetRDef](https://github.com/JonathanVSV/U-netRDef).
 
-* Repo with several scripts to perform different analyses for updating some of the Mexico's Natural Capital indicators (Capital Natural de México). This repo contains much of the work I did in CONABIO (Comisión Nacional para el Conocimiento y Uso de la Biodiversidad) [BiodiversidadES](https://gitlab.com/OscarGOGO/BiodiversidadES).
+* Repo with several scripts to perform different analyses for updating some of Mexico's Natural Capital indicators (Capital Natural de México). This repo contains much of the work I did in CONABIO (Comisión Nacional para el Conocimiento y Uso de la Biodiversidad) [BiodiversidadES](https://gitlab.com/OscarGOGO/BiodiversidadES).
 
-* Repo to model aboveground biomass (AGB) using LiDAR. Includes scripts for calculating AGB, extracting LiDAR metrics, fitting different models, making AGB predictions and writing a manuscript using RMarkdown. [AGBLiDAR](https://github.com/JonathanVSV/AGBLiDAR).
+* Repo to model aboveground biomass (AGB) using LiDAR. Includes scripts for calculating AGB, extracting LiDAR metrics, fitting different models, making AGB predictions, and writing a manuscript using RMarkdown. [AGBLiDAR](https://github.com/JonathanVSV/AGBLiDAR).
 
 * Repo to calculate some basic forest's structural and diversity attributes: [VegCommunity](https://github.com/JonathanVSV/VegCommunity).
 

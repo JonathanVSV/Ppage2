@@ -7,7 +7,7 @@ header:
   overlay_image: /assets/images/ceiba5.JPG
 ---
 
-In this site you can get to know more about myself, my research interests and review different educational materials. In the **posts** section you can check some R scripts to do different processes and analyses. 
+On this site, you can learn more about me, my research interests and review different educational materials. In the **posts** section you can check some R scripts to do different processes and analyses. 
 
 In the following section, you can take a look at several aerial images of the places I have worked.
 
