@@ -60,6 +60,14 @@ gallery:
     image_path: /assets/images/spectro.png
     alt: "spectro"
     title: "Spectrograms obtained using different thresholds (columns) for three different hours (rows) and its effect over a acoustic diversity index (final row)"
+  - url: /assets/images/trajanalysis.jpeg
+    image_path: /assets/images/trajanalysis.jpeg
+    alt: "trajanalysis"
+    title: "Trajectory analysis for land use land cover change associated with avocado orchards using CCDC and landsat images"
+  - url: /assets/images/Map2.jpeg
+    image_path: /assets/images/Map2.jpeg
+    alt: "trajanalysis"
+    title: "Aboveground biomass predictions and its variation based on LiDAR metrics (ALS) using a random forest algorithm."
 ---
 
 I am a biologist/geographer interested in studying tropical forests and their changes using remote sensing, from a discrete perspective (land use/land cover) to a continuous one (modeling forest attributes, such as aboveground biomass [AGB]).
